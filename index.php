@@ -1,0 +1,28 @@
+<?php
+
+require_once "controladores/plantilla.controlador.php";
+require_once "controladores/usuarios.controlador.php";
+require_once "controladores/perfil-laboral.controlador.php";
+require_once "controladores/institucion.controlador.php";
+require_once "controladores/sedes.controlador.php";
+require_once "controladores/jornadas.controlador.php";
+require_once "controladores/niveleducativo.controlador.php";
+require_once "controladores/grados.controlador.php";
+require_once "controladores/cursos.controlador.php";
+require_once "controladores/oferta.controlador.php";
+
+
+require_once "modelos/usuarios.modelo.php";
+require_once "modelos/perfil-laboral.modelo.php";
+require_once "modelos/institucion.modelo.php";
+require_once "modelos/sedes.modelo.php";
+require_once "modelos/niveleducativo.modelo.php";
+require_once "modelos/jornadas.modelo.php";
+require_once "modelos/grados.modelo.php";
+require_once "modelos/cursos.modelo.php";
+require_once "modelos/oferta.modelo.php";
+
+
+
+$plantilla = new ControladorPlantilla(); /*objeto plantilla instanciada con la clase controlador plantilla que viene de la carpeta controladores*/
+$plantilla -> ctrPlantilla(); /* metodo de la clase controlador plantilla, carpeta controladores */

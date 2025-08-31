@@ -1,0 +1,12 @@
+{
+    "name": "edculman/wissen",
+    "authors": [
+        {
+            "name": "Eduardo Culman",
+            "email": "edculman@gmail.com"
+        }
+    ],
+    "require": {
+        "dompdf/dompdf": "^3.1"
+    }
+}
