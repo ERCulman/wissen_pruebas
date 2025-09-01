@@ -193,7 +193,7 @@ class ControladorUsuarios {
                     $respuesta = ModeloUsuarios::mdlActualizarToken($tabla, $datos);
 
                     if($respuesta == "ok"){
-                        // Aquí se enviaría el email en un caso real
+                        // Aquí se enviaría el email cuándo este implementado el envío de emails
                         echo "ok";
                     } else {
                         echo "error-db";

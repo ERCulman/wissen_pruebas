@@ -6,7 +6,7 @@ $(document).on('click', '.btnEditarUsuario', function() {
 
     console.log("Clic detectado");
   
-    var idUsuario = $(this).data("id"); // Changed to .data("id")
+    var idUsuario = $(this).data("id");
   
     var datos = new FormData();
     datos.append("idUsuario", idUsuario);
@@ -43,60 +43,7 @@ $(document).on('click', '.btnEditarUsuario', function() {
             $("#editarRolUsuario").html(respuesta["id_rol"]);
             $("#editarRolUsuario").val(respuesta["id_rol"]);
 
-            $('#modalEditarUsuario').modal('show'); // Added this line to show the modal after data is loaded
-
-        }
-
-    });
-
-});
-
-/* =======================================
-	   EDITAR USUARIO
-======================================= */
-
-$(document).on('click', '.btnEditarUsuario', function() {
-
-    console.log("Clic detectado");
-  
-    var idUsuario = $(this).data("id"); // Changed to .data("id")
-  
-    var datos = new FormData();
-    datos.append("idUsuario", idUsuario);
-
-    $.ajax({
-        url:"ajax/usuarios.ajax.php",
-        method: "POST",
-        data: datos,
-        cache: false,
-        contentType: false,
-        processData: false,
-        dataType: "json",
-        success: function(respuesta){
-
-            console.log("respuesta:", respuesta);
-
-            $("#editarNumeroDocumento").val(respuesta["numero_documento"]);
-            $("#editarTipoDocumento").html(respuesta["tipo_documento"]);
-            $("#editarTipoDocumento").val(respuesta["tipo_documento"]);
-            $("#editarNombreUsuario").val(respuesta["nombres_usuario"]);
-            $("#editarApellidoUsuario").val(respuesta["apellidos_usuario"]);
-            $("#editarSexoUsuario").html(respuesta["sexo_usuario"]);
-            $("#editarSexoUsuario").val(respuesta["sexo_usuario"]);
-            $("#editarRhUsuario").html(respuesta["rh_usuario"]);
-            $("#editarRhUsuario").val(respuesta["rh_usuario"]);
-            $("#editarFechaNacimiento").val(respuesta["fecha_nacimiento"]);
-            $("#editarEdadUsuario").val(respuesta["edad_usuario"]);
-            $("#editarTelefonoUsuario").val(respuesta["telefono_usuario"]);
-            $("#editarEmailUsuario").val(respuesta["email_usuario"]);
-            $("#editarLoginUsuario").val(respuesta["usuario"]);
-            $("#passwordActual").val(respuesta["password"]);
-            $("#editarEstadoUsuario").html(respuesta["estado_usuario"]);
-            $("#editarEstadoUsuario").val(respuesta["estado_usuario"]);
-            $("#editarRolUsuario").html(respuesta["id_rol"]);
-            $("#editarRolUsuario").val(respuesta["id_rol"]);
-
-            $('#modalEditarUsuario').modal('show'); // Added this line to show the modal after data is loaded
+            $('#modalEditarUsuario').modal('show');
 
         }
 
@@ -110,7 +57,7 @@ $(document).on('click', '.btnEditarUsuario', function() {
 
 $(document).on('click', '.btnVerUsuario', function() {
 
-    var idUsuario = $(this).data("id"); // Changed to .data("id")
+    var idUsuario = $(this).data("id");
     console.log('ID obtenido para ver:', idUsuario);
 
     var datos = new FormData();
@@ -144,7 +91,7 @@ $(document).on('click', '.btnVerUsuario', function() {
             $("#verFechaActualizacion").text(respuesta["fecha_actualizacion"]);
 
             // Guardar ID para el botón editar del modal ver
-            $('.btnEditarUsuario[data-dismiss="modal"]').attr('data-id', idUsuario); // Changed to .data('id')
+            $('.btnEditarUsuario[data-dismiss="modal"]').attr('data-id', idUsuario);
 
             $('#modalVerUsuario').modal('show');
         }

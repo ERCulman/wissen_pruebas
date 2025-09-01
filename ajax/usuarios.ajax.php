@@ -1,4 +1,4 @@
- <?php
+<?php
 
 require_once "../controladores/usuarios.controlador.php";
 require_once "../modelos/usuarios.modelo.php";
@@ -6,7 +6,7 @@ require_once "../modelos/usuarios.modelo.php";
 class AjaxUsuarios{
 
     /* =======================================
-      EDITAR USUARIO
+      MÉTODO PARA EDITAR USUARIO
     =======================================*/
 
     public $idUsuario;
@@ -19,12 +19,10 @@ class AjaxUsuarios{
         $respuesta = ControladorUsuarios::ctrMostrarUsuario($item, $valor);
 
         echo json_encode($respuesta);
-
-
     }
     
     /* =======================================
-      CREAR USUARIO
+      MÉTODO PARA CREAR USUARIO
     =======================================*/
 
     public function ajaxCrearUsuario(){
@@ -32,11 +30,10 @@ class AjaxUsuarios{
         $respuesta = ControladorUsuarios::ctrCrearUsuario();
 
         echo $respuesta;
-
     }
     
     /* =======================================
-      OLVIDO PASSWORD
+      MÉTODO PARA OLVIDO DE PASSWORD
     =======================================*/
 
     public function ajaxOlvidoPassword(){
@@ -44,13 +41,17 @@ class AjaxUsuarios{
         $respuesta = ControladorUsuarios::ctrOlvidoPassword();
 
         echo $respuesta;
-
     }
 
 }
 
+/* ===================================================================================
+   SECCIÓN DE EJECUCIÓN (DISPATCHER)
+   Aquí se crean los objetos y se llaman a los métodos según la petición POST
+======================================================================================*/
+
 /* =======================================
-    EDITAR USUARIO
+    LÓGICA PARA EDITAR USUARIO
 =======================================*/
 
 if(isset($_POST["idUsuario"])){
@@ -59,11 +60,10 @@ if(isset($_POST["idUsuario"])){
     $editar -> idUsuario = $_POST["idUsuario"];
     $editar -> ajaxEditarUsuario();
 
-
 }
 
 /* =======================================
-    CREAR USUARIO
+    LÓGICA PARA CREAR USUARIO
 =======================================*/
 
 if(isset($_POST["loginUsuario"])){
@@ -74,7 +74,7 @@ if(isset($_POST["loginUsuario"])){
 }
 
 /* =======================================
-    OLVIDO PASSWORD
+    LÓGICA PARA OLVIDO DE PASSWORD
 =======================================*/
 
 if(isset($_POST["emailRecuperar"])){
