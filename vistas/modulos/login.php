@@ -1,3 +1,41 @@
+<style>
+  .login-box {
+    width: 430px; /* Ancho original 360px, aumentado ~20% */
+  }
+
+  .login-box-msg {
+    font-size: 24px; /* Aumentar tamaño de fuente del título */
+    padding-bottom: 20px;
+  }
+
+  .form-control, .btn {
+    font-size: 16px; /* Aumentar tamaño de fuente base */
+  }
+
+  .form-control {
+      height: auto; /* Permitir que el padding defina la altura */
+      padding: 10px;
+  }
+
+  .login-links {
+    margin-top: 20px;
+  }
+
+  .login-links a {
+    font-size: 16px; /* Tamaño de fuente para los enlaces */
+    color: #3c8dbc; /* Color azul primario de AdminLTE */
+  }
+
+  .login-links a:hover {
+    color: #367fa9; /* Azul un poco más oscuro para hover */
+    text-decoration: none;
+  }
+
+  .login-links .fa {
+    margin-right: 5px;
+  }
+</style>
+
 <!-- PAGINA LOGIN -->
 
 <div id="back"></div>
@@ -31,7 +69,7 @@
 
        <!-- BOTON DE INGRESO --> 
         
-        <div class="col-xs-4 col-xs-offset-4">
+        <div class="col-xs-6 col-xs-offset-3">
           <button type="submit" class="btn btn-primary btn-block btn-flat">Ingresar</button>
         </div>
 
@@ -44,7 +82,22 @@
 
       ?>
     </form>
+
+    <div class="row login-links">
+      <div class="col-xs-6">
+        <a href="#" data-toggle="modal" data-target="#modalRecuperarPassword"><i class="fa fa-lock"></i> Olvidé mi contraseña</a>
+      </div>
+      <div class="col-xs-6 text-right">
+        <a href="#" data-toggle="modal" data-target="#modalAgregarUsuario"><i class="fa fa-user-plus"></i> Registro</a>
+      </div>
+    </div>
+
   </div>
   <!-- /.login-box-body -->
 </div>
 <!-- /.login-box -->
+
+<?php 
+  include 'modales/modal-registro-usuario.php'; 
+  include 'modales/modal-recuperar-password.php';
+?>

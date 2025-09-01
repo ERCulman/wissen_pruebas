@@ -22,6 +22,30 @@ class AjaxUsuarios{
 
 
     }
+    
+    /* =======================================
+      CREAR USUARIO
+    =======================================*/
+
+    public function ajaxCrearUsuario(){
+
+        $respuesta = ControladorUsuarios::ctrCrearUsuario();
+
+        echo $respuesta;
+
+    }
+    
+    /* =======================================
+      OLVIDO PASSWORD
+    =======================================*/
+
+    public function ajaxOlvidoPassword(){
+
+        $respuesta = ControladorUsuarios::ctrOlvidoPassword();
+
+        echo $respuesta;
+
+    }
 
 }
 
@@ -35,6 +59,28 @@ if(isset($_POST["idUsuario"])){
     $editar -> idUsuario = $_POST["idUsuario"];
     $editar -> ajaxEditarUsuario();
 
+
+}
+
+/* =======================================
+    CREAR USUARIO
+=======================================*/
+
+if(isset($_POST["loginUsuario"])){
+
+    $crearUsuario = new AjaxUsuarios();
+    $crearUsuario -> ajaxCrearUsuario();
+
+}
+
+/* =======================================
+    OLVIDO PASSWORD
+=======================================*/
+
+if(isset($_POST["emailRecuperar"])){
+
+    $olvidoPassword = new AjaxUsuarios();
+    $olvidoPassword -> ajaxOlvidoPassword();
 
 }
 

@@ -14,13 +14,12 @@ class ControladorUsuarios {
 			   preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingPassword"])){
 
 				$encriptar = crypt($_POST["ingPassword"], '$1$rasmusle$');
-				$tabla = "usuarios"; // Variable que me consulte la tabla Usuarios
-				$item = "usuario"; // Variable que me consulte el campo Usuario
-				$valor = $_POST["ingUsuario"]; // Variable que me consulte el usuario ingresado en el login, si este existe
+				$tabla = "usuarios";
+				$item = "usuario";
+				$valor = $_POST["ingUsuario"];
 
-				$respuesta = ModeloUsuarios::MdlMostrarUsuarios($tabla, $item, $valor); // Solicitar una respuesta del modelo a través del método mostrar usuarios
+				$respuesta = ModeloUsuarios::MdlMostrarUsuarios($tabla, $item, $valor);
 
-				// Muestra la respuesta cuando se ejecute
 				if ($respuesta["usuario"] == $_POST["ingUsuario"] && $respuesta["password"] == $encriptar){
 
 					$_SESSION["iniciarSesion"] = "ok";
@@ -28,9 +27,7 @@ class ControladorUsuarios {
 					$_SESSION["apellidos_usuario"] = $respuesta["apellidos_usuario"];
                     $_SESSION["id_rol"] = $respuesta["id_rol"];
 
-					echo '<script>
-						window.location = "inicio";
-					</script>';
+					echo '<script> window.location = "inicio"; </script>';
 
 				} else {
 
@@ -59,9 +56,7 @@ class ControladorUsuarios {
 			   preg_match('/^[a-zA-Z0-9]+$/', $_POST["password"])){
 
 				$tabla = "usuarios";
-
 				$encriptar = crypt($_POST["password"], '$1$rasmusle$');
-
 				$datos = array(
 					"numero_documento" => $_POST["numeroDocumento"],
 					"tipo_documento" => $_POST["tipoDocumento"],
@@ -81,49 +76,13 @@ class ControladorUsuarios {
 
 				$respuesta = ModeloUsuarios::mdlCrearUsuario($tabla, $datos);
 
-				if ($respuesta == "ok") {
-
-					echo '<script>
-						Swal.fire({
-							position: "top-end",
-							icon: "success",
-							title: "El usuario se ha creado correctamente",
-							showConfirmButton: false,
-							timer: 1500
-						}).then ((result)=>{
-							if(result.value){
-								window.location="usuarios";
-							}
-						});
-					</script>';
-				}else {
-                    echo '<script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "¡Error al registrar!",
-                        text: "No se pudo crear el usuario. Es posible que el número de documento o el email ya existan en el sistema."
-                    }).then((result) => {
-                        if(result.value){
-                            window.location = "usuarios";
-                        }
-                    });
-                </script>';
-                }
+				echo $respuesta;
 
 			} else {
 
-				echo '<script>
-					Swal.fire({
-						icon: "error",
-						title: "¡El usuario no puede ir vacio o llevar caracteres especiales en los campos diligenciados!"
-					}).then ((result)=>{
-						if(result.value){
-							window.location="usuarios";
-						}
-					});
-				</script>';
+				echo "error-sintaxis";
 			}
-		}	
+		}
 	}
 
 	/* =======================================
@@ -133,12 +92,10 @@ class ControladorUsuarios {
 	static public function ctrMostrarUsuario($item, $valor){
 
 		$tabla = "usuarios";
-		$respuesta = ModeloUsuarios::MdlMostrarUsuarios($tabla, $item, $valor); // Solicitar una respuesta del modelo a través del método mostrar usuarios
-
+		$respuesta = ModeloUsuarios::MdlMostrarUsuarios($tabla, $item, $valor);
 		return $respuesta;
 
 	}
-
 
 	/* =======================================
 	   METODO EDITAR USUARIO
@@ -166,22 +123,13 @@ class ControladorUsuarios {
 
 			   		} else{
 
-			   			echo '<script>
-									Swal.fire({
-										icon: "error",
-										title: "¡La contraseña no puede ir vacio o llevar caracteres especiales en los campos diligenciados!"
-									}).then ((result)=>{
-										if(result.value){
-											window.location="usuarios";
-										}
-									});
-						</script>';
+			   			echo '<script> Swal.fire({ icon: "error", title: "¡La contraseña no puede ir vacio o llevar caracteres especiales en los campos diligenciados!"}).then ((result)=>{{if(result.value){window.location="usuarios";}}});</script>';
 
 			   		}
 			   		
 			   	} else {
 
-			   		$encriptar = crypt($_POST["passwordActual"], '$1$rasmusle$');
+			   		$encriptar = $_POST["passwordActual"];
 			   	}
 
 			   	$datos = array(
@@ -205,35 +153,110 @@ class ControladorUsuarios {
 
 				if ($respuesta == "ok") {
 
-					echo '<script>
-						Swal.fire({
-							position: "top-end",
-							icon: "success",
-							title: "El usuario se ha actualizado correctamente",
-							showConfirmButton: false,
-							timer: 1500
-						}).then ((result)=>{
-							if(result.value){
-								window.location="usuarios";
-							}
-						});
-					</script>';
+					echo '<script>Swal.fire({position: "top-end",icon: "success",title: "El usuario se ha actualizado correctamente",showConfirmButton: false,timer: 1500}).then ((result)=>{{if(result.value){window.location="usuarios";}}});</script>';
 				}
 
 			} else {
 
-				echo '<script>
-					Swal.fire({
-						icon: "error",
-						title: "¡El usuario no puede ir vacio o llevar caracteres especiales en los campos diligenciados!"
-					}).then ((result)=>{
-						if(result.value){
-							window.location="usuarios";
-						}
-					});
-				</script>';
+				echo '<script>Swal.fire({icon: "error",title: "¡El usuario no puede ir vacio o llevar caracteres especiales en los campos diligenciados!"}).then ((result)=>{{if(result.value){window.location="usuarios";}}});</script>';
 			}  	
 		}
 	}
+    
+    /* =======================================
+	   METODO OLVIDO PASSWORD
+	======================================= */
+
+    static public function ctrOlvidoPassword(){
+
+        if(isset($_POST["emailRecuperar"])){
+
+            if(filter_var($_POST["emailRecuperar"], FILTER_VALIDATE_EMAIL)){
+
+                $tabla = "usuarios";
+                $item = "email_usuario";
+                $valor = $_POST["emailRecuperar"];
+
+                $usuario = ModeloUsuarios::MdlMostrarUsuarios($tabla, $item, $valor);
+
+                if($usuario){
+
+                    $token = bin2hex(random_bytes(16));
+                    $expiry = new DateTime();
+                    $expiry->add(new DateInterval('PT1H'));
+                    $expiryDate = $expiry->format('Y-m-d H:i:s');
+
+                    $datos = array("id_usuario" => $usuario["id_usuario"],
+                                   "reset_token" => $token,
+                                   "reset_token_expiry" => $expiryDate);
+
+                    $respuesta = ModeloUsuarios::mdlActualizarToken($tabla, $datos);
+
+                    if($respuesta == "ok"){
+                        // Aquí se enviaría el email en un caso real
+                        echo "ok";
+                    } else {
+                        echo "error-db";
+                    }
+
+                } else {
+                    echo "not-found";
+                }
+
+            } else {
+                echo "error-sintaxis";
+            }
+        }
+    }
+
+    /* =======================================
+	   METODO RESET PASSWORD
+	======================================= */
+
+    static public function ctrResetPassword(){
+
+        if(isset($_POST["reset_token"])){
+
+            if(isset($_POST["new_password"]) && isset($_POST["confirm_password"]) &&
+               !empty($_POST["new_password"]) && $_POST["new_password"] === $_POST["confirm_password"]){
+
+                $tabla = "usuarios";
+                $item = "reset_token";
+                $valor = $_POST["reset_token"];
+
+                $usuario = ModeloUsuarios::MdlMostrarUsuarios($tabla, $item, $valor);
+
+                if($usuario){
+
+                    $now = new DateTime();
+                    $expiry = new DateTime($usuario["reset_token_expiry"]);
+
+                    if($now < $expiry){
+
+                        $encriptar = crypt($_POST["new_password"], '$1$rasmusle$');
+
+                        $datos = array("id_usuario" => $usuario["id_usuario"],
+                                       "password" => $encriptar);
+
+                        $respuesta = ModeloUsuarios::mdlActualizarPassword($tabla, $datos);
+
+                        if($respuesta == "ok"){
+                            echo '<div class="alert alert-success">Contraseña actualizada correctamente. Ya puedes <a href="index.php">iniciar sesión</a>.</div>';
+                        } else {
+                            echo '<div class="alert alert-danger">Error al actualizar la contraseña.</div>';
+                        }
+
+                    } else {
+                        echo '<div class="alert alert-danger">El token ha expirado. Por favor, solicita un nuevo restablecimiento.</div>';
+                    }
+                } else {
+                    echo '<div class="alert alert-danger">Token inválido.</div>';
+                }
+
+            } else {
+                echo '<div class="alert alert-danger">Las contraseñas no coinciden o están vacías.</div>';
+            }
+        }
+    }
 
 }

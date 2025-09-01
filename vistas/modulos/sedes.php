@@ -477,18 +477,56 @@
                     <div class="modal-body">
                         <div class="row">
                             <div class="col-md-12">
-                                <p><strong>Número de Sede:</strong> <span id="verNumeroSede"></span></p>
-                                <p><strong>Tipo de Sede:</strong> <span id="verTipoSede"></span></p>
-                                <p><strong>Nombre de la Sede:</strong> <span id="verNombreSede"></span></p>
-                                <p><strong>Código DANE:</strong> <span id="verCodigoDaneSede"></span></p>
-                                <p><strong>Consecutivo DANE:</strong> <span id="verConsecutivoDane"></span></p>
-                                <p><strong>Resolución de Creación:</strong> <span id="verResolucionCreacionSede"></span></p>
-                                <p><strong>Fecha de Creación:</strong> <span id="verFechaCreacionSede"></span></p>
-                                <p><strong>Dirección:</strong> <span id="verDireccionSede"></span></p>
-                                <p><strong>Teléfono:</strong> <span id="verTelefonoSede"></span></p>
-                                <p><strong>Celular:</strong> <span id="verCelularSede"></span></p>
-                                <p><strong>Institución:</strong> <span id="verInstitucionSede"></span></p>
-                                <p><strong>Estado:</strong> <span id="verEstadoSede"></span></p>
+                                <table style="border: none; width: 100%;">
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold; width: 40%;">Número de Sede:</td>
+                                        <td style="border: none; padding: 10px;" id="verNumeroSede"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Tipo de Sede:</td>
+                                        <td style="border: none; padding: 10px;" id="verTipoSede"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Nombre de la Sede:</td>
+                                        <td style="border: none; padding: 10px;" id="verNombreSede"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Código DANE:</td>
+                                        <td style="border: none; padding: 10px;" id="verCodigoDaneSede"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Consecutivo DANE:</td>
+                                        <td style="border: none; padding: 10px;" id="verConsecutivoDane"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Resolución de Creación:</td>
+                                        <td style="border: none; padding: 10px;" id="verResolucionCreacionSede"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Fecha de Creación:</td>
+                                        <td style="border: none; padding: 10px;" id="verFechaCreacionSede"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Dirección:</td>
+                                        <td style="border: none; padding: 10px;" id="verDireccionSede"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Teléfono:</td>
+                                        <td style="border: none; padding: 10px;" id="verTelefonoSede"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Celular:</td>
+                                        <td style="border: none; padding: 10px;" id="verCelularSede"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Institución:</td>
+                                        <td style="border: none; padding: 10px;" id="verInstitucionSede"></td>
+                                    </tr>
+                                    <tr style="border: none;">
+                                        <td style="border: none; padding: 10px; font-weight: bold;">Estado:</td>
+                                        <td style="border: none; padding: 10px;" id="verEstadoSede"></td>
+                                    </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -502,6 +540,8 @@
             </div>
         </div>
     </div>
+
+   
 
     <script src="/wissen/vistas/js/sede.js"></script>
 

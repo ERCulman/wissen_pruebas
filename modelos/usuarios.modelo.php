@@ -113,5 +113,48 @@ class ModeloUsuarios{
 
 
 	}
+    
+    /*  =======================================
+  	METODO ACTUALIZAR TOKEN
+	======================================= */
+
+    static public function mdlActualizarToken($tabla, $datos){
+
+        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET reset_token = :reset_token, reset_token_expiry = :reset_token_expiry WHERE id_usuario = :id_usuario");
+
+        $stmt -> bindParam(":reset_token", $datos["reset_token"], PDO::PARAM_STR);
+        $stmt -> bindParam(":reset_token_expiry", $datos["reset_token_expiry"], PDO::PARAM_STR);
+        $stmt -> bindParam(":id_usuario", $datos["id_usuario"], PDO::PARAM_INT);
+
+        if ($stmt->execute()){
+            return "ok";
+        }else{
+            return "error";
+        }
+
+        $stmt -> close();
+        $stmt -> null;
+    }
+
+    /*  =======================================
+  	METODO ACTUALIZAR PASSWORD
+	======================================= */
+
+    static public function mdlActualizarPassword($tabla, $datos){
+
+        $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET password = :password, reset_token = NULL, reset_token_expiry = NULL WHERE id_usuario = :id_usuario");
+
+        $stmt -> bindParam(":password", $datos["password"], PDO::PARAM_STR);
+        $stmt -> bindParam(":id_usuario", $datos["id_usuario"], PDO::PARAM_INT);
+
+        if ($stmt->execute()){
+            return "ok";
+        }else{
+            return "error";
+        }
+
+        $stmt -> close();
+        $stmt -> null;
+    }
 
 }
