@@ -260,5 +260,15 @@ class ModeloInstitucion {
     static public function mdlObtenerEstadoTexto($estado) {
         return ($estado == 1) ? "Activo" : "Inactivo";
     }
+
+    /*=============================================
+    CONTAR INSTITUCIONES
+    =============================================*/
+
+    static public function mdlContarInstituciones($tabla) {
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM $tabla");
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>

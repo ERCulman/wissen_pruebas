@@ -257,5 +257,15 @@ class ModeloSede {
         $stmt->close();
         $stmt = null;
     }
+
+    /*=============================================
+    CONTAR SEDES
+    =============================================*/
+
+    static public function mdlContarSedes($tabla) {
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM $tabla");
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
 ?>

@@ -157,4 +157,15 @@ class ModeloUsuarios{
         $stmt -> null;
     }
 
+    /*=============================================
+    CONTAR USUARIOS POR ROL
+    =============================================*/
+
+    static public function mdlContarUsuariosPorRol($tabla, $rol) {
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM $tabla WHERE id_rol = :rol");
+        $stmt->bindParam(":rol", $rol, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 }

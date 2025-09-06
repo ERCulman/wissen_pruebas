@@ -79,64 +79,48 @@
 
     <?php
 
-    if(isset($_SESSION["iniciarSesion"]) && $_SESSION["iniciarSesion"] == "ok"){
-
-      ## SE COLOCA LA CLASE WRAPPER DEL CUERPO DE LA PLANTILLA DENTRO DE PHP PARA QUE APAREZCA DESPUES DEL INICIO DE SESION
-
-      echo '<div class="wrapper">';
-
-    ##SE INCLUYE CABEZOTE O CABECERA
-     
-
-      include "modulos/cabezote.php";
-
-        ##SE INCLUYE MENU LATERAL
-     
-      include "modulos/menu.php";
-
-        ##SE INCLUYEN TODAS LAS PAGINAS DEL MENU
-
-      if(isset($_GET["ruta"])){
-
-        if($_GET["ruta"] == "inicio" ||
-           $_GET["ruta"] == "usuarios" ||
-           $_GET["ruta"] == "perfil-laboral" ||
-           $_GET["ruta"] == "institucion" ||
-           $_GET["ruta"] == "sedes" ||
-           $_GET["ruta"] == "niveleducativo" ||
-           $_GET["ruta"] == "jornadas" ||
-           $_GET["ruta"] == "grados" ||
-           $_GET["ruta"] == "cursos" ||
-           $_GET["ruta"] == "oferta" ||
-           $_GET["ruta"] == "matricula" ||
-           $_GET["ruta"] == "estudiantes" ||
-           $_GET["ruta"] == "acudientes" ||
-           $_GET["ruta"] == "pension-escolar" ||
-           $_GET["ruta"] == "asistencia" ||
-           $_GET["ruta"] == "calificaciones" ||
-           $_GET["ruta"] == "observaciones-academicas" ||
-           $_GET["ruta"] == "observaciones-disciplinarias" ||
-           $_GET["ruta"] == "horarios" ||
-           $_GET["ruta"] == "salir"){
-
-          include "modulos/".$_GET["ruta"].".php";
-        } else {
-          include "modulos/404.php";
-        }
-      } else {
-        include "modulos/inicio.php";
-      }
-
-       ## SE INCLUYE PIE DE PAGINA
-
-      include "modulos/footer.php";
-
-    echo '</div>';
-
+    if (isset($_GET["ruta"]) && $_GET["ruta"] == "login") {
+        include "modulos/login.php";
     } else {
+        if(isset($_SESSION["iniciarSesion"]) && $_SESSION["iniciarSesion"] == "ok"){
+            echo '<div class="wrapper">';
+            include "modulos/cabezote.php";
+            include "modulos/menu.php";
 
-      include "modulos/login.php";
+            if(isset($_GET["ruta"])){
+                if($_GET["ruta"] == "inicio" ||
+                   $_GET["ruta"] == "usuarios" ||
+                   $_GET["ruta"] == "perfil-laboral" ||
+                   $_GET["ruta"] == "institucion" ||
+                   $_GET["ruta"] == "sedes" ||
+                   $_GET["ruta"] == "niveleducativo" ||
+                   $_GET["ruta"] == "jornadas" ||
+                   $_GET["ruta"] == "grados" ||
+                   $_GET["ruta"] == "cursos" ||
+                   $_GET["ruta"] == "oferta" ||
+                   $_GET["ruta"] == "matricula" ||
+                   $_GET["ruta"] == "estudiantes" ||
+                   $_GET["ruta"] == "acudientes" ||
+                   $_GET["ruta"] == "pension-escolar" ||
+                   $_GET["ruta"] == "asistencia" ||
+                   $_GET["ruta"] == "calificaciones" ||
+                   $_GET["ruta"] == "observaciones-academicas" ||
+                   $_GET["ruta"] == "observaciones-disciplinarias" ||
+                   $_GET["ruta"] == "horarios" ||
+                   $_GET["ruta"] == "salir"){
+                    include "modulos/".$_GET["ruta"].".php";
+                } else {
+                    include "modulos/404.php";
+                }
+            } else {
+                include "modulos/inicio.php";
+            }
 
+            include "modulos/footer.php";
+            echo '</div>';
+        } else {
+            include "modulos/login.php";
+        }
     }
 
   ?>

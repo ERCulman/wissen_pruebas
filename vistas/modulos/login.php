@@ -46,6 +46,7 @@
   </div>
 
   <!-- /.login-logo -->
+
   <div class="login-box-body">
     <p class="login-box-msg">Ingresar al Sistema</p>
 
@@ -77,8 +78,10 @@
 
       <?php
 
-        $login = new ControladorUsuarios();
-        $login -> ctrIngresoUsuario();
+        if(isset($_POST["ingUsuario"])){
+          $login = new ControladorUsuarios();
+          $login -> ctrIngresoUsuario();
+        }
 
       ?>
     </form>
@@ -94,8 +97,16 @@
 
   </div>
   <!-- /.login-box-body -->
+    <div style="margin-top: 20px; text-align: center;">
+        <a href="home.php" class="btn btn-primary" style="background-color: #3c8dbc; border-color: #367fa9;
+     padding: 10px 16px; font-size: 16px; border-radius: 3px; box-shadow: 0 2px 3px rgba(0,0,0,0.1);">
+            <i class="fa fa-home"></i> Regresar a Página de Inicio
+        </a>
+    </div>
 </div>
 <!-- /.login-box -->
+
+
 
 <?php 
   include 'modales/modal-registro-usuario.php'; 

@@ -309,6 +309,16 @@ class ControladorSede {
         $respuesta = ModeloSede::mdlObtenerInstituciones();
         return $respuesta;
     }
+
+    /*=============================================
+    CONTAR SEDES
+    =============================================*/
+
+    static public function ctrContarSedes() {
+        $tabla = "sede";
+        $respuesta = ModeloSede::mdlContarSedes($tabla);
+        return $respuesta['total'];
+    }
 }
 ?>
 

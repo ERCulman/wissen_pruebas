@@ -293,5 +293,15 @@ class ControladorInstitucion {
             }
         }
     }
+
+    /*=============================================
+    CONTAR INSTITUCIONES
+    =============================================*/
+
+    static public function ctrContarInstituciones() {
+        $tabla = "institucion";
+        $respuesta = ModeloInstitucion::mdlContarInstituciones($tabla);
+        return $respuesta['total'];
+    }
 }
 ?>

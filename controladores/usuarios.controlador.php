@@ -10,7 +10,7 @@ class ControladorUsuarios {
 
 		if(isset($_POST["ingUsuario"])){
 
-			if(preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingUsuario"]) && 
+			if(preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingUsuario"]) &&
 			   preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingPassword"])){
 
 				$encriptar = crypt($_POST["ingPassword"], '$1$rasmusle$');
@@ -20,17 +20,28 @@ class ControladorUsuarios {
 
 				$respuesta = ModeloUsuarios::MdlMostrarUsuarios($tabla, $item, $valor);
 
-				if ($respuesta["usuario"] == $_POST["ingUsuario"] && $respuesta["password"] == $encriptar){
+				if ($respuesta){
+					// Verificar si el usuario está activo
+					if ($respuesta["estado_usuario"] == "Inactivo"){
+						echo '<br><div class="alert alert-warning">Su cuenta ha sido desactivada. Por favor, contacte al administrador del sistema para reactivarla.</div>';
+						return;
+					}
 
-					$_SESSION["iniciarSesion"] = "ok";
-					$_SESSION["nombres_usuario"] = $respuesta["nombres_usuario"];
-					$_SESSION["apellidos_usuario"] = $respuesta["apellidos_usuario"];
-                    $_SESSION["id_rol"] = $respuesta["id_rol"];
+					// Verificar contraseña
+					if ($respuesta["usuario"] == $_POST["ingUsuario"] && $respuesta["password"] == $encriptar){
 
-					echo '<script> window.location = "inicio"; </script>';
+						$_SESSION["iniciarSesion"] = "ok";
+						$_SESSION["nombres_usuario"] = $respuesta["nombres_usuario"];
+						$_SESSION["apellidos_usuario"] = $respuesta["apellidos_usuario"];
+		                        $_SESSION["id_rol"] = $respuesta["id_rol"];
 
+						echo '<script> window.location = "inicio"; </script>';
+
+					} else {
+
+						echo '<br><div class="alert alert-danger">Error al ingresar, vuelve a intentar</div>';
+					}
 				} else {
-
 					echo '<br><div class="alert alert-danger">Error al ingresar, vuelve a intentar</div>';
 				}
 			}
@@ -126,7 +137,7 @@ class ControladorUsuarios {
 			   			echo '<script> Swal.fire({ icon: "error", title: "¡La contraseña no puede ir vacio o llevar caracteres especiales en los campos diligenciados!"}).then ((result)=>{{if(result.value){window.location="usuarios";}}});</script>';
 
 			   		}
-			   		
+
 			   	} else {
 
 			   		$encriptar = $_POST["passwordActual"];
@@ -159,10 +170,10 @@ class ControladorUsuarios {
 			} else {
 
 				echo '<script>Swal.fire({icon: "error",title: "¡El usuario no puede ir vacio o llevar caracteres especiales en los campos diligenciados!"}).then ((result)=>{{if(result.value){window.location="usuarios";}}});</script>';
-			}  	
+			}
 		}
 	}
-    
+
     /* =======================================
 	   METODO OLVIDO PASSWORD
 	======================================= */
@@ -218,7 +229,7 @@ class ControladorUsuarios {
         if(isset($_POST["reset_token"])){
 
             if(isset($_POST["new_password"]) && isset($_POST["confirm_password"]) &&
-               !empty($_POST["new_password"]) && $_POST["new_password"] === $_POST["confirm_password"]){
+                !empty($_POST["new_password"]) && $_POST["new_password"] === $_POST["confirm_password"]){
 
                 $tabla = "usuarios";
                 $item = "reset_token";
@@ -233,10 +244,13 @@ class ControladorUsuarios {
 
                     if($now < $expiry){
 
+                        // Corrección: salt bien formado y sin salto de línea
                         $encriptar = crypt($_POST["new_password"], '$1$rasmusle$');
 
-                        $datos = array("id_usuario" => $usuario["id_usuario"],
-                                       "password" => $encriptar);
+                        $datos = array(
+                            "id_usuario" => $usuario["id_usuario"],
+                            "password" => $encriptar
+                        );
 
                         $respuesta = ModeloUsuarios::mdlActualizarPassword($tabla, $datos);
 
@@ -257,6 +271,17 @@ class ControladorUsuarios {
                 echo '<div class="alert alert-danger">Las contraseñas no coinciden o están vacías.</div>';
             }
         }
+    }
+
+
+    /*=============================================
+    CONTAR USUARIOS POR ROL
+    =============================================*/
+
+    static public function ctrContarUsuariosPorRol($idRol) {
+        $tabla = "usuarios";
+        $respuesta = ModeloUsuarios::mdlContarUsuariosPorRol($tabla, $idRol);
+        return $respuesta['total'];
     }
 
 }
