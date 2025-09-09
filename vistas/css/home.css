@@ -42,7 +42,7 @@ body {
     transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.navbar-custom .nav > li > a:hover, 
+.navbar-custom .nav > li > a:hover,
 .navbar-custom .nav > li.active > a {
     color: #3c8dbc !important;
     background-color: transparent;
@@ -123,157 +123,35 @@ section#transforma {
     margin: 0 auto; /* Centrar horizontalmente */
 }
 
-/* --- Sección Hero (Portada) --- */
+/* --- Sección Hero (Portada) Unificada --- */
+
 .hero {
     position: relative;
     min-height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center; /* Centra el .hero-content horizontalmente */
+    align-items: center;    /* Centra el .hero-content verticalmente */
 
+    /* Capas de fondo en orden: mujer, gradiente, fondo principal */
     background:
-            url('/wissen/vistas/img/plantilla/mujer1.png') left 30px top 20%/auto 50% no-repeat,
+            url('/wissen/vistas/img/plantilla/mujer1.png') left 30px top 35% / auto 50% no-repeat,
             linear-gradient(to left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%),
-            url('/wissen/vistas/img/plantilla/home2.png') center/cover no-repeat;
+            url('/wissen/vistas/img/plantilla/home2.png') center / cover no-repeat;
 }
 
+/* Línea decorativa en la parte inferior */
 .hero::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 2px;
+    height: 3px;
     background: linear-gradient(to right, #3c8dbc, #367fa9);
-}
-
-/* Contenedor para aislar el texto del gradiente */
-/* --- Tu CSS base --- */
-.hero {
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    background:
-            url('/wissen/vistas/img/plantilla/mujer1.png') left 30px top 20%/auto 50% no-repeat,
-            linear-gradient(to left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%),
-            url('/wissen/vistas/img/plantilla/home2.png') center/cover no-repeat;
-}
-
-.hero::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 5px;
-    background: linear-gradient(to right, #3c8dbc, #367fa9);
-    z-index: 2;
-}
-
-/* --- CONTENEDOR CON EFECTOS LLAMATIVOS PERO CONTRASTANTES --- */
-.hero-content {
-    position: relative;
-    z-index: 10;
-    background: rgba(255, 255, 255, 0.98); /* Fondo casi opaco para que destaque */
-    padding: 50px 70px;
-    border-radius: 25px;
-    backdrop-filter: blur(15px);
-    max-width: 950px;
-    margin: 0 auto;
-
-    /* Efectos llamativos con colores que contrastan */
-    box-shadow:
-            0 0 40px rgba(255, 165, 0, 0.4),    /* Resplandor naranja (contrasta con azul) */
-            0 25px 50px rgba(0, 0, 0, 0.3),     /* Sombra negra profunda */
-            inset 0 1px 0 rgba(255, 255, 255, 1); /* Luz blanca superior */
-
-    /* Borde llamativo naranja/dorado */
-    border: 3px solid;
-    border-image: linear-gradient(45deg, #ff6b35, #ffa500, #ff8c42) 1;
-
-    /* Animación de entrada */
-    animation: slideInBounce 1.2s ease-out;
-    transform-origin: center;
-}
-
-/* Efecto de brillo dorado animado */
-.hero-content::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(45deg,
-    transparent 30%,
-    rgba(255, 215, 0, 0.3) 50%,     /* Oro brillante */
-    transparent 70%);
-    animation: goldShimmer 3s infinite;
-    pointer-events: none;
     z-index: 1;
 }
 
-/* Animaciones */
-@keyframes slideInBounce {
-    0% {
-        opacity: 0;
-        transform: translateY(60px) scale(0.8);
-    }
-    60% {
-        opacity: 1;
-        transform: translateY(-10px) scale(1.05);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes goldShimmer {
-    0% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
-    100% { transform: translateX(100%) translateY(100%) rotate(30deg); }
-}
-
-/* Hover effect espectacular con colores cálidos */
-.hero-content:hover {
-    transform: translateY(-12px) scale(1.03);
-    box-shadow:
-            0 0 60px rgba(255, 165, 0, 0.6),    /* Más resplandor naranja */
-            0 35px 70px rgba(0, 0, 0, 0.4),
-            inset 0 2px 0 rgba(255, 255, 255, 1);
-    border-image: linear-gradient(45deg, #ff4500, #ffd700, #ff6347) 1;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-/* --- TEXTO CON COLORES SÓLIDOS Y CONTRASTANTES --- */
-/* --- CSS original --- */
-.hero {
-    position: relative;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    background:
-            url('/wissen/vistas/img/plantilla/mujer1.png') left 30px top 35%/auto 50% no-repeat,
-            linear-gradient(to left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%),
-            url('/wissen/vistas/img/plantilla/home2.png') center/cover no-repeat;
-}
-
-.hero::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(to right, #3c8dbc, #367fa9);
-}
-
-/* Contenedor con borde difuminado */
+/* Contenedor del texto para aislarlo del fondo */
 .hero-content {
     position: relative;
     z-index: 10;
@@ -281,57 +159,56 @@ section#transforma {
     padding: 40px 60px;
     border-radius: 20px;
     backdrop-filter: blur(10px);
-    box-shadow:
-            0 20px 40px rgba(0,0,0,0.15),
-            0 0 30px rgba(255,140,0,0.2),
-            0 0 0 1px rgba(228, 9, 9, 0.3),
-            0 0 20px rgba(228, 9, 9, 0.4);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
     max-width: 900px;
     margin: 0 auto;
+    text-align: center; /* <-- CORRECCIÓN: Asegura que el texto dentro del contenedor esté centrado */
     animation: containerFadeIn 1s ease-out;
 }
 
-/* Animaciones hover para los textos */
+/* Estilos y animación para el título principal (H1) */
 .hero h1 {
     font-weight: 900;
     font-size: 100px;
     margin-bottom: 25px;
-    text-align: center;
-    color: #2c64ca;
+    color: #2c64ca; /* Color original restaurado */
     text-shadow: none;
-    animation: titleSlideIn 1.2s ease-out;
     transition: all 0.3s ease;
     cursor: pointer;
-    filter: drop-shadow(0 2px 6px rgb(217, 216, 218));
+    filter: drop-shadow(0 2px 6px rgb(217, 216, 218)); /* Sombra original restaurada */
+    animation: titleSlideIn 1.2s ease-out;
+    text-align: center;
 }
 
 .hero h1:hover {
     transform: scale(1.05);
-    color: #1e4ba8;
-    filter: drop-shadow(0 5px 15px rgba(217, 165, 0, 0.4));
+    color: #1e4ba8; /* Color hover original restaurado */
+    filter: drop-shadow(0 5px 15px rgba(217, 165, 0, 0.4)); /* Sombra hover original restaurada */
 }
 
+/* Estilos y animación para el párrafo (P) */
 .hero p {
     font-size: 60px;
     line-height: 1.2;
-    text-align: center;
-    color: #d9d8da;
+    color: #d9d8da; /* <-- CORRECCIÓN: Color grisáceo original restaurado */
     text-shadow: none;
     margin: 0;
     font-weight: 600;
-    animation: textFadeIn 1.5s ease-out 0.3s both;
     transition: all 0.3s ease;
     cursor: pointer;
-    filter: drop-shadow(0 2px 6px rgb(7, 7, 7));
+    filter: drop-shadow(0 2px 6px rgb(7, 7, 7)); /* <-- CORRECCIÓN: Sombra oscura original restaurada */
+    animation: textFadeIn 1.5s ease-out 0.3s both;
+    text-align: center;
 }
 
 .hero p:hover {
     transform: translateY(-5px);
-    color: #ffffff;
-    filter: drop-shadow(0 3px 10px rgba(217, 165, 218, 0.6));
+    color: #ffffff; /* <-- CORRECCIÓN: Color blanco hover restaurado */
+    filter: drop-shadow(0 3px 10px rgba(217, 165, 218, 0.6)); /* <-- CORRECCIÓN: Sombra de color original restaurada */
 }
 
-/* Keyframes eficientes */
+/* --- Definición de Animaciones (Keyframes) --- */
+
 @keyframes containerFadeIn {
     from { opacity: 0; transform: translateY(30px); }
     to { opacity: 1; transform: translateY(0); }

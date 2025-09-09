@@ -1,6 +1,7 @@
 <?php
 
-require_once "conexion.php";
+// Se utiliza __DIR__ para asegurar que la ruta al archivo de conexión sea siempre correcta.
+require_once __DIR__ . "/conexion.php";
 
 class ModeloUsuarios{
 
@@ -113,12 +114,37 @@ class ModeloUsuarios{
 
 
 	}
+
+    /*=============================================
+	BUSCAR USUARIO POR USUARIO Y EMAIL
+	=============================================*/
+	static public function mdlBuscarUsuarioPorUsuarioYEmail($tabla, $usuario, $email){
+		$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE usuario = :usuario AND email_usuario = :email_usuario");
+		$stmt->bindParam(":usuario", $usuario, PDO::PARAM_STR);
+		$stmt->bindParam(":email_usuario", $email, PDO::PARAM_STR);
+		$stmt->execute();
+		$resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+		$stmt = null;
+		return $resultado;
+	}
+
+	/*=============================================
+	BUSCAR USUARIO POR TOKEN DE RESETEO
+	=============================================*/
+	static public function mdlBuscarUsuarioPorToken($tabla, $token){
+		$stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE reset_token = :reset_token AND reset_token_expiry > NOW()");
+		$stmt->bindParam(":reset_token", $token, PDO::PARAM_STR);
+		$stmt->execute();
+		$resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+		$stmt = null;
+		return $resultado;
+	}
     
     /*  =======================================
-  	METODO ACTUALIZAR TOKEN
+  	METODO GUARDAR TOKEN DE RESETEO
 	======================================= */
 
-    static public function mdlActualizarToken($tabla, $datos){
+    static public function mdlGuardarTokenReseteo($tabla, $datos){
 
         $stmt = Conexion::conectar()->prepare("UPDATE $tabla SET reset_token = :reset_token, reset_token_expiry = :reset_token_expiry WHERE id_usuario = :id_usuario");
 
@@ -132,8 +158,7 @@ class ModeloUsuarios{
             return "error";
         }
 
-        $stmt -> close();
-        $stmt -> null;
+        $stmt = null;
     }
 
     /*  =======================================
@@ -153,8 +178,7 @@ class ModeloUsuarios{
             return "error";
         }
 
-        $stmt -> close();
-        $stmt -> null;
+        $stmt = null;
     }
 
     /*=============================================

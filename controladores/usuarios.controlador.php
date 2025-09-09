@@ -87,6 +87,15 @@ class ControladorUsuarios {
 
 				$respuesta = ModeloUsuarios::mdlCrearUsuario($tabla, $datos);
 
+				if($respuesta == "ok"){
+					require_once __DIR__ . "/../servicios/email.servicio.php";
+					$nombre = $_POST["nombreUsuario"] . " " . $_POST["apellidoUsuario"];
+					$email = $_POST["emailUsuario"];
+					$usuario = $_POST["loginUsuario"];
+					
+					$envioEmail = EmailServicio::enviarEmailBienvenida($email, $nombre, $usuario);
+				}
+
 				echo $respuesta;
 
 			} else {
@@ -175,37 +184,48 @@ class ControladorUsuarios {
 	}
 
     /* =======================================
-	   METODO OLVIDO PASSWORD
+	   METODO RECUPERAR PASSWORD
 	======================================= */
 
-    static public function ctrOlvidoPassword(){
+    static public function ctrRecuperarPassword(){
 
-        if(isset($_POST["emailRecuperar"])){
+        if(isset($_POST["usuarioRecuperar"]) && isset($_POST["emailRecuperar"])){
 
-            if(filter_var($_POST["emailRecuperar"], FILTER_VALIDATE_EMAIL)){
+            if(preg_match('/^[a-zA-Z0-9]+$/', $_POST["usuarioRecuperar"]) &&
+               filter_var($_POST["emailRecuperar"], FILTER_VALIDATE_EMAIL)){
 
                 $tabla = "usuarios";
-                $item = "email_usuario";
-                $valor = $_POST["emailRecuperar"];
+                $usuario = $_POST["usuarioRecuperar"];
+                $email = $_POST["emailRecuperar"];
 
-                $usuario = ModeloUsuarios::MdlMostrarUsuarios($tabla, $item, $valor);
+                $respuesta = ModeloUsuarios::mdlBuscarUsuarioPorUsuarioYEmail($tabla, $usuario, $email);
 
-                if($usuario){
+                if($respuesta){
 
-                    $token = bin2hex(random_bytes(16));
+                    $token = bin2hex(random_bytes(32));
                     $expiry = new DateTime();
                     $expiry->add(new DateInterval('PT1H'));
                     $expiryDate = $expiry->format('Y-m-d H:i:s');
 
-                    $datos = array("id_usuario" => $usuario["id_usuario"],
-                                   "reset_token" => $token,
-                                   "reset_token_expiry" => $expiryDate);
+                    $datos = array(
+                        "id_usuario" => $respuesta["id_usuario"],
+                        "reset_token" => $token,
+                        "reset_token_expiry" => $expiryDate
+                    );
 
-                    $respuesta = ModeloUsuarios::mdlActualizarToken($tabla, $datos);
+                    $guardarToken = ModeloUsuarios::mdlGuardarTokenReseteo($tabla, $datos);
 
-                    if($respuesta == "ok"){
-                        // Aquí se enviaría el email cuándo este implementado el envío de emails
-                        echo "ok";
+                    if($guardarToken == "ok"){
+                        
+                        require_once __DIR__ . "/../servicios/email.servicio.php";
+                        $nombre = $respuesta["nombres_usuario"] . " " . $respuesta["apellidos_usuario"];
+                        $envioEmail = EmailServicio::enviarEmailRecuperacion($email, $nombre, $token);
+
+                        if($envioEmail == "ok"){
+                            echo "ok";
+                        } else {
+                            echo "error-email";
+                        }
                     } else {
                         echo "error-db";
                     }

@@ -106,9 +106,8 @@
 </div>
 <!-- /.login-box -->
 
-
-
 <?php 
   include 'modales/modal-registro-usuario.php'; 
   include 'modales/modal-recuperar-password.php';
 ?>
+

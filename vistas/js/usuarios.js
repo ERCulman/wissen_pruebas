@@ -102,7 +102,7 @@ $(document).on('click', '.btnVerUsuario', function() {
 	   CREAR USUARIO
 ======================================= */
 
-$('#formAgregarUsuario').submit(function(event) {
+$(document).on('submit', '#formAgregarUsuario', function(event) {
     event.preventDefault();
 
     var formData = new FormData($('#formAgregarUsuario')[0]);
@@ -154,10 +154,14 @@ $('#formAgregarUsuario').submit(function(event) {
 	   RECUPERAR PASSWORD
 ======================================= */
 
-$('#formRecuperarPassword').submit(function(event) {
+$(document).on('submit', '#formNuevaRecuperacion', function(event) {
     event.preventDefault();
+    console.log('Formulario enviado');
 
-    var formData = new FormData($('#formRecuperarPassword')[0]);
+    var formData = new FormData(this);
+    
+    console.log('Usuario:', $('input[name="usuarioRecuperar"]').val());
+    console.log('Email:', $('input[name="emailRecuperar"]').val());
 
     $.ajax({
         url: "ajax/usuarios.ajax.php",
@@ -167,6 +171,8 @@ $('#formRecuperarPassword').submit(function(event) {
         contentType: false,
         processData: false,
         success: function(respuesta) {
+            console.log('Respuesta:', respuesta);
+            
             if (respuesta.trim() === "ok") {
                 Swal.fire({
                     icon: 'success',
@@ -176,24 +182,28 @@ $('#formRecuperarPassword').submit(function(event) {
                 }).then((result) => {
                     if (result.value) {
                         $('#modalRecuperarPassword').modal('hide');
-                        $('#formRecuperarPassword')[0].reset();
+                        $('#formNuevaRecuperacion')[0].reset();
                     }
                 });
             } else if (respuesta.trim() === "not-found") {
                 Swal.fire({
                     icon: 'error',
-                    title: '¡Correo no encontrado!',
-                    text: 'El correo electrónico que ingresaste no está registrado en nuestro sistema.',
+                    title: '¡Datos no encontrados!',
+                    text: 'El usuario y correo electrónico no coinciden en nuestro sistema.',
                     confirmButtonText: 'Cerrar'
                 });
             } else {
                 Swal.fire({
                     icon: 'error',
                     title: '¡Error!',
-                    text: 'No se pudo procesar la solicitud. Por favor, intenta de nuevo.',
+                    text: 'Respuesta: ' + respuesta,
                     confirmButtonText: 'Cerrar'
                 });
             }
+        },
+        error: function(xhr, status, error) {
+            console.log('Error AJAX:', error);
+            alert('Error de conexión');
         }
     });
 });

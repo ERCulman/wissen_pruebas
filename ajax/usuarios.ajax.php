@@ -2,6 +2,7 @@
 
 require_once "../controladores/usuarios.controlador.php";
 require_once "../modelos/usuarios.modelo.php";
+require_once "../modelos/conexion.php";
 
 class AjaxUsuarios{
 
@@ -33,14 +34,16 @@ class AjaxUsuarios{
     }
     
     /* =======================================
-      MÉTODO PARA OLVIDO DE PASSWORD
+      MÉTODO PARA RECUPERAR PASSWORD
     =======================================*/
 
-    public function ajaxOlvidoPassword(){
-
-        $respuesta = ControladorUsuarios::ctrOlvidoPassword();
-
-        echo $respuesta;
+    public function ajaxRecuperarPassword(){
+        try {
+            $respuesta = ControladorUsuarios::ctrRecuperarPassword();
+            echo $respuesta;
+        } catch (Exception $e) {
+            echo "error-exception: " . $e->getMessage();
+        }
     }
 
 }
@@ -74,13 +77,19 @@ if(isset($_POST["loginUsuario"])){
 }
 
 /* =======================================
-    LÓGICA PARA OLVIDO DE PASSWORD
+    LÓGICA PARA RECUPERAR PASSWORD
 =======================================*/
 
-if(isset($_POST["emailRecuperar"])){
+if(isset($_POST["usuarioRecuperar"]) && isset($_POST["emailRecuperar"])){
 
-    $olvidoPassword = new AjaxUsuarios();
-    $olvidoPassword -> ajaxOlvidoPassword();
+    $recuperarPassword = new AjaxUsuarios();
+    $recuperarPassword -> ajaxRecuperarPassword();
 
+} else {
+    // Debug: verificar qué datos llegan
+    error_log("POST data: " . print_r($_POST, true));
+    if(isset($_POST["usuarioRecuperar"]) || isset($_POST["emailRecuperar"])){
+        echo "error-datos-incompletos";
+    }
 }
 
