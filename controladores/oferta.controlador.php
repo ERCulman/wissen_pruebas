@@ -470,6 +470,15 @@ class ControladorOfertaEducativa {
     }
 
     /*=============================================
+    MOSTRAR OFERTA POR USUARIO
+    =============================================*/
+
+    static public function ctrMostrarOfertaPorUsuario($idUsuario) {
+        $respuesta = ModeloOfertaEducativa::mdlMostrarOfertaPorInstitucion($idUsuario);
+        return $respuesta;
+    }
+
+    /*=============================================
     BORRAR GRUPO
     =============================================*/
 

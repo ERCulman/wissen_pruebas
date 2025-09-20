@@ -562,6 +562,38 @@ class ModeloOfertaEducativa {
     }
 
     /*=============================================
+    MOSTRAR OFERTA POR INSTITUCIÓN DEL USUARIO
+    =============================================*/
+
+    static public function mdlMostrarOfertaPorInstitucion($idUsuario) {
+
+        $stmt = Conexion::conectar()->prepare("SELECT oa.*, al.anio, s.nombre_sede, j.nombre as nombre_jornada, 
+                                               ne.nombre as nombre_nivel, g.nombre as nombre_grado,
+                                               gr.id as grupo_id, gr.nombre as nombre_grupo, gr.cupos, 
+                                               c.nombre as nombre_curso, s.id as sede_id, j.id as jornada_id,
+                                               ne.id as nivel_educativo_id
+                                               FROM oferta_academica oa 
+                                               LEFT JOIN sede_jornada sj ON oa.sede_jornada_id = sj.id
+                                               LEFT JOIN anio_lectivo al ON oa.anio_lectivo_id = al.id
+                                               LEFT JOIN sede s ON sj.sede_id = s.id
+                                               LEFT JOIN institucion i ON s.institucion_id = i.id
+                                               LEFT JOIN jornada j ON sj.jornada_id = j.id
+                                               LEFT JOIN grado g ON oa.grado_id = g.id
+                                               LEFT JOIN nivel_educativo ne ON g.nivel_educativo_id = ne.id
+                                               LEFT JOIN grupo gr ON oa.id = gr.oferta_educativa_id
+                                               LEFT JOIN curso c ON gr.curso_id = c.id
+                                               WHERE i.id_usuario_representante = :id_usuario
+                                               ORDER BY al.anio DESC, s.nombre_sede, j.nombre, ne.nombre, g.numero, c.nombre");
+        $stmt->bindParam(":id_usuario", $idUsuario, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll();
+
+        $stmt->close();
+        $stmt = null;
+    }
+
+    /*=============================================
     BORRAR GRUPO (CON LÓGICA DE OFERTA)
     =============================================*/
 

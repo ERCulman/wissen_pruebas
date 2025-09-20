@@ -39,9 +39,12 @@ class AjaxUsuarios{
 
     public function ajaxRecuperarPassword(){
         try {
+            error_log("[RECUPERAR] Iniciando ajaxRecuperarPassword - " . date('Y-m-d H:i:s'));
             $respuesta = ControladorUsuarios::ctrRecuperarPassword();
+            error_log("[RECUPERAR] Respuesta del controlador: " . $respuesta);
             echo $respuesta;
         } catch (Exception $e) {
+            error_log("[RECUPERAR] Exception: " . $e->getMessage());
             echo "error-exception: " . $e->getMessage();
         }
     }
@@ -82,8 +85,22 @@ if(isset($_POST["loginUsuario"])){
 
 if(isset($_POST["usuarioRecuperar"]) && isset($_POST["emailRecuperar"])){
 
+    // Crear identificador único para esta solicitud
+    $solicitudId = md5($_POST["usuarioRecuperar"] . $_POST["emailRecuperar"] . time());
+    
+    // Verificar si ya se está procesando esta solicitud
+    if(isset($_SESSION["procesando_recuperacion"]) && 
+       (time() - $_SESSION["procesando_recuperacion"]) < 5) {
+        echo "ok"; // Simular éxito para evitar doble procesamiento
+        exit;
+    }
+    
+    $_SESSION["procesando_recuperacion"] = time();
+    
     $recuperarPassword = new AjaxUsuarios();
     $recuperarPassword -> ajaxRecuperarPassword();
+    
+    unset($_SESSION["procesando_recuperacion"]);
 
 } else {
     // Debug: verificar qué datos llegan

@@ -31,6 +31,7 @@ class ControladorUsuarios {
 					if ($respuesta["usuario"] == $_POST["ingUsuario"] && $respuesta["password"] == $encriptar){
 
 						$_SESSION["iniciarSesion"] = "ok";
+						$_SESSION["id_usuario"] = $respuesta["id_usuario"];
 						$_SESSION["nombres_usuario"] = $respuesta["nombres_usuario"];
 						$_SESSION["apellidos_usuario"] = $respuesta["apellidos_usuario"];
 		                        $_SESSION["id_rol"] = $respuesta["id_rol"];
@@ -189,6 +190,9 @@ class ControladorUsuarios {
 
     static public function ctrRecuperarPassword(){
 
+        error_log("[RECUPERAR] Iniciando ctrRecuperarPassword - " . date('Y-m-d H:i:s'));
+        error_log("[RECUPERAR] POST data: " . print_r($_POST, true));
+
         if(isset($_POST["usuarioRecuperar"]) && isset($_POST["emailRecuperar"])){
 
             if(preg_match('/^[a-zA-Z0-9]+$/', $_POST["usuarioRecuperar"]) &&
@@ -198,10 +202,12 @@ class ControladorUsuarios {
                 $usuario = $_POST["usuarioRecuperar"];
                 $email = $_POST["emailRecuperar"];
 
+                error_log("[RECUPERAR] Buscando usuario: $usuario, email: $email");
                 $respuesta = ModeloUsuarios::mdlBuscarUsuarioPorUsuarioYEmail($tabla, $usuario, $email);
 
                 if($respuesta){
 
+                    error_log("[RECUPERAR] Usuario encontrado, generando token");
                     $token = bin2hex(random_bytes(32));
                     $expiry = new DateTime();
                     $expiry->add(new DateInterval('PT1H'));
@@ -213,20 +219,26 @@ class ControladorUsuarios {
                         "reset_token_expiry" => $expiryDate
                     );
 
+                    error_log("[RECUPERAR] Guardando token: $token");
                     $guardarToken = ModeloUsuarios::mdlGuardarTokenReseteo($tabla, $datos);
 
                     if($guardarToken == "ok"){
                         
+                        error_log("[RECUPERAR] Token guardado, enviando email");
                         require_once __DIR__ . "/../servicios/email.servicio.php";
                         $nombre = $respuesta["nombres_usuario"] . " " . $respuesta["apellidos_usuario"];
                         $envioEmail = EmailServicio::enviarEmailRecuperacion($email, $nombre, $token);
 
+                        error_log("[RECUPERAR] Resultado envío email: $envioEmail");
                         if($envioEmail == "ok"){
+                            error_log("[RECUPERAR] Proceso completado exitosamente");
                             echo "ok";
                         } else {
+                            error_log("[RECUPERAR] Error en envío de email: $envioEmail");
                             echo "error-email";
                         }
                     } else {
+                        error_log("[RECUPERAR] Error guardando token: $guardarToken");
                         echo "error-db";
                     }
 

@@ -34,7 +34,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Salir</button>
-          <button type="submit" class="btn btn-primary" id="btnEnviarRecuperacion">Enviar</button>
+          <button type="button" class="btn btn-primary" id="btnEnviarRecuperacion">Enviar</button>
         </div>
       </form>
     </div>
@@ -42,55 +42,76 @@
 </div>
 
 <script>
-$('#formNuevaRecuperacion').on('submit', function(e) {
-    e.preventDefault();
+$(document).ready(function() {
+    var procesando = false;
     
-    var formData = new FormData(this);
-    
-    $.ajax({
-        url: "ajax/usuarios.ajax.php",
-        method: "POST",
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function(respuesta) {
-            if (respuesta.trim() === "ok") {
-                Swal.fire({
-                    icon: 'success',
-                    title: '¡Revisa tu correo!',
-                    text: 'Hemos enviado un enlace a tu correo electrónico para que puedas restablecer tu contraseña.',
-                    confirmButtonText: 'Aceptar'
-                }).then((result) => {
-                    if (result.value) {
-                        $('#modalRecuperarPassword').modal('hide');
-                        $('#formNuevaRecuperacion')[0].reset();
-                    }
-                });
-            } else if (respuesta.trim() === "not-found") {
-                Swal.fire({
-                    icon: 'error',
-                    title: '¡Datos no encontrados!',
-                    text: 'El usuario y correo electrónico no coinciden en nuestro sistema.',
-                    confirmButtonText: 'Cerrar'
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: '¡Error!',
-                    text: 'Error: ' + respuesta,
-                    confirmButtonText: 'Cerrar'
-                });
-            }
-        },
-        error: function() {
-            Swal.fire({
-                icon: 'error',
-                title: '¡Error de conexión!',
-                text: 'No se pudo conectar con el servidor.',
-                confirmButtonText: 'Cerrar'
-            });
+    $('#btnEnviarRecuperacion').off('click').on('click', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        
+        if(procesando) return false;
+        
+        var $form = $('#formNuevaRecuperacion');
+        var $btn = $(this);
+        
+        // Validar formulario
+        if(!$form[0].checkValidity()) {
+            $form[0].reportValidity();
+            return false;
         }
+        
+        procesando = true;
+        $btn.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Enviando...');
+        
+        var formData = new FormData($form[0]);
+        
+        $.ajax({
+            url: "ajax/usuarios.ajax.php",
+            method: "POST",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function(respuesta) {
+                if (respuesta.trim() === "ok") {
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Revisa tu correo!',
+                        text: 'Hemos enviado un enlace a tu correo electrónico para que puedas restablecer tu contraseña.',
+                        confirmButtonText: 'Aceptar'
+                    }).then(() => {
+                        $('#modalRecuperarPassword').modal('hide');
+                        $form[0].reset();
+                    });
+                } else if (respuesta.trim() === "not-found") {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '¡Datos no encontrados!',
+                        text: 'El usuario y correo electrónico no coinciden en nuestro sistema.',
+                        confirmButtonText: 'Cerrar'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: '¡Error!',
+                        text: 'Error: ' + respuesta,
+                        confirmButtonText: 'Cerrar'
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: '¡Error de conexión!',
+                    text: 'No se pudo conectar con el servidor.',
+                    confirmButtonText: 'Cerrar'
+                });
+            },
+            complete: function() {
+                procesando = false;
+                $btn.prop('disabled', false).html('Enviar');
+            }
+        });
     });
 });
 </script>

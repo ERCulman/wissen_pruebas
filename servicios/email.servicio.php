@@ -68,6 +68,7 @@ class EmailServicio {
 
     static public function enviarEmailRecuperacion($email, $nombre, $token) {
         
+        error_log("[EMAIL] Iniciando envío de email a: $email con token: $token - " . date('Y-m-d H:i:s'));
         $mail = new PHPMailer(true);
 
         try {
@@ -112,11 +113,12 @@ class EmailServicio {
             ";
 
             $mail->send();
+            error_log("[EMAIL] Email enviado exitosamente a: $email");
             return "ok";
             
         } catch (Exception $e) {
-            error_log("Error PHPMailer: " . $e->getMessage());
-            error_log("ErrorInfo: " . $mail->ErrorInfo);
+            error_log("[EMAIL] Error PHPMailer: " . $e->getMessage());
+            error_log("[EMAIL] ErrorInfo: " . $mail->ErrorInfo);
             return "Error: " . $e->getMessage();
         }
     }

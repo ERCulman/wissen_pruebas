@@ -10,6 +10,8 @@ require_once "controladores/niveleducativo.controlador.php";
 require_once "controladores/grados.controlador.php";
 require_once "controladores/cursos.controlador.php";
 require_once "controladores/oferta.controlador.php";
+require_once "controladores/periodos.controlador.php";
+require_once "controladores/estructura-curricular.controlador.php";
 
 
 require_once "modelos/usuarios.modelo.php";
@@ -21,6 +23,8 @@ require_once "modelos/jornadas.modelo.php";
 require_once "modelos/grados.modelo.php";
 require_once "modelos/cursos.modelo.php";
 require_once "modelos/oferta.modelo.php";
+require_once "modelos/periodos.modelo.php";
+require_once "modelos/estructura-curricular.modelo.php";
 
 
 

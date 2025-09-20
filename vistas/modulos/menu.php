@@ -83,6 +83,13 @@
 					</li>
 
 					<li>						
+						<a href="periodos">							
+							<i class="fa fa-circle-o"></i>
+							<span>Periodo Académico</span>
+						</a>
+					</li>
+
+					<li>						
 						<a href="cursos">							
 							<i class="fa fa-circle-o"></i>
 							<span>Cursos</span>
@@ -155,7 +162,15 @@
 
 				<!-- SUBBOTON SEGUIMIENTO ACADEMICO EN ARBOL O JERARQUICO -->
 
-				<ul class="treeview-menu">					
+				<ul class="treeview-menu">
+
+                    <li>
+                        <a href="estructura-curricular">
+                            <i class="fa fa-circle-o"></i>
+                            <span>Estructura Curricular</span>
+                        </a>
+                    </li>
+
 					<li>						
 						<a href="asistencia">							
 							<i class="fa fa-circle-o"></i>
