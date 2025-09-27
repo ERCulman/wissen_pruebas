@@ -38,8 +38,9 @@
                 <div class="col-2"><strong>Fecha de Matrícula:</strong><p><?= htmlspecialchars(isset($data['fecha_matricula']) ? $data['fecha_matricula'] : 'N/A') ?></p></div>
             </div>
             <div class="row">
-                <div class="col-2"><strong>¿Es Estudiante Nuevo?:</strong><p><?= htmlspecialchars(isset($data['nuevo']) ? $data['nuevo'] : 'N/A') ?></p></div>
-                <div class="col-2"><strong>Estado de Matrícula:</strong><p><?= htmlspecialchars(isset($data['estado_matricula']) ? $data['estado_matricula'] : 'N/A') ?></p></div>
+                <div class="col-3"><strong>¿Es Estudiante Nuevo?:</strong><p><?= htmlspecialchars(isset($data['nuevo']) ? $data['nuevo'] : 'N/A') ?></p></div>
+                <div class="col-3"><strong>¿Es Repitente?:</strong><p><?= htmlspecialchars(isset($data['repitente']) ? $data['repitente'] : 'N/A') ?></p></div>
+                <div class="col-3"><strong>Estado de Matrícula:</strong><p><?= htmlspecialchars(isset($data['estado_matricula']) ? $data['estado_matricula'] : 'N/A') ?></p></div>
             </div>
         </div>
     </div>
@@ -91,16 +92,31 @@
                                 <strong><?= htmlspecialchars($acudiente['acudiente_nombres'] . ' ' . $acudiente['acudiente_apellidos']) ?></strong>
                                 (<?= htmlspecialchars($acudiente['parentesco']) ?>)
                             </div>
-                            <div class="col-2" style="text-align: right;">
-                                <strong><?= $acudiente['autorizado_recoger'] === 'Si' ? 'Autorizado para recoger' : 'No Autorizado para recoger' ?></strong>
+                            <div class="col-2">
+                                <strong>Documento:</strong>
+                                <?= htmlspecialchars($acudiente['acudiente_tipo_documento'] . ' - ' . $acudiente['acudiente_documento']) ?>
                             </div>
                         </div>
-                        <?php if (!empty($acudiente['observacion'])): ?>
+                        <div class="row">
+                            <div class="col-3">
+                                <strong>Teléfono:</strong>
+                                <?= htmlspecialchars($acudiente['acudiente_telefono'] ?? 'N/A') ?>
+                            </div>
+                            <div class="col-3">
+                                <strong>Email:</strong>
+                                <?= htmlspecialchars($acudiente['acudiente_email'] ?? 'N/A') ?>
+                            </div>
+                            <div class="col-3">
+                                <strong>Autorizado para recoger:</strong>
+                                <?= $acudiente['autorizado_recoger'] === 'Si' ? 'Sí' : 'No' ?>
+                            </div>
+                        </div>
+                        <?php if (!empty($acudiente['observaciones'])): ?>
                             <hr style="margin: 5px 0;">
                             <div class="row">
                                 <div class="col-full">
                                     <strong>Observación:</strong>
-                                    <p><?= htmlspecialchars($acudiente['observacion']) ?></p>
+                                    <p><?= htmlspecialchars($acudiente['observaciones']) ?></p>
                                 </div>
                                 </div>
                         <?php endif; ?>

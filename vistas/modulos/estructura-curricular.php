@@ -255,4 +255,3 @@ $borrarAsignatura->ctrBorrarAsignatura();
 $borrarEstructura = new ControladorEstructuraCurricular();
 $borrarEstructura->ctrBorrarEstructuraCurricular();
 ?>
-

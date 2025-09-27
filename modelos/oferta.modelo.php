@@ -17,14 +17,14 @@ class ModeloOfertaEducativa {
                                                    gr.id as grupo_id, gr.nombre as nombre_grupo, gr.cupos, 
                                                    c.nombre as nombre_curso
                                                    FROM $tabla oa 
-                                                   LEFT JOIN sede_jornada sj ON oa.sede_jornada_id = sj.id
-                                                   LEFT JOIN anio_lectivo al ON oa.anio_lectivo_id = al.id
-                                                   LEFT JOIN sede s ON sj.sede_id = s.id
-                                                   LEFT JOIN jornada j ON sj.jornada_id = j.id
-                                                   LEFT JOIN grado g ON oa.grado_id = g.id
-                                                   LEFT JOIN nivel_educativo ne ON g.nivel_educativo_id = ne.id
-                                                   LEFT JOIN grupo gr ON oa.id = gr.oferta_educativa_id
-                                                   LEFT JOIN curso c ON gr.curso_id = c.id
+                                                   INNER JOIN sede_jornada sj ON oa.sede_jornada_id = sj.id
+                                                   INNER JOIN anio_lectivo al ON oa.anio_lectivo_id = al.id
+                                                   INNER JOIN sede s ON sj.sede_id = s.id
+                                                   INNER JOIN jornada j ON sj.jornada_id = j.id
+                                                   INNER JOIN grado g ON oa.grado_id = g.id
+                                                   INNER JOIN nivel_educativo ne ON g.nivel_educativo_id = ne.id
+                                                   INNER JOIN grupo gr ON oa.id = gr.oferta_educativa_id
+                                                   INNER JOIN curso c ON gr.curso_id = c.id
                                                    WHERE oa.$item = :$item
                                                    ORDER BY oa.id, gr.id");
             $stmt -> bindParam(":".$item, $valor, PDO::PARAM_STR);
@@ -40,14 +40,14 @@ class ModeloOfertaEducativa {
                                                    c.nombre as nombre_curso, s.id as sede_id, j.id as jornada_id,
                                                    ne.id as nivel_educativo_id
                                                    FROM $tabla oa 
-                                                   LEFT JOIN sede_jornada sj ON oa.sede_jornada_id = sj.id
-                                                   LEFT JOIN anio_lectivo al ON oa.anio_lectivo_id = al.id
-                                                   LEFT JOIN sede s ON sj.sede_id = s.id
-                                                   LEFT JOIN jornada j ON sj.jornada_id = j.id
-                                                   LEFT JOIN grado g ON oa.grado_id = g.id
-                                                   LEFT JOIN nivel_educativo ne ON g.nivel_educativo_id = ne.id
-                                                   LEFT JOIN grupo gr ON oa.id = gr.oferta_educativa_id
-                                                   LEFT JOIN curso c ON gr.curso_id = c.id
+                                                   INNER JOIN sede_jornada sj ON oa.sede_jornada_id = sj.id
+                                                   INNER JOIN anio_lectivo al ON oa.anio_lectivo_id = al.id
+                                                   INNER JOIN sede s ON sj.sede_id = s.id
+                                                   INNER JOIN jornada j ON sj.jornada_id = j.id
+                                                   INNER JOIN grado g ON oa.grado_id = g.id
+                                                   INNER JOIN nivel_educativo ne ON g.nivel_educativo_id = ne.id
+                                                   INNER JOIN grupo gr ON oa.id = gr.oferta_educativa_id
+                                                   INNER JOIN curso c ON gr.curso_id = c.id
                                                    ORDER BY al.anio DESC, s.nombre_sede, j.nombre, ne.nombre, g.numero, c.nombre");
             $stmt -> execute();
 
@@ -573,15 +573,15 @@ class ModeloOfertaEducativa {
                                                c.nombre as nombre_curso, s.id as sede_id, j.id as jornada_id,
                                                ne.id as nivel_educativo_id
                                                FROM oferta_academica oa 
-                                               LEFT JOIN sede_jornada sj ON oa.sede_jornada_id = sj.id
-                                               LEFT JOIN anio_lectivo al ON oa.anio_lectivo_id = al.id
-                                               LEFT JOIN sede s ON sj.sede_id = s.id
-                                               LEFT JOIN institucion i ON s.institucion_id = i.id
-                                               LEFT JOIN jornada j ON sj.jornada_id = j.id
-                                               LEFT JOIN grado g ON oa.grado_id = g.id
-                                               LEFT JOIN nivel_educativo ne ON g.nivel_educativo_id = ne.id
-                                               LEFT JOIN grupo gr ON oa.id = gr.oferta_educativa_id
-                                               LEFT JOIN curso c ON gr.curso_id = c.id
+                                               INNER JOIN sede_jornada sj ON oa.sede_jornada_id = sj.id
+                                               INNER JOIN anio_lectivo al ON oa.anio_lectivo_id = al.id
+                                               INNER JOIN sede s ON sj.sede_id = s.id
+                                               INNER JOIN institucion i ON s.institucion_id = i.id
+                                               INNER JOIN jornada j ON sj.jornada_id = j.id
+                                               INNER JOIN grado g ON oa.grado_id = g.id
+                                               INNER JOIN nivel_educativo ne ON g.nivel_educativo_id = ne.id
+                                               INNER JOIN grupo gr ON oa.id = gr.oferta_educativa_id
+                                               INNER JOIN curso c ON gr.curso_id = c.id
                                                WHERE i.id_usuario_representante = :id_usuario
                                                ORDER BY al.anio DESC, s.nombre_sede, j.nombre, ne.nombre, g.numero, c.nombre");
         $stmt->bindParam(":id_usuario", $idUsuario, PDO::PARAM_INT);
@@ -594,57 +594,100 @@ class ModeloOfertaEducativa {
     }
 
     /*=============================================
+    VERIFICAR SI GRUPO TIENE ESTUDIANTES MATRICULADOS
+    =============================================*/
+
+    static public function mdlVerificarEstudiantesEnGrupo($grupoId) {
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM matricula WHERE grupo_id = :grupo_id AND estado_matricula = 'Matriculado'");
+        $stmt->bindParam(":grupo_id", $grupoId, PDO::PARAM_INT);
+        $stmt->execute();
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $resultado['total'] > 0;
+    }
+
+    /*=============================================
+    CONTAR GRUPOS EN OFERTA EDUCATIVA
+    =============================================*/
+
+    static public function mdlContarGruposEnOferta($ofertaId) {
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM grupo WHERE oferta_educativa_id = :oferta_id");
+        $stmt->bindParam(":oferta_id", $ofertaId, PDO::PARAM_INT);
+        $stmt->execute();
+        $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $resultado['total'];
+    }
+
+    /*=============================================
+    VERIFICAR REFERENCIAS DE OFERTA EDUCATIVA
+    =============================================*/
+
+    static public function mdlVerificarReferenciasOferta($ofertaId) {
+        $referencias = array();
+        
+        // Verificar estructura_curricular
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM estructura_curricular WHERE oferta_academica_id = :oferta_id");
+        $stmt->bindParam(":oferta_id", $ofertaId, PDO::PARAM_INT);
+        $stmt->execute();
+        $estructuraCurricular = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        if ($estructuraCurricular > 0) {
+            $referencias[] = "Estructura Curricular ($estructuraCurricular registros)";
+        }
+        
+        return $referencias;
+    }
+
+    /*=============================================
     BORRAR GRUPO (CON LÓGICA DE OFERTA)
     =============================================*/
 
     static public function mdlBorrarGrupo($tabla, $datos) {
-        // $tabla es "grupo", $datos es el id del grupo
         $db = Conexion::conectar();
-
+        
         try {
-            // Iniciar transacción
             $db->beginTransaction();
-
-            // 1. Obtener el ID de la oferta educativa antes de borrar el grupo
-            $stmt = $db->prepare("SELECT oferta_educativa_id FROM grupo WHERE id = :id_grupo");
-            $stmt->bindParam(":id_grupo", $datos, PDO::PARAM_INT);
+            
+            // Obtener oferta_educativa_id antes de borrar
+            $stmt = $db->prepare("SELECT oferta_educativa_id FROM grupo WHERE id = :id");
+            $stmt->bindParam(":id", $datos, PDO::PARAM_INT);
             $stmt->execute();
             $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
-
+            
             if (!$resultado) {
-                // El grupo no existe, revertir y salir
                 $db->rollBack();
                 return "error";
             }
-
+            
             $ofertaId = $resultado['oferta_educativa_id'];
-
-            // 2. Borrar el grupo específico
-            $stmt = $db->prepare("DELETE FROM grupo WHERE id = :id_grupo");
-            $stmt->bindParam(":id_grupo", $datos, PDO::PARAM_INT);
-            $stmt->execute();
-
-            // 3. Contar cuántos grupos quedan para esa misma oferta educativa
-            $stmt = $db->prepare("SELECT COUNT(id) as total FROM grupo WHERE oferta_educativa_id = :oferta_id");
-            $stmt->bindParam(":oferta_id", $ofertaId, PDO::PARAM_INT);
-            $stmt->execute();
-            $conteo = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
-
-            // 4. Si no quedan más grupos, borrar la oferta educativa
-            if ($conteo == 0) {
+            
+            // Contar grupos antes de eliminar
+            $totalGrupos = self::mdlContarGruposEnOferta($ofertaId);
+            
+            // Eliminar el grupo
+            $stmt = $db->prepare("DELETE FROM grupo WHERE id = :id");
+            $stmt->bindParam(":id", $datos, PDO::PARAM_INT);
+            if (!$stmt->execute()) {
+                $db->rollBack();
+                return "error";
+            }
+            
+            // Si era el último grupo, eliminar la oferta educativa
+            if ($totalGrupos == 1) {
                 $stmt = $db->prepare("DELETE FROM oferta_academica WHERE id = :oferta_id");
                 $stmt->bindParam(":oferta_id", $ofertaId, PDO::PARAM_INT);
-                $stmt->execute();
+                if (!$stmt->execute()) {
+                    $db->rollBack();
+                    return "error";
+                }
             }
-
-            // Si todo fue exitoso, confirmar la transacción
+            
             $db->commit();
             return "ok";
-
+            
         } catch (Exception $e) {
-            // Si algo falla, revertir todos los cambios
-            $db->rollBack();
-            error_log("Error al borrar grupo/oferta: " . $e->getMessage());
+            if ($db->inTransaction()) {
+                $db->rollBack();
+            }
             return "error";
         }
     }

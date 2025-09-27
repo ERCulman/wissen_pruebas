@@ -1,8 +1,10 @@
 <?php
+require_once "global-protection.php";
 require_once "../controladores/matricula.controlador.php";
 require_once "../modelos/matricula.modelo.php";
 require_once "../controladores/usuarios.controlador.php";
 require_once "../modelos/usuarios.modelo.php";
+require_once "../middleware/BackendProtector.php";
 
 class AjaxMatricula {
 

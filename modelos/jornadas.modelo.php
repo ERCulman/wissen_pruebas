@@ -110,6 +110,26 @@ class ModeloJornada {
     }
 
     /*=============================================
+    VERIFICAR REFERENCIAS DE JORNADA
+    =============================================*/
+
+    static public function mdlVerificarReferenciasJornada($jornadaId) {
+        $referencias = array();
+        
+        // Verificar sede_jornada
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM sede_jornada WHERE jornada_id = :jornada_id");
+        $stmt->bindParam(":jornada_id", $jornadaId, PDO::PARAM_INT);
+        $stmt->execute();
+        $sedeJornada = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        if ($sedeJornada > 0) {
+            $referencias[] = "Sede-Jornada ($sedeJornada registros)";
+        }
+        
+        return $referencias;
+    }
+
+    /*=============================================
     BORRAR JORNADA
     =============================================*/
 

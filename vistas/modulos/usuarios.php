@@ -55,14 +55,13 @@
               <thead>
                 <tr>
                   <th style="width: 5%">Id</th>
-                  <th style="width: 10%">No. Documento</th>
-                  <th style="width: 10%">Nombres</th>
-                  <th style="width: 10%">Apellidos</th>
-                  <th style="width: 10%">Telefono</th>
-                  <th style="width: 12%">Email</th>
-                  <th style="width: 5%">Estado</th>
-                  <th style="width: 10%">Rol</th>
-                  <th style="width: 10%">Acciones</th>
+                  <th style="width: 12%">No. Documento</th>
+                  <th style="width: 12%">Nombres</th>
+                  <th style="width: 12%">Apellidos</th>
+                  <th style="width: 12%">Telefono</th>
+                  <th style="width: 15%">Email</th>
+                  <th style="width: 8%">Estado</th>
+                  <th style="width: 14%">Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -97,8 +96,7 @@
 
                           }
 
-                          echo'<td>'.$value["id_rol"].'</td>
-                              <td>
+                          echo'<td>
                                 <button class="btn btn-info btnVerUsuario" data-id="'.$value["id_usuario"].'"><i class="fa fa-search"></i></button>
                                 <button class="btn btn-warning btnEditarUsuario" data-id="'.$value["id_usuario"].'"><i class="fa fa-pencil"></i></button>
                               </td>
@@ -424,15 +422,7 @@
                   </div>
                 </div>
 
-                <!-- ROL TITULO-->
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Rol:</label> 
-                    </div>
-                  </div>
-                </div>
 
                 <!-- ESTADO CASILLA -->
 
@@ -450,27 +440,7 @@
                   </div>
                 </div>
 
-                <!-- ROL CASILLA -->
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
-                      <select class="form-control input-lg" name="editarRolUsuario">
-                        <option value="" id="editarRolUsuario"></option>
-                        <option value="Superadministrador">Superadministrador</option>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Rector">Rector</option>
-                        <option value="Coordinador">Coordinador</option>
-                        <option value="Docente">Docente</option>
-                        <option value="Asistente Administrativo">Asistente Administrativo</option>
-                        <option value="Estudiante">Estudiante</option>
-                        <option value="Acudiente">Acudiente</option>
-                        <option value="Exalumno">Exalumno</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
 
 
                 <!-- <p>Aquí irán los campos del formulario para editar al usuario seleccionado.</p> -->
@@ -556,10 +526,7 @@
                                         <td style="border: none; padding: 10px; font-weight: bold;">Estado:</td>
                                         <td style="border: none; padding: 10px;" id="verEstadoUsuario"></td>
                                     </tr>
-                                    <tr style="border: none;">
-                                        <td style="border: none; padding: 10px; font-weight: bold;">Rol:</td>
-                                        <td style="border: none; padding: 10px;" id="verRolUsuario"></td>
-                                    </tr>
+
                                     <tr style="border: none;">
                                         <td style="border: none; padding: 10px; font-weight: bold;">Fecha de Creación:</td>
                                         <td style="border: none; padding: 10px;" id="verFechaCreacion"></td>

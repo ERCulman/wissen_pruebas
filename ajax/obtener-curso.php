@@ -1,4 +1,5 @@
 <?php
+require_once "global-protection.php";
 require_once "../controladores/cursos.controlador.php";
 require_once "../modelos/cursos.modelo.php";
 

@@ -1,8 +1,12 @@
 <?php
 
+session_start();
 require_once "../controladores/usuarios.controlador.php";
 require_once "../modelos/usuarios.modelo.php";
 require_once "../modelos/conexion.php";
+require_once "../controladores/auth.controlador.php";
+require_once "../modelos/auth.modelo.php";
+require_once "../middleware/BackendProtector.php";
 
 class AjaxUsuarios{
 
@@ -62,6 +66,11 @@ class AjaxUsuarios{
 
 if(isset($_POST["idUsuario"])){
 
+    // PROTECCIÓN: Verificar permisos para ver usuario
+    if (!BackendProtector::protectAjax('usuarios_ver')) {
+        exit();
+    }
+
     $editar = new AjaxUsuarios();
     $editar -> idUsuario = $_POST["idUsuario"];
     $editar -> ajaxEditarUsuario();
@@ -73,6 +82,11 @@ if(isset($_POST["idUsuario"])){
 =======================================*/
 
 if(isset($_POST["loginUsuario"])){
+
+    // PROTECCIÓN: Verificar permisos para crear usuario
+    if (!BackendProtector::protectAjax('usuarios_crear')) {
+        exit();
+    }
 
     $crearUsuario = new AjaxUsuarios();
     $crearUsuario -> ajaxCrearUsuario();

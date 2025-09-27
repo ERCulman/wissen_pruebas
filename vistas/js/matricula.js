@@ -91,11 +91,12 @@ $(document).ready(function() {
                 html += `<div class="acudiente-item" style="padding: 8px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;">
                             <div>
                                 <strong>${acudiente.nombres_completos}</strong>
-                                <br><small class="text-muted">${acudiente.parentesco} - ${acudiente.numero_documento}</small>
+                                <br><small class="text-muted">${acudiente.parentesco} - ${acudiente.tipo_documento || 'N/A'} ${acudiente.numero_documento || 'N/A'}</small>
                                 ${obsHtml}
                             </div>
                             <div>
                                 ${autorizadoHtml}
+                                <button type="button" class="btn btn-warning btn-xs btn-editar-acudiente" data-index="${index}" style="margin-left: 5px;" title="Editar Acudiente"><i class="fa fa-edit"></i></button>
                                 <button type="button" class="btn btn-danger btn-xs btn-eliminar-acudiente" data-index="${index}" style="margin-left: 5px;" title="Eliminar Acudiente"><i class="fa fa-times"></i></button>
                             </div>
                         </div>`;
@@ -142,7 +143,7 @@ $(document).ready(function() {
                 if (data && data.id_usuario) {
                     $('#resultadoBusqueda').show();
 
-                    if (data.estado_matricula === 'Activo') {
+                    if (data.estado_matricula === 'Matriculado') {
                         let mensaje = `El estudiante <strong>${data.nombres_usuario} ${data.apellidos_usuario}</strong> ya se encuentra matriculado en la <strong>Sede ${data.nombre_sede}</strong> en el grado <strong>${data.grado_completo}</strong>.`;
                         $('#mensajeMatriculaExistente').html(mensaje);
                         $('#estudianteYaMatriculado').show();
@@ -202,24 +203,67 @@ $(document).ready(function() {
         var modal = $(this).closest('.modal');
         var acudientesArray = $(modal).data('acudientes') || [];
         var parentesco = modal.find('.parentesco-acudiente').val();
+        var esFirmante = modal.find('.es-firmante-acudiente').val();
         var autorizado = modal.find('.autorizado-recoger-acudiente').val();
-        if (!parentesco || !autorizado) { Swal.fire("Atención", "Debe seleccionar el parentesco y si está autorizado.", "warning"); return; }
+        var editingIndex = $(this).data('editing-index');
+        
+        if (!parentesco || !esFirmante || !autorizado) { Swal.fire("Atención", "Debe completar todos los campos requeridos.", "warning"); return; }
+        
         if (acudienteEncontradoTemporal) {
-            if (acudientesArray.some(item => item.id_usuario === acudienteEncontradoTemporal.id_usuario)) { Swal.fire("Duplicado", "Este acudiente ya está en la lista.", "info"); return; }
-            acudientesArray.push({
+            var acudienteData = {
                 id_usuario: acudienteEncontradoTemporal.id_usuario,
                 tipo_documento: acudienteEncontradoTemporal.tipo_documento,
                 numero_documento: acudienteEncontradoTemporal.numero_documento,
                 nombres_completos: `${acudienteEncontradoTemporal.nombres_usuario} ${acudienteEncontradoTemporal.apellidos_usuario}`,
-                parentesco: parentesco, autorizado_recoger: autorizado,
+                parentesco: parentesco, es_firmante_principal: esFirmante, autorizado_recoger: autorizado,
                 observacion: modal.find('.observacion-acudiente').val()
-            });
+            };
+            
+            if (editingIndex !== undefined) {
+                // Actualizar acudiente existente
+                acudientesArray[editingIndex] = acudienteData;
+                $(this).text('Agregar Acudiente a la Lista').removeClass('btn-warning').addClass('btn-success').removeData('editing-index');
+            } else {
+                // Agregar nuevo acudiente
+                if (acudientesArray.some(item => item.id_usuario === acudienteEncontradoTemporal.id_usuario)) { Swal.fire("Duplicado", "Este acudiente ya está en la lista.", "info"); return; }
+                acudientesArray.push(acudienteData);
+            }
+            
             $(modal).data('acudientes', acudientesArray);
             actualizarListaAcudientes(modal);
             acudienteEncontradoTemporal = null;
             modal.find('.buscar-acudiente-doc').val('');
             modal.find('.formulario-acudiente-container, .acudiente-encontrado-container').hide();
         } else { Swal.fire("Error", "Primero debe buscar y encontrar un acudiente válido.", "error"); }
+    });
+
+    $(document).on('click', '.btn-editar-acudiente', function() {
+        var modal = $(this).closest('.modal');
+        var index = $(this).data('index');
+        var acudientesArray = $(modal).data('acudientes') || [];
+        var acudiente = acudientesArray[index];
+        
+        // Cargar datos del acudiente en el formulario
+        modal.find('.parentesco-acudiente').val(acudiente.parentesco);
+        modal.find('.es-firmante-acudiente').val(acudiente.es_firmante_principal || 'No');
+        modal.find('.autorizado-recoger-acudiente').val(acudiente.autorizado_recoger);
+        modal.find('.observacion-acudiente').val(acudiente.observacion || '');
+        
+        // Mostrar información del acudiente
+        var container = modal.find('.acudiente-encontrado-container');
+        container.html(`<div class="alert alert-warning"><i class="fa fa-edit"></i> Editando: <strong>${acudiente.nombres_completos}</strong></div>`);
+        container.show();
+        
+        // Mostrar formulario y cambiar botón
+        modal.find('.formulario-acudiente-container').show();
+        modal.find('.btn-agregar-acudiente').text('Actualizar Acudiente').removeClass('btn-success').addClass('btn-warning').data('editing-index', index);
+        
+        // Simular acudiente encontrado para el proceso de actualización
+        acudienteEncontradoTemporal = {
+            id_usuario: acudiente.id_usuario,
+            nombres_usuario: acudiente.nombres_completos.split(' ')[0],
+            apellidos_usuario: acudiente.nombres_completos.split(' ').slice(1).join(' ')
+        };
     });
 
     $(document).on('click', '.btn-eliminar-acudiente', function() {
@@ -250,11 +294,12 @@ $(document).ready(function() {
                 $("#editarNumeroMatricula").val(respuesta.numero_matricula);
                 $("#editarFechaMatricula").val(respuesta.fecha_matricula);
                 $("#editarEstudianteNuevo").val(respuesta.nuevo);
+                $("#editarEsRepitente").val(respuesta.repitente);
                 $("#editarEstadoMatricula").val(respuesta.estado_matricula);
-                $("#editarFechaIngreso").val(respuesta.fecha_ingreso);
-                $("#editarEstadoAnioAnterior").val(respuesta.estado_anio_anterior);
+                $("#editarFechaIngreso").val(respuesta.fecha_inicio);
+                $("#editarEstadoAnioAnterior").val("promovido"); // Valor por defecto
                 var acudientesParaEditar = respuesta.acudientes.map(function(acu) {
-                    return { id_usuario: acu.acudiente_usuario_id, tipo_documento: acu.acudiente_tipo_documento, numero_documento: acu.acudiente_documento, nombres_completos: `${acu.acudiente_nombres} ${acu.acudiente_apellidos}`, parentesco: acu.parentesco, autorizado_recoger: acu.autorizado_recoger, observacion: acu.observacion };
+                    return { id_usuario: acu.acudiente_usuario_id, tipo_documento: acu.acudiente_tipo_documento, numero_documento: acu.acudiente_documento, nombres_completos: `${acu.acudiente_nombres} ${acu.acudiente_apellidos}`, parentesco: acu.parentesco, es_firmante_principal: acu.es_firmante_principal, autorizado_recoger: acu.autorizado_recoger, observacion: acu.observaciones };
                 });
                 $(modal).data('acudientes', acudientesParaEditar);
                 actualizarListaAcudientes(modal);
@@ -337,6 +382,7 @@ $(document).ready(function() {
                 modal.find('#verNumeroMatricula').text(data.numero_matricula || 'N/A');
                 modal.find('#verFechaMatricula').text(data.fecha_matricula || 'N/A');
                 modal.find('#verEstudianteNuevo').text(data.nuevo || 'N/A');
+                modal.find('#verEsRepitente').text(data.repitente || 'N/A');
                 modal.find('#verEstadoMatricula').text(data.estado_matricula || 'N/A');
                 modal.find('#verEstudianteNombres').text(data.estudiante_nombres + ' ' + data.estudiante_apellidos);
                 modal.find('#verEstudianteSexo').text(data.estudiante_sexo || 'N/A');
@@ -364,12 +410,14 @@ $(document).ready(function() {
                             <div class="row">
                                 <div class="col-xs-8">
                                     <strong>${acudiente.acudiente_nombres || ''} ${acudiente.acudiente_apellidos || ''}</strong>
-                                    <br><small>${acudiente.parentesco} / Tel: ${acudiente.acudiente_telefono || 'N/A'}</small>
-                                    ${acudiente.observacion ? `<br><small><strong>Observación:</strong> ${acudiente.observacion}</small>` : ''}
+                                    <br><small><strong>Documento:</strong> ${acudiente.acudiente_tipo_documento || 'N/A'} - ${acudiente.acudiente_documento || 'N/A'}</small>
+                                    <br><small><strong>Parentesco:</strong> ${acudiente.parentesco} | <strong>Tel:</strong> ${acudiente.acudiente_telefono || 'N/A'} | <strong>Email:</strong> ${acudiente.acudiente_email || 'N/A'}</small>
+                                    ${acudiente.observaciones ? `<br><small><strong>Observación:</strong> ${acudiente.observaciones}</small>` : ''}
                                 </div>
                                 <div class="col-xs-4 text-right">
-                                    <span class="label ${acudiente.autorizado_recoger === 'Si' ? 'label-success' : 'label-warning'}">
-                                        ${acudiente.autorizado_recoger === 'Si' ? 'Autorizado' : 'No Autorizado'}
+                                    <small><strong>¿Autorizado para recoger?</strong></small><br>
+                                    <span class="label ${acudiente.autorizado_recoger === 'Si' ? 'label-success' : 'label-danger'}">
+                                        ${acudiente.autorizado_recoger === 'Si' ? 'Sí' : 'No'}
                                     </span>
                                 </div>
                             </div>

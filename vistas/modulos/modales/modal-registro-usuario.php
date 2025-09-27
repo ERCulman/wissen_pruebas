@@ -174,44 +174,7 @@
               </div>
             </div>
 
-            <div class="row">
-              <!-- CAMPO ESTADO -->
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Estado:</label>
-                  <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-toggle-on"></i></span>
-                    <select class="form-control input-lg" name="estadoUsuario" required>
-                      <option value="">Seleccione Estado</option>
-                      <option value="Activo">Activo</option>
-                      <option value="Inactivo">Inactivo</option>
-                      <option value="Pendiente">Pendiente</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-              <!-- CAMPO ROL -->
-              <div class="col-md-6">
-                <div class="form-group">
-                  <label>Rol:</label>
-                  <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-users"></i></span>
-                    <select class="form-control input-lg" name="rolUsuario" required>
-                      <option value="">Seleccione Rol</option>
-                      <option value="Superadministrador">Superadministrador</option>
-                      <option value="Administrador">Administrador</option>
-                      <option value="Rector">Rector</option>
-                      <option value="Coordinador">Coordinador</option>
-                      <option value="Docente">Docente</option>
-                      <option value="Asistente Administrativo">Asistente Administrativo</option>
-                      <option value="Estudiante">Estudiante</option>
-                      <option value="Acudiente">Acudiente</option>
-                      <option value="Exalumno">Exalumno</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
+
 
           </div>
         </div>

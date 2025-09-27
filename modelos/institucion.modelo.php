@@ -195,6 +195,26 @@ class ModeloInstitucion {
     }
 
     /*=============================================
+    VERIFICAR REFERENCIAS DE INSTITUCIÓN
+    =============================================*/
+
+    static public function mdlVerificarReferenciasInstitucion($institucionId) {
+        $referencias = array();
+        
+        // Verificar sede
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM sede WHERE institucion_id = :institucion_id");
+        $stmt->bindParam(":institucion_id", $institucionId, PDO::PARAM_INT);
+        $stmt->execute();
+        $sede = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        if ($sede > 0) {
+            $referencias[] = "Sedes ($sede registros)";
+        }
+        
+        return $referencias;
+    }
+
+    /*=============================================
     BORRAR INSTITUCIÓN
     =============================================*/
 

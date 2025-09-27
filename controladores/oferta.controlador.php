@@ -7,6 +7,9 @@ class ControladorOfertaEducativa {
     =============================================*/
 
     static public function ctrMostrarOfertaEducativaConGrupos($item, $valor) {
+        if (!BackendProtector::protectController('oferta_ver')) {
+            return false;
+        }
         $tabla = "oferta_academica";
         $respuesta = ModeloOfertaEducativa::mdlMostrarOfertaEducativaConGrupos($tabla, $item, $valor);
         return $respuesta;
@@ -17,6 +20,9 @@ class ControladorOfertaEducativa {
     =============================================*/
 
     static public function ctrMostrarOfertaEducativa($item, $valor) {
+        if (!BackendProtector::protectController('oferta_ver')) {
+            return false;
+        }
         $tabla = "oferta_academica";
         $respuesta = ModeloOfertaEducativa::mdlMostrarOfertaEducativa($tabla, $item, $valor);
         return $respuesta;
@@ -27,6 +33,10 @@ class ControladorOfertaEducativa {
     =============================================*/
 
     public function ctrCrearOfertaEducativa() {
+
+        if (!BackendProtector::protectController('oferta_crear')) {
+            return;
+        }
 
         if(isset($_POST["anioLectivo"])) {
 
@@ -261,6 +271,10 @@ class ControladorOfertaEducativa {
 
     static public function ctrEditarOfertaEducativa() {
 
+        if (!BackendProtector::protectController('oferta_editar')) {
+            return;
+        }
+
         if(isset($_POST["editarAnioLectivo"])) {
 
             if(!empty($_POST["editarAnioLectivo"]) &&
@@ -393,6 +407,10 @@ class ControladorOfertaEducativa {
 
     static public function ctrBorrarOfertaEducativa() {
 
+        if (!BackendProtector::protectController('oferta_eliminar')) {
+            return;
+        }
+
         if(isset($_GET["idOferta"])) {
 
             $tabla = "oferta_academica";
@@ -486,17 +504,75 @@ class ControladorOfertaEducativa {
 
         if(isset($_GET["idGrupo"])) {
 
+            $grupoId = $_GET["idGrupo"];
+            
+            // Verificar si el grupo tiene estudiantes matriculados
+            $tieneEstudiantes = ModeloOfertaEducativa::mdlVerificarEstudiantesEnGrupo($grupoId);
+            
+            if($tieneEstudiantes) {
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "No se puede eliminar",
+                    text: "Este grupo tiene estudiantes matriculados. No es posible eliminarlo.",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "oferta";
+                });
+                </script>';
+                return;
+            }
+            
+            // Verificar si es el último grupo y tiene referencias
+            $stmt = Conexion::conectar()->prepare("SELECT oferta_educativa_id FROM grupo WHERE id = :id");
+            $stmt->bindParam(":id", $grupoId, PDO::PARAM_INT);
+            $stmt->execute();
+            $grupoInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            $totalGrupos = 1;
+            $esUltimoGrupo = false;
+            
+            if($grupoInfo) {
+                $ofertaId = $grupoInfo['oferta_educativa_id'];
+                $totalGrupos = ModeloOfertaEducativa::mdlContarGruposEnOferta($ofertaId);
+                $esUltimoGrupo = ($totalGrupos == 1);
+                
+                if($esUltimoGrupo) {
+                    $referencias = ModeloOfertaEducativa::mdlVerificarReferenciasOferta($ofertaId);
+                    
+                    if(!empty($referencias)) {
+                        $listaReferencias = implode(", ", $referencias);
+                        echo '<script>
+                        Swal.fire({
+                            icon: "error",
+                            title: "No se puede eliminar",
+                            text: "Este es el último grupo del grado y la oferta educativa tiene referencias activas en: ' . $listaReferencias . '. No es posible eliminarlo.",
+                            showConfirmButton: true,
+                            confirmButtonText: "Cerrar"
+                        }).then(function(result) {
+                            window.location = "oferta";
+                        });
+                        </script>';
+                        return;
+                    }
+                }
+            }
+            
             $tabla = "grupo";
-            $datos = $_GET["idGrupo"];
-
-            $respuesta = ModeloOfertaEducativa::mdlBorrarGrupo($tabla, $datos);
+            $respuesta = ModeloOfertaEducativa::mdlBorrarGrupo($tabla, $grupoId);
 
             if($respuesta == "ok") {
+                $mensaje = "El grupo ha sido eliminado correctamente";
+                if($esUltimoGrupo) {
+                    $mensaje .= " y la oferta educativa también fue eliminada por no tener más grupos";
+                }
+                
                 echo '<script>
                 Swal.fire({
                     icon: "success",
                     title: "Correcto",
-                    text: "El grupo ha sido borrado correctamente",
+                    text: "'.$mensaje.'",
                     showConfirmButton: true,
                     confirmButtonText: "Cerrar"
                 }).then(function(result) {
@@ -504,7 +580,20 @@ class ControladorOfertaEducativa {
                         window.location = "oferta";
                     }
                 });
-            </script>';
+                </script>';
+            } else {
+                error_log("Error al eliminar grupo ID: " . $grupoId);
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudo eliminar el grupo. Verifique los logs para más detalles.",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "oferta";
+                });
+                </script>';
             }
         }
     }

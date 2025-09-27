@@ -7,6 +7,9 @@ class ControladorPeriodo {
     =============================================*/
 
     static public function ctrMostrarPeriodo($item, $valor) {
+        if (!BackendProtector::protectController('periodos_ver')) {
+            return false;
+        }
         $tabla = "periodo";
         $respuesta = ModeloPeriodo::mdlMostrarPeriodo($tabla, $item, $valor);
         return $respuesta;
@@ -17,6 +20,10 @@ class ControladorPeriodo {
     =============================================*/
 
     public function ctrCrearPeriodo() {
+
+        if (!BackendProtector::protectController('periodos_crear')) {
+            return;
+        }
 
         // Debug: Verificar si llegan los datos POST
         echo "<script>console.log('POST data:', " . json_encode($_POST) . ");</script>";
@@ -164,6 +171,10 @@ class ControladorPeriodo {
 
     static public function ctrEditarPeriodo() {
 
+        if (!BackendProtector::protectController('periodos_editar')) {
+            return;
+        }
+
         if(isset($_POST["editarNombrePeriodo"])) {
 
             if(mb_ereg_match('^[a-zA-Z0-9ñÑáéíóúüÁÉÍÓÚÜ\\s\\-]+$', $_POST["editarNombrePeriodo"]) &&
@@ -242,6 +253,10 @@ class ControladorPeriodo {
     =============================================*/
 
     static public function ctrBorrarPeriodo() {
+
+        if (!BackendProtector::protectController('periodos_eliminar')) {
+            return;
+        }
 
         if(isset($_GET["idPeriodo"])) {
 

@@ -7,6 +7,11 @@ class ControladorGrado {
     =============================================*/
 
     static public function ctrMostrarGrado($item, $valor) {
+        // PROTECCIÓN: Verificar permisos antes de mostrar grado
+        if (!BackendProtector::protectController('grados_ver')) {
+            return false;
+        }
+        
         $tabla = "grado";
         $respuesta = ModeloGrado::mdlMostrarGrado($tabla, $item, $valor);
         return $respuesta;
@@ -17,6 +22,11 @@ class ControladorGrado {
     =============================================*/
 
     public function ctrCrearGrado() {
+
+        // PROTECCIÓN: Verificar permisos antes de crear grado
+        if (!BackendProtector::protectController('grados_crear')) {
+            return;
+        }
 
         // Debug: Verificar si llegan los datos POST
         echo "<script>console.log('POST data:', " . json_encode($_POST) . ");</script>";
@@ -163,6 +173,11 @@ class ControladorGrado {
 
     static public function ctrEditarGrado() {
 
+        // PROTECCIÓN: Verificar permisos antes de editar grado
+        if (!BackendProtector::protectController('grados_editar')) {
+            return;
+        }
+
         if(isset($_POST["editarNumeroGrado"])) {
 
             if(preg_match('/^[0-9]{1,5}$/', $_POST["editarNumeroGrado"]) &&
@@ -240,12 +255,36 @@ class ControladorGrado {
 
     static public function ctrBorrarGrado() {
 
+        // PROTECCIÓN: Verificar permisos antes de eliminar grado
+        if (!BackendProtector::protectController('grados_eliminar')) {
+            return;
+        }
+
         if(isset($_GET["idGrado"])) {
 
-            $tabla = "grado";
-            $datos = $_GET["idGrado"];
+            $gradoId = $_GET["idGrado"];
+            
+            // Verificar si el grado tiene referencias en otras tablas
+            $referencias = ModeloGrado::mdlVerificarReferenciasGrado($gradoId);
+            
+            if(!empty($referencias)) {
+                $listaReferencias = implode(", ", $referencias);
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "No se puede eliminar",
+                    text: "Este grado tiene referencias activas en: ' . $listaReferencias . '. No es posible eliminarlo.",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "grados";
+                });
+                </script>';
+                return;
+            }
 
-            $respuesta = ModeloGrado::mdlBorrarGrado($tabla, $datos);
+            $tabla = "grado";
+            $respuesta = ModeloGrado::mdlBorrarGrado($tabla, $gradoId);
 
             if($respuesta == "ok") {
                 echo '<script>
@@ -260,6 +299,18 @@ class ControladorGrado {
                             window.location = "grados";
                         }
                     });
+                </script>';
+            } else {
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudo eliminar el grado",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "grados";
+                });
                 </script>';
             }
         }

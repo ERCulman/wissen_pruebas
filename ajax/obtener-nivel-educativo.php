@@ -1,5 +1,6 @@
 <?php
 
+require_once "global-protection.php";
 require_once "../controladores/niveleducativo.controlador.php";
 require_once "../modelos/niveleducativo.modelo.php";
 

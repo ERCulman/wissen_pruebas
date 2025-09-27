@@ -1,5 +1,8 @@
 <?php
 
+// Cargar autoloader y middleware
+require_once "autoload.php";
+
 require_once "controladores/plantilla.controlador.php";
 require_once "controladores/usuarios.controlador.php";
 require_once "controladores/perfil-laboral.controlador.php";
@@ -12,6 +15,9 @@ require_once "controladores/cursos.controlador.php";
 require_once "controladores/oferta.controlador.php";
 require_once "controladores/periodos.controlador.php";
 require_once "controladores/estructura-curricular.controlador.php";
+require_once "controladores/acciones.controlador.php";
+require_once "controladores/roles.controlador.php";
+require_once "controladores/auth.controlador.php";
 
 
 require_once "modelos/usuarios.modelo.php";
@@ -25,6 +31,9 @@ require_once "modelos/cursos.modelo.php";
 require_once "modelos/oferta.modelo.php";
 require_once "modelos/periodos.modelo.php";
 require_once "modelos/estructura-curricular.modelo.php";
+require_once "modelos/acciones.modelo.php";
+require_once "modelos/roles.modelo.php";
+require_once "modelos/auth.modelo.php";
 
 
 

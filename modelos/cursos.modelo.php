@@ -110,6 +110,26 @@ class ModeloCurso {
     }
 
     /*=============================================
+    VERIFICAR REFERENCIAS DE CURSO
+    =============================================*/
+
+    static public function mdlVerificarReferenciasCurso($cursoId) {
+        $referencias = array();
+        
+        // Verificar grupo
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM grupo WHERE curso_id = :curso_id");
+        $stmt->bindParam(":curso_id", $cursoId, PDO::PARAM_INT);
+        $stmt->execute();
+        $grupos = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        if ($grupos > 0) {
+            $referencias[] = "Grupos ($grupos registros)";
+        }
+        
+        return $referencias;
+    }
+
+    /*=============================================
     BORRAR CURSO
     =============================================*/
 

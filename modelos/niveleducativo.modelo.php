@@ -110,6 +110,26 @@ class ModeloNivelEducativo {
     }
 
     /*=============================================
+    VERIFICAR REFERENCIAS DE NIVEL EDUCATIVO
+    =============================================*/
+
+    static public function mdlVerificarReferenciasNivelEducativo($nivelEducativoId) {
+        $referencias = array();
+        
+        // Verificar grado
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM grado WHERE nivel_educativo_id = :nivel_educativo_id");
+        $stmt->bindParam(":nivel_educativo_id", $nivelEducativoId, PDO::PARAM_INT);
+        $stmt->execute();
+        $grado = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        if ($grado > 0) {
+            $referencias[] = "Grados ($grado registros)";
+        }
+        
+        return $referencias;
+    }
+
+    /*=============================================
     BORRAR NIVEL EDUCATIVO
     =============================================*/
 

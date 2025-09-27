@@ -1,4 +1,5 @@
 <?php
+require_once "global-protection.php";
 require_once "../controladores/oferta.controlador.php";
 require_once "../modelos/oferta.modelo.php";
 require_once "../modelos/conexion.php";
@@ -124,77 +125,63 @@ if(isset($_POST['accion']) && $_POST['accion'] == 'obtenerCursosParaEdicion') {
         }
     }
 
-// OBTENER CURSOS PARA EDICIÓN DE GRUPO
-    if (isset($_POST['accion']) && $_POST['accion'] == 'obtenerCursosParaEdicion') {
-        $gradoId = $_POST['gradoId'];
-        $sedeJornadaId = $_POST['sedeJornadaId'];
-        $anioLectivoId = $_POST['anioLectivoId'];
-        $grupoActualId = $_POST['grupoActualId'];
+    echo json_encode($cursosDisponibles);
+}
 
-        // Obtener cursos ocupados (excluyendo el grupo actual)
-        $stmt = Conexion::conectar()->prepare("SELECT g.curso_id 
-                                           FROM grupo g
-                                           INNER JOIN oferta_academica oa ON g.oferta_educativa_id = oa.id
-                                           WHERE oa.grado_id = :grado_id 
-                                           AND oa.sede_jornada_id = :sede_jornada_id 
-                                           AND oa.anio_lectivo_id = :anio_lectivo_id
-                                           AND g.id != :grupo_actual_id");
-        $stmt->bindParam(":grado_id", $gradoId, PDO::PARAM_INT);
-        $stmt->bindParam(":sede_jornada_id", $sedeJornadaId, PDO::PARAM_INT);
-        $stmt->bindParam(":anio_lectivo_id", $anioLectivoId, PDO::PARAM_INT);
-        $stmt->bindParam(":grupo_actual_id", $grupoActualId, PDO::PARAM_INT);
-        $stmt->execute();
-
-        $cursosOcupados = array();
-        while ($row = $stmt->fetch()) {
-            $cursosOcupados[] = $row["curso_id"];
-        }
-
-        // Obtener todos los cursos
-        $stmt = Conexion::conectar()->prepare("SELECT id, nombre, tipo FROM curso ORDER BY tipo ASC, nombre ASC");
-        $stmt->execute();
-        $todosCursos = $stmt->fetchAll();
-
-        // Filtrar cursos disponibles
-        $cursosDisponibles = array();
-        foreach ($todosCursos as $curso) {
-            if (!in_array($curso["id"], $cursosOcupados)) {
-                $cursosDisponibles[] = $curso;
-            }
-        }
-
-        echo json_encode($cursosDisponibles);
+// VERIFICAR SI GRUPO PUEDE SER ELIMINADO
+if(isset($_POST['accion']) && $_POST['accion'] == 'verificarEliminacionGrupo') {
+    $grupoId = $_POST['grupoId'];
+    
+    // Verificar estudiantes matriculados
+    $tieneEstudiantes = ModeloOfertaEducativa::mdlVerificarEstudiantesEnGrupo($grupoId);
+    
+    // Obtener información del grupo
+    $stmt = Conexion::conectar()->prepare("SELECT oferta_educativa_id FROM grupo WHERE id = :id");
+    $stmt->bindParam(":id", $grupoId, PDO::PARAM_INT);
+    $stmt->execute();
+    $grupoInfo = $stmt->fetch(PDO::FETCH_ASSOC);
+    
+    $esUltimoGrupo = false;
+    if($grupoInfo) {
+        $totalGrupos = ModeloOfertaEducativa::mdlContarGruposEnOferta($grupoInfo['oferta_educativa_id']);
+        $esUltimoGrupo = ($totalGrupos == 1);
     }
+    
+    echo json_encode(array(
+        'puedeEliminar' => !$tieneEstudiantes,
+        'tieneEstudiantes' => $tieneEstudiantes,
+        'esUltimoGrupo' => $esUltimoGrupo
+    ));
+}
 
 // OBTENER DATOS ESPECÍFICOS DE OFERTA EDUCATIVA (COMPATIBILIDAD)
-    if (isset($_POST['id'])) {
-        $id = $_POST['id'];
+if (isset($_POST['id'])) {
+    $id = $_POST['id'];
 
-        $item = "oa.id";
-        $valor = $id;
+    $item = "oa.id";
+    $valor = $id;
 
-        // Consulta completa con JOINS para obtener todos los datos
-        $stmt = Conexion::conectar()->prepare("SELECT oa.*, al.anio, s.nombre_sede, j.nombre as nombre_jornada, 
-                                           ne.nombre as nombre_nivel, g.nombre as nombre_grado,
-                                           s.id as sede_id, j.id as jornada_id, ne.id as nivel_educativo_id
-                                           FROM oferta_academica oa 
-                                           LEFT JOIN sede_jornada sj ON oa.sede_jornada_id = sj.id
-                                           LEFT JOIN anio_lectivo al ON oa.anio_lectivo_id = al.id
-                                           LEFT JOIN sede s ON sj.sede_id = s.id
-                                           LEFT JOIN jornada j ON sj.jornada_id = j.id
-                                           LEFT JOIN grado g ON oa.grado_id = g.id
-                                           LEFT JOIN nivel_educativo ne ON g.nivel_educativo_id = ne.id
-                                           WHERE oa.id = :id");
-        $stmt->bindParam(":id", $valor, PDO::PARAM_INT);
-        $stmt->execute();
+    // Consulta completa con JOINS para obtener todos los datos
+    $stmt = Conexion::conectar()->prepare("SELECT oa.*, al.anio, s.nombre_sede, j.nombre as nombre_jornada, 
+                                       ne.nombre as nombre_nivel, g.nombre as nombre_grado,
+                                       s.id as sede_id, j.id as jornada_id, ne.id as nivel_educativo_id
+                                       FROM oferta_academica oa 
+                                       LEFT JOIN sede_jornada sj ON oa.sede_jornada_id = sj.id
+                                       LEFT JOIN anio_lectivo al ON oa.anio_lectivo_id = al.id
+                                       LEFT JOIN sede s ON sj.sede_id = s.id
+                                       LEFT JOIN jornada j ON sj.jornada_id = j.id
+                                       LEFT JOIN grado g ON oa.grado_id = g.id
+                                       LEFT JOIN nivel_educativo ne ON g.nivel_educativo_id = ne.id
+                                       WHERE oa.id = :id");
+    $stmt->bindParam(":id", $valor, PDO::PARAM_INT);
+    $stmt->execute();
 
-        $respuesta = $stmt->fetch(PDO::FETCH_ASSOC);
+    $respuesta = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($respuesta) {
-            echo json_encode($respuesta);
-        } else {
-            echo json_encode(array("error" => "No se encontraron datos"));
-        }
+    if ($respuesta) {
+        echo json_encode($respuesta);
+    } else {
+        echo json_encode(array("error" => "No se encontraron datos"));
     }
 }
 ?>

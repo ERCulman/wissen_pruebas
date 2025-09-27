@@ -1,5 +1,6 @@
 <?php
 
+require_once "global-protection.php";
 require_once "../controladores/estructura-curricular.controlador.php";
 require_once "../modelos/estructura-curricular.modelo.php";
 require_once "../modelos/conexion.php";
@@ -13,11 +14,13 @@ if(isset($_POST["accion"])) {
     $accion = "guardar";
 } elseif(isset($_POST["grado_id"]) && isset($_POST["asignatura_id"])) {
     $accion = "eliminar";
-} elseif(isset($_POST["grado_id"]) && !isset($_POST["asignatura_id"])) {
-    // Determinar si es JSON o simple basado en si se espera JSON
+} elseif(isset($_POST["grado_id"]) && !isset($_POST["asignatura_id"]) && !isset($_POST["grados"])) {
+    // Solo grado_id: puede ser obtener_simple u obtener_json
+    // Por defecto obtener_simple (para compatibilidad)
     $accion = "obtener_simple";
-} elseif(isset($_POST["grados"]) && !isset($_POST["asignaturas"]) && !isset($_POST["grado_id"])) {
-    // Por defecto obtener_grado para compatibilidad con archivo original
+} elseif(isset($_POST["grados"]) && is_array($_POST["grados"]) && !isset($_POST["asignaturas"]) && !isset($_POST["grado_id"])) {
+    // Array de grados sin asignaturas: puede ser verificar u obtener_grado
+    // Por defecto obtener_grado (para compatibilidad con archivo original)
     $accion = "obtener_grado";
 } else {
     echo "error-parametros";

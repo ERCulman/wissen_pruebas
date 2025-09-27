@@ -1,8 +1,15 @@
 <?php
+require_once "global-protection.php";
 require_once "../controladores/sedes.controlador.php";
 require_once "../modelos/sedes.modelo.php";
+require_once "../middleware/BackendProtector.php";
 
 if(isset($_POST['id'])) {
+    // Verificar permisos para ver sedes
+    if (!BackendProtector::protectAjax('sedes_ver')) {
+        exit();
+    }
+    
     $id = $_POST['id'];
 
     $item = "id";

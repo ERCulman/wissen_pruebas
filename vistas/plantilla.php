@@ -1,6 +1,8 @@
 <?php
 
   session_start(); ## Dispara el inicio de sesion
+  require_once "controladores/auth.controlador.php";
+  require_once "modelos/auth.modelo.php";
 
 ?>
 
@@ -85,29 +87,35 @@
         include "modulos/menu.php";
 
         if(isset($_GET["ruta"])){
-            if($_GET["ruta"] == "inicio" ||
-               $_GET["ruta"] == "usuarios" ||
-               $_GET["ruta"] == "perfil-laboral" ||
-               $_GET["ruta"] == "institucion" ||
-               $_GET["ruta"] == "sedes" ||
-               $_GET["ruta"] == "niveleducativo" ||
-               $_GET["ruta"] == "jornadas" ||
-               $_GET["ruta"] == "grados" ||
-               $_GET["ruta"] == "cursos" ||
-               $_GET["ruta"] == "oferta" ||
-               $_GET["ruta"] == "periodos" ||
-               $_GET["ruta"] == "estructura-curricular" ||
-               $_GET["ruta"] == "matricula" ||
-               $_GET["ruta"] == "estudiantes" ||
-               $_GET["ruta"] == "acudientes" ||
-               $_GET["ruta"] == "pension-escolar" ||
-               $_GET["ruta"] == "asistencia" ||
-               $_GET["ruta"] == "calificaciones" ||
-               $_GET["ruta"] == "observaciones-academicas" ||
-               $_GET["ruta"] == "observaciones-disciplinarias" ||
-               $_GET["ruta"] == "horarios" ||
-               $_GET["ruta"] == "salir"){
-                include "modulos/".$_GET["ruta"].".php";
+            $rutasValidas = array(
+                "inicio", "usuarios", "perfil-laboral", "institucion", "sedes", 
+                "niveleducativo", "jornadas", "grados", "cursos", "oferta", 
+                "periodos", "estructura-curricular", "matricula", "estudiantes", 
+                "acudientes", "pension-escolar", "asistencia", "calificaciones", 
+                "observaciones-academicas", "observaciones-disciplinarias", 
+                "horarios", "gestionar-acciones", "gestionar-permisos", 
+                "asignar-roles", "sincronizar-permisos", "acceso-denegado", "salir"
+            );
+            
+            if(in_array($_GET["ruta"], $rutasValidas)){
+                // Rutas que no requieren verificación de permisos
+                $rutasLibres = array("inicio", "salir", "acceso-denegado");
+                
+                if(in_array($_GET["ruta"], $rutasLibres)){
+                    include "modulos/".$_GET["ruta"].".php";
+                } else {
+                    // SISTEMA ESCALABLE: Verificar acceso dinámicamente
+                    if(ControladorAuth::ctrVerificarAccesoModulo($_GET["ruta"])){
+                        include "modulos/".$_GET["ruta"].".php";
+                    } else {
+                        // Log del intento de acceso denegado para debugging
+                        error_log("Acceso denegado para usuario " . $_SESSION["id_usuario"] . " al módulo: " . $_GET["ruta"]);
+                        echo '<script>
+                            console.log("Debug: Acceso denegado al módulo ' . $_GET["ruta"] . '");
+                            window.location = "acceso-denegado";
+                        </script>';
+                    }
+                }
             } else {
                 include "modulos/404.php";
             }
@@ -130,6 +138,8 @@
 <script src="vistas/js/plantilla.js"></script>
 <script src="vistas/js/usuarios.js"></script>
 <script src="vistas/js/periodo.js"></script>
+<script src="vistas/js/asignar-roles.js"></script>
+<script src="vistas/js/validaciones-permisos.js"></script>
 
 <script src="vistas/js/estructura-curricular.js"></script>
 <!--  <script src="vistas/js/contraseña.js"></script> -->

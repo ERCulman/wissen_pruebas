@@ -1,52 +1,11 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// DEBUG: Verificar si llegan datos POST
-if(!empty($_POST)) {
-    error_log("DEBUG MATRICULA PRINCIPAL - POST recibido: " . print_r($_POST, true));
-
-    // Mostrar mensaje temporal para verificar
-    if(isset($_POST["btnRegistrarMatricula"])) {
-        echo "<script>console.log('POST detectado en matricula.php');</script>";
-    }
-}
-?>
-<?php
 require_once "controladores/matricula.controlador.php";
 require_once "modelos/matricula.modelo.php";
 require_once "controladores/usuarios.controlador.php";
 require_once "modelos/usuarios.modelo.php";
 ?>
-<!DOCTYPE html>
-<html>
 
-<!--<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Sistema de Educacion Wissen</title>
-    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" href="dist/css/AdminLTE.css">
-    <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
-    <link rel="stylesheet" href="bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
-    <link rel="stylesheet" href="bower_components/datatables.net-bs/css/responsive.bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-
-    <script src="bower_components/jquery/dist/jquery.min.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="bower_components/datatables.net/js/jquery.dataTables.min.js"></script>
-    <script src="bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
-    <script src="bower_components/datatables.net-bs/js/dataTables.responsive.min.js"></script>
-    <script src="bower_components/datatables.net-bs/js/responsive.bootstrap.min.js"></script>
-    <script src="plugins/sweetalert2/sweetalert2.all.js"></script>
-</head> -->
-
-<body class="hold-transition skin-blue sidebar-collapse sidebar-mini login-page">
-<div class="wrapper">
-    <div class="content-wrapper">
+<div class="content-wrapper">
         <section class="content-header">
             <h1>Matrícula</h1>
             <ol class="breadcrumb">
@@ -165,14 +124,15 @@ require_once "modelos/usuarios.modelo.php";
                     <table class="table table-bordered table-striped dt-responsive tablas" id="tablaMatricula">
                         <thead>
                         <tr>
+                            <th style="width: 15%">Sede</th>
+                            <th style="width: 8%">Jornada</th>
                             <th style="width: 8%">No. Matrícula</th>
-                            <th style="width: 15%">Estudiante</th>
-                            <th style="width: 10%">Documento</th>
-                            <th style="width: 12%">Jornada</th>
-                            <th style="width: 10%">Grado</th>
-                            <th style="width: 8%">Curso</th>
-                            <th style="width: 12%">Fecha Matrícula</th>
-                            <th style="width: 10%">Estado</th>
+                            <th style="width: 8%">Documento</th>
+                            <th style="width: 17%">Estudiante</th>
+                            <th style="width: 6%">Grado</th>
+                            <th style="width: 12%">Grupo</th>
+                            <th style="width: 6%">Fecha</th>
+                            <th style="width: 5%">Estado</th>
                             <th style="width: 15%">Acciones</th>
                         </tr>
                         </thead>
@@ -187,15 +147,16 @@ require_once "modelos/usuarios.modelo.php";
                         foreach ($matriculas as $key => $value) {
 
                             echo '<tr>
-                        <td>'.$value["numero_matricula"].'</td>
-                        <td>'.$value["nombres_estudiante"].'</td>
-                        <td>'.$value["documento_estudiante"].'</td>
+                        <td>'.$value["nombre_sede"].'</td>
                         <td>'.$value["jornada"].'</td>
+                        <td>'.$value["numero_matricula"].'</td>
+                        <td>'.$value["tipo_documento_estudiante"].' '.$value["documento_estudiante"].'</td>
+                        <td>'.$value["nombres_estudiante"].'</td>
                         <td>'.$value["grado"].'</td>
-                        <td>'.$value["curso"].'</td>
+                        <td>'.$value["grupo_nombre"].'</td>
                         <td>'.$value["fecha_matricula"].'</td>';
 
-                            if($value["estado_matricula"] == 'Activo'){
+                            if($value["estado_matricula"] == 'Matriculado'){
                                 echo '<td><button class="btn btn-success btn-xs">'.$value["estado_matricula"].'</button></td>';
                             } else {
                                 echo '<td><button class="btn btn-danger btn-xs">'.$value["estado_matricula"].'</button></td>';
@@ -440,13 +401,19 @@ require_once "modelos/usuarios.modelo.php";
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
                                     <label>¿Es estudiante nuevo?:</label>
                                     <select class="form-control input-lg" name="estudianteNuevo" required>
                                         <option value="">Seleccione...</option><option value="Si">Sí</option><option value="No">No</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
+                                    <label>¿Es repitente?:</label>
+                                    <select class="form-control input-lg" name="esRepitente" required>
+                                        <option value="">Seleccione...</option><option value="Si">Sí</option><option value="No">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
                                     <label>Estado Año Anterior:</label>
                                     <select class="form-control input-lg" name="estadoAnioAnterior" required>
                                         <option value="">Seleccione...</option><option value="repitente">Repitente</option><option value="promovido">Promovido</option><option value="retirado">Retirado</option>
@@ -507,13 +474,19 @@ require_once "modelos/usuarios.modelo.php";
                             <div class="formulario-acudiente-container" style="display: none; background-color:#eef; padding:15px; border-radius:5px;">
                                 <h5><i class="fa fa-user-plus"></i> Complete los datos del acudiente</h5>
                                 <div class="row">
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-4">
                                         <label>Parentesco:</label>
                                         <select class="form-control input-lg parentesco-acudiente">
                                             <option value="">Seleccione...</option><option value="Padre">Padre</option><option value="Madre">Madre</option><option value="Tio">Tío</option><option value="Tia">Tía</option><option value="Abuelo">Abuelo</option><option value="Abuela">Abuela</option><option value="Hermano">Hermano</option><option value="Hermana">Hermana</option><option value="Otro">Otro</option>
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-4">
+                                        <label>¿Es firmante principal?:</label>
+                                        <select class="form-control input-lg es-firmante-acudiente">
+                                            <option value="">Seleccione...</option><option value="Si">Sí</option><option value="No">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
                                         <label>¿Autorizado para recoger?:</label>
                                         <select class="form-control input-lg autorizado-recoger-acudiente">
                                             <option value="">Seleccione...</option><option value="Si">Sí</option><option value="No">No</option>
@@ -731,11 +704,15 @@ require_once "modelos/usuarios.modelo.php";
                                         <strong>Fecha de Matrícula:</strong>
                                         <p id="verFechaMatricula"></p>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <strong>¿Es Estudiante Nuevo?:</strong>
                                         <p id="verEstudianteNuevo"></p>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
+                                        <strong>¿Es Repitente?:</strong>
+                                        <p id="verEsRepitente"></p>
+                                    </div>
+                                    <div class="col-md-4">
                                         <strong>Estado de Matrícula:</strong>
                                         <p id="verEstadoMatricula"></p>
                                     </div>
@@ -907,13 +884,19 @@ require_once "modelos/usuarios.modelo.php";
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
                                     <label>¿Es estudiante nuevo?:</label>
                                     <select class="form-control input-lg" name="editarEstudianteNuevo" id="editarEstudianteNuevo" required>
                                         <option value="">Seleccione...</option><option value="Si">Sí</option><option value="No">No</option>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class="form-group col-md-4">
+                                    <label>¿Es repitente?:</label>
+                                    <select class="form-control input-lg" name="editarEsRepitente" id="editarEsRepitente" required>
+                                        <option value="">Seleccione...</option><option value="Si">Sí</option><option value="No">No</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
                                     <label>Estado Año Anterior:</label>
                                     <select class="form-control input-lg" name="editarEstadoAnioAnterior" id="editarEstadoAnioAnterior" required>
                                         <option value="">Seleccione...</option><option value="repitente">Repitente</option><option value="promovido">Promovido</option><option value="retirado">Retirado</option>
@@ -952,9 +935,10 @@ require_once "modelos/usuarios.modelo.php";
                                     <label><span class="text-danger">*</span> Estado de Matrícula:</label>
                                     <select class="form-control input-lg" name="editarEstadoMatricula" id="editarEstadoMatricula" required>
                                         <option value="">Seleccione...</option>
-                                        <option value="Activo">Activo</option>
-                                        <option value="Inactivo">Inactivo</option>
+                                        <option value="Matriculado">Matriculado</option>
                                         <option value="Retirado">Retirado</option>
+                                        <option value="Aprobado">Aprobado</option>
+                                        <option value="Reprobado">Reprobado</option>
                                     </select>
                                 </div>
                             </div>
@@ -984,13 +968,19 @@ require_once "modelos/usuarios.modelo.php";
                             <div class="formulario-acudiente-container" style="display: none; background-color:#eef; padding:15px; border-radius:5px;">
                                 <h5><i class="fa fa-user-plus"></i> Complete los datos del acudiente</h5>
                                 <div class="row">
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-4">
                                         <label>Parentesco:</label>
                                         <select class="form-control input-lg parentesco-acudiente">
                                             <option value="">Seleccione...</option><option value="Padre">Padre</option><option value="Madre">Madre</option><option value="Tio">Tío</option><option value="Tia">Tía</option><option value="Abuelo">Abuelo</option><option value="Abuela">Abuela</option><option value="Hermano">Hermano</option><option value="Hermana">Hermana</option><option value="Otro">Otro</option>
                                         </select>
                                     </div>
-                                    <div class="form-group col-md-6">
+                                    <div class="form-group col-md-4">
+                                        <label>¿Es firmante principal?:</label>
+                                        <select class="form-control input-lg es-firmante-acudiente">
+                                            <option value="">Seleccione...</option><option value="Si">Sí</option><option value="No">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-4">
                                         <label>¿Autorizado para recoger?:</label>
                                         <select class="form-control input-lg autorizado-recoger-acudiente">
                                             <option value="">Seleccione...</option><option value="Si">Sí</option><option value="No">No</option>
@@ -1020,13 +1010,9 @@ require_once "modelos/usuarios.modelo.php";
     </div>
 
 
-    <script src="/wissen/vistas/js/matricula.js"></script>
+<script src="vistas/js/matricula.js"></script>
 
-    <?php
-
-    $borrarMatricula = new ControladorMatricula();
-    $borrarMatricula -> ctrBorrarMatricula();
-
-    ?>
-</body>
-</html>
+<?php
+$borrarMatricula = new ControladorMatricula();
+$borrarMatricula -> ctrBorrarMatricula();
+?>

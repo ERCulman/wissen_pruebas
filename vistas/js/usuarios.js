@@ -40,8 +40,7 @@ $(document).on('click', '.btnEditarUsuario', function() {
             $("#passwordActual").val(respuesta["password"]);
             $("#editarEstadoUsuario").html(respuesta["estado_usuario"]);
             $("#editarEstadoUsuario").val(respuesta["estado_usuario"]);
-            $("#editarRolUsuario").html(respuesta["id_rol"]);
-            $("#editarRolUsuario").val(respuesta["id_rol"]);
+
 
             $('#modalEditarUsuario').modal('show');
 
@@ -86,7 +85,7 @@ $(document).on('click', '.btnVerUsuario', function() {
             $("#verEmailUsuario").text(respuesta["email_usuario"]);
             $("#verLoginUsuario").text(respuesta["usuario"]);
             $("#verEstadoUsuario").text(respuesta["estado_usuario"]);
-            $("#verRolUsuario").text(respuesta["id_rol"]);
+
             $("#verFechaCreacion").text(respuesta["fecha_creacion"]);
             $("#verFechaActualizacion").text(respuesta["fecha_actualizacion"]);
 
@@ -149,6 +148,8 @@ $(document).on('submit', '#formAgregarUsuario', function(event) {
         }
     });
 });
+
+
 
 /* =======================================
 	   RECUPERAR PASSWORD

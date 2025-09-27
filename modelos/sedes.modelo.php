@@ -202,6 +202,36 @@ class ModeloSede {
     }
 
     /*=============================================
+    VERIFICAR REFERENCIAS DE SEDE
+    =============================================*/
+
+    static public function mdlVerificarReferenciasSede($sedeId) {
+        $referencias = array();
+        
+        // Verificar sede_jornada
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM sede_jornada WHERE sede_id = :sede_id");
+        $stmt->bindParam(":sede_id", $sedeId, PDO::PARAM_INT);
+        $stmt->execute();
+        $sedeJornada = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        if ($sedeJornada > 0) {
+            $referencias[] = "Sede-Jornada ($sedeJornada registros)";
+        }
+        
+        // Verificar roles_institucionales
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM roles_institucionales WHERE sede_id = :sede_id");
+        $stmt->bindParam(":sede_id", $sedeId, PDO::PARAM_INT);
+        $stmt->execute();
+        $rolesInstitucionales = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        if ($rolesInstitucionales > 0) {
+            $referencias[] = "Roles Institucionales ($rolesInstitucionales registros)";
+        }
+        
+        return $referencias;
+    }
+
+    /*=============================================
     BORRAR SEDE
     =============================================*/
 

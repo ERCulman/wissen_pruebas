@@ -7,6 +7,11 @@ class ControladorCurso {
     =============================================*/
 
     static public function ctrMostrarCurso($item, $valor) {
+        // PROTECCIÓN: Verificar permisos antes de mostrar curso
+        if (!BackendProtector::protectController('cursos_ver')) {
+            return false;
+        }
+        
         $tabla = "curso";
         $respuesta = ModeloCurso::mdlMostrarCurso($tabla, $item, $valor);
         return $respuesta;
@@ -17,6 +22,11 @@ class ControladorCurso {
     =============================================*/
 
     public function ctrCrearCurso() {
+
+        // PROTECCIÓN: Verificar permisos antes de crear curso
+        if (!BackendProtector::protectController('cursos_crear')) {
+            return;
+        }
 
         // Debug: Verificar si llegan los datos POST
         echo "<script>console.log('POST data:', " . json_encode($_POST) . ");</script>";
@@ -129,6 +139,11 @@ class ControladorCurso {
 
     static public function ctrEditarCurso() {
 
+        // PROTECCIÓN: Verificar permisos antes de editar curso
+        if (!BackendProtector::protectController('cursos_editar')) {
+            return;
+        }
+
         if(isset($_POST["editarTipoCurso"])) {
 
             if(($_POST["editarTipoCurso"] == "Númerico" || $_POST["editarTipoCurso"] == "Alfabético") &&
@@ -185,12 +200,36 @@ class ControladorCurso {
 
     static public function ctrBorrarCurso() {
 
+        // PROTECCIÓN: Verificar permisos antes de eliminar curso
+        if (!BackendProtector::protectController('cursos_eliminar')) {
+            return;
+        }
+
         if(isset($_GET["idCurso"])) {
 
-            $tabla = "curso";
-            $datos = $_GET["idCurso"];
+            $cursoId = $_GET["idCurso"];
+            
+            // Verificar si el curso tiene referencias en otras tablas
+            $referencias = ModeloCurso::mdlVerificarReferenciasCurso($cursoId);
+            
+            if(!empty($referencias)) {
+                $listaReferencias = implode(", ", $referencias);
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "No se puede eliminar",
+                    text: "Este curso tiene referencias activas en: ' . $listaReferencias . '. No es posible eliminarlo.",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "cursos";
+                });
+                </script>';
+                return;
+            }
 
-            $respuesta = ModeloCurso::mdlBorrarCurso($tabla, $datos);
+            $tabla = "curso";
+            $respuesta = ModeloCurso::mdlBorrarCurso($tabla, $cursoId);
 
             if($respuesta == "ok") {
                 echo '<script>
@@ -205,6 +244,18 @@ class ControladorCurso {
                             window.location = "cursos";
                         }
                     });
+                </script>';
+            } else {
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudo eliminar el curso",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "cursos";
+                });
                 </script>';
             }
         }

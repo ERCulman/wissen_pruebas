@@ -474,18 +474,62 @@ $(document).ready(function() {
         var grupoId = $(this).data('grupo-id');
         var grupoNombre = $(this).data('grupo-nombre');
 
-        Swal.fire({
-            title: '¿Está seguro de eliminar este grupo?',
-            text: grupoNombre,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            cancelButtonText: 'No, cancelar',
-            confirmButtonText: 'Sí, eliminar'
-        }).then(function(result) {
-            if (result.value) {
-                window.location = "index.php?ruta=oferta&idGrupo=" + grupoId;
+        // Verificar si el grupo puede ser eliminado
+        $.ajax({
+            url: 'ajax/obtener-oferta-educativa.php',
+            type: 'POST',
+            data: {
+                accion: 'verificarEliminacionGrupo',
+                grupoId: grupoId
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (!data.puedeEliminar) {
+                    var mensaje = '';
+                    if (data.tieneEstudiantes) {
+                        mensaje = 'Este grupo tiene estudiantes matriculados. No es posible eliminarlo.';
+                    } else if (data.esUltimoGrupo && data.tieneReferencias) {
+                        mensaje = 'Este es el último grupo del grado y la oferta educativa tiene referencias activas en: ' + data.referencias.join(', ') + '. No es posible eliminarlo.';
+                    }
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'No se puede eliminar',
+                        text: mensaje,
+                        confirmButtonText: 'Entendido'
+                    });
+                    return;
+                }
+
+                var mensaje = grupoNombre;
+                var textoAdicional = '';
+                
+                if (data.esUltimoGrupo) {
+                    textoAdicional = '\n\nADVERTENCIA: Este es el último grupo del grado. Al eliminarlo también se eliminará la oferta educativa completa.';
+                }
+
+                Swal.fire({
+                    title: '¿Está seguro de eliminar este grupo?',
+                    text: mensaje + textoAdicional,
+                    icon: data.esUltimoGrupo ? 'warning' : 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'No, cancelar',
+                    confirmButtonText: 'Sí, eliminar'
+                }).then(function(result) {
+                    if (result.value) {
+                        window.location = "index.php?ruta=oferta&idGrupo=" + grupoId;
+                    }
+                });
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'No se pudo verificar el estado del grupo',
+                    confirmButtonText: 'Cerrar'
+                });
             }
         });
     });

@@ -1,5 +1,6 @@
 <?php
 
+require_once "global-protection.php";
 require_once "../controladores/estructura-curricular.controlador.php";
 require_once "../modelos/estructura-curricular.modelo.php";
 require_once "../modelos/conexion.php";

@@ -7,7 +7,7 @@ class ControladorUsuarios {
 	======================================= */
 
 	static public function ctrIngresoUsuario(){
-
+        
 		if(isset($_POST["ingUsuario"])){
 
 			if(preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingUsuario"]) &&
@@ -34,7 +34,13 @@ class ControladorUsuarios {
 						$_SESSION["id_usuario"] = $respuesta["id_usuario"];
 						$_SESSION["nombres_usuario"] = $respuesta["nombres_usuario"];
 						$_SESSION["apellidos_usuario"] = $respuesta["apellidos_usuario"];
-		                        $_SESSION["id_rol"] = $respuesta["id_rol"];
+						
+						// Establecer rol activo automáticamente
+						$rolesUsuario = ModeloAuth::mdlObtenerRolesUsuario($respuesta["id_usuario"]);
+						if(!empty($rolesUsuario)){
+							$primerRol = $rolesUsuario[0];
+							$_SESSION['rol_activo'] = $primerRol['tipo'] . '_' . ($primerRol['tipo'] == 'institucional' ? 'sede_' . ($primerRol['sede_id'] ?? 'unknown') : 'sistema');
+						}
 
 						echo '<script> window.location = "inicio"; </script>';
 
@@ -54,6 +60,11 @@ class ControladorUsuarios {
 	======================================= */
 
 	static public function ctrCrearUsuario(){
+
+		// PROTECCIÓN: Verificar permisos antes de crear usuario
+		if (!BackendProtector::protectController('usuarios_crear')) {
+			return;
+		}
 
 		if(isset($_POST["loginUsuario"])){
 
@@ -82,8 +93,7 @@ class ControladorUsuarios {
 					"email_usuario" => $_POST["emailUsuario"],
 					"usuario" => $_POST["loginUsuario"],
 					"password" => $encriptar,
-					"estado_usuario" => $_POST["estadoUsuario"],
-					"id_rol" => $_POST["rolUsuario"]
+					"estado_usuario" => "Activo"
 				);
 
 				$respuesta = ModeloUsuarios::mdlCrearUsuario($tabla, $datos);
@@ -112,6 +122,11 @@ class ControladorUsuarios {
 
 	static public function ctrMostrarUsuario($item, $valor){
 
+		// PROTECCIÓN: Verificar permisos antes de mostrar usuario
+		if (!BackendProtector::protectController('usuarios_ver')) {
+			return false;
+		}
+
 		$tabla = "usuarios";
 		$respuesta = ModeloUsuarios::MdlMostrarUsuarios($tabla, $item, $valor);
 		return $respuesta;
@@ -123,6 +138,11 @@ class ControladorUsuarios {
 	======================================= */
 
 	public function ctrEditarUsuario(){
+
+		// PROTECCIÓN: Verificar permisos antes de editar usuario
+		if (!BackendProtector::protectController('usuarios_editar')) {
+			return;
+		}
 
 		if(isset($_POST["editarLoginUsuario"])){
 
@@ -166,8 +186,7 @@ class ControladorUsuarios {
 					"email_usuario" => $_POST["editarEmailUsuario"],
 					"usuario" => $_POST["editarLoginUsuario"],
 					"password" => $encriptar,
-					"estado_usuario" => $_POST["editarEstadoUsuario"],
-					"id_rol" => $_POST["editarRolUsuario"]
+					"estado_usuario" => $_POST["editarEstadoUsuario"]
 				);
 
 				$respuesta = ModeloUsuarios::mdlEditarUsuario($tabla, $datos);
@@ -306,14 +325,6 @@ class ControladorUsuarios {
     }
 
 
-    /*=============================================
-    CONTAR USUARIOS POR ROL
-    =============================================*/
 
-    static public function ctrContarUsuariosPorRol($idRol) {
-        $tabla = "usuarios";
-        $respuesta = ModeloUsuarios::mdlContarUsuariosPorRol($tabla, $idRol);
-        return $respuesta['total'];
-    }
 
 }

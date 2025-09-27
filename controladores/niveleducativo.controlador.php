@@ -7,6 +7,9 @@ class ControladorNivelEducativo {
     =============================================*/
 
     static public function ctrMostrarNivelEducativo($item, $valor) {
+        if (!BackendProtector::protectController('niveles_ver')) {
+            return false;
+        }
         $tabla = "nivel_educativo";
         $respuesta = ModeloNivelEducativo::mdlMostrarNivelEducativo($tabla, $item, $valor);
         return $respuesta;
@@ -17,6 +20,10 @@ class ControladorNivelEducativo {
     =============================================*/
 
     public function ctrCrearNivelEducativo() {
+
+        if (!BackendProtector::protectController('niveles_crear')) {
+            return;
+        }
 
         // Debug: Verificar si llegan los datos POST
         echo "<script>console.log('POST data:', " . json_encode($_POST) . ");</script>";
@@ -127,6 +134,10 @@ class ControladorNivelEducativo {
 
     static public function ctrEditarNivelEducativo() {
 
+        if (!BackendProtector::protectController('niveles_editar')) {
+            return;
+        }
+
         if(isset($_POST["editarCodigoNivelEducativo"])) {
 
             if(preg_match('/^[a-zA-Z0-9\-_]+$/', $_POST["editarCodigoNivelEducativo"]) &&
@@ -181,12 +192,35 @@ class ControladorNivelEducativo {
 
     static public function ctrBorrarNivelEducativo() {
 
+        if (!BackendProtector::protectController('niveles_eliminar')) {
+            return;
+        }
+
         if(isset($_GET["idNivelEducativo"])) {
 
-            $tabla = "nivel_educativo";
-            $datos = $_GET["idNivelEducativo"];
+            $nivelEducativoId = $_GET["idNivelEducativo"];
+            
+            // Verificar referencias
+            $referencias = ModeloNivelEducativo::mdlVerificarReferenciasNivelEducativo($nivelEducativoId);
+            
+            if(!empty($referencias)) {
+                $listaReferencias = implode(", ", $referencias);
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "No se puede eliminar",
+                    text: "Este nivel educativo tiene referencias activas en: ' . $listaReferencias . '. No es posible eliminarlo.",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "niveleducativo";
+                });
+                </script>';
+                return;
+            }
 
-            $respuesta = ModeloNivelEducativo::mdlBorrarNivelEducativo($tabla, $datos);
+            $tabla = "nivel_educativo";
+            $respuesta = ModeloNivelEducativo::mdlBorrarNivelEducativo($tabla, $nivelEducativoId);
 
             if($respuesta == "ok") {
                 echo '<script>
@@ -201,6 +235,18 @@ class ControladorNivelEducativo {
                             window.location = "niveleducativo";
                         }
                     });
+                </script>';
+            } else {
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudo eliminar el nivel educativo",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "niveleducativo";
+                });
                 </script>';
             }
         }

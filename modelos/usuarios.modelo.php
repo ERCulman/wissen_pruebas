@@ -44,7 +44,7 @@ class ModeloUsuarios{
 
 	static public function mdlCrearUsuario($tabla, $datos){
 
-		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(numero_documento, tipo_documento, nombres_usuario, apellidos_usuario, sexo_usuario, rh_usuario, fecha_nacimiento, edad_usuario, telefono_usuario, email_usuario, usuario, password, estado_usuario, id_rol)VALUES(:numero_documento, :tipo_documento, :nombres_usuario, :apellidos_usuario, :sexo_usuario, :rh_usuario, :fecha_nacimiento, :edad_usuario, :telefono_usuario, :email_usuario, :usuario, :password, :estado_usuario, :id_rol)"); /*Variable que me realice la consulta para insertar datos del usuario en la base de datos*/
+		$stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(numero_documento, tipo_documento, nombres_usuario, apellidos_usuario, sexo_usuario, rh_usuario, fecha_nacimiento, edad_usuario, telefono_usuario, email_usuario, usuario, password, estado_usuario)VALUES(:numero_documento, :tipo_documento, :nombres_usuario, :apellidos_usuario, :sexo_usuario, :rh_usuario, :fecha_nacimiento, :edad_usuario, :telefono_usuario, :email_usuario, :usuario, :password, :estado_usuario)"); /*Variable que me realice la consulta para insertar datos del usuario en la base de datos*/
 
 		/*Usamos el metodo bindParam que significa enlace al parametro, trayendo solo las variables en tipo string*/
 
@@ -61,7 +61,6 @@ class ModeloUsuarios{
 		$stmt -> bindParam(":usuario", $datos["usuario"], PDO::PARAM_STR);
 		$stmt -> bindParam(":password", $datos["password"], PDO::PARAM_STR);
 		$stmt -> bindParam(":estado_usuario", $datos["estado_usuario"], PDO::PARAM_STR);
-		$stmt -> bindParam(":id_rol", $datos["id_rol"], PDO::PARAM_STR);
 
 		if ($stmt->execute()){
 
@@ -82,7 +81,7 @@ class ModeloUsuarios{
 
 	static public function mdlEditarUsuario($tabla, $datos){
 
-		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET numero_documento = :numero_documento, tipo_documento = :tipo_documento, nombres_usuario = :nombres_usuario, apellidos_usuario = :apellidos_usuario, sexo_usuario = :sexo_usuario, rh_usuario = :rh_usuario, fecha_nacimiento = :fecha_nacimiento, edad_usuario = :edad_usuario, telefono_usuario = :telefono_usuario, email_usuario = :email_usuario, usuario = :usuario, password = :password, estado_usuario = :estado_usuario, id_rol = :id_rol WHERE usuario = :usuario"); /*Variable que me realice la actualizacion del usuario en la base de datos*/
+		$stmt = Conexion::conectar()->prepare("UPDATE $tabla SET numero_documento = :numero_documento, tipo_documento = :tipo_documento, nombres_usuario = :nombres_usuario, apellidos_usuario = :apellidos_usuario, sexo_usuario = :sexo_usuario, rh_usuario = :rh_usuario, fecha_nacimiento = :fecha_nacimiento, edad_usuario = :edad_usuario, telefono_usuario = :telefono_usuario, email_usuario = :email_usuario, usuario = :usuario, password = :password, estado_usuario = :estado_usuario WHERE usuario = :usuario"); /*Variable que me realice la actualizacion del usuario en la base de datos*/
 
 		/*Usamos el metodo bindParam que significa enlace al parametro, trayendo solo las variables en tipo string*/
 
@@ -99,7 +98,6 @@ class ModeloUsuarios{
 		$stmt -> bindParam(":usuario", $datos["usuario"], PDO::PARAM_STR);
 		$stmt -> bindParam(":password", $datos["password"], PDO::PARAM_STR);
 		$stmt -> bindParam(":estado_usuario", $datos["estado_usuario"], PDO::PARAM_STR);
-		$stmt -> bindParam(":id_rol", $datos["id_rol"], PDO::PARAM_STR);
 
 		if ($stmt->execute()){
 
@@ -181,15 +179,6 @@ class ModeloUsuarios{
         $stmt = null;
     }
 
-    /*=============================================
-    CONTAR USUARIOS POR ROL
-    =============================================*/
 
-    static public function mdlContarUsuariosPorRol($tabla, $rol) {
-        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM $tabla WHERE id_rol = :rol");
-        $stmt->bindParam(":rol", $rol, PDO::PARAM_STR);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
 
 }

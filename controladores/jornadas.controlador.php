@@ -7,6 +7,9 @@ class ControladorJornada {
     =============================================*/
 
     static public function ctrMostrarJornada($item, $valor) {
+        if (!BackendProtector::protectController('jornadas_ver')) {
+            return false;
+        }
         $tabla = "jornada";
         $respuesta = ModeloJornada::mdlMostrarJornada($tabla, $item, $valor);
         return $respuesta;
@@ -17,6 +20,10 @@ class ControladorJornada {
     =============================================*/
 
     public function ctrCrearJornada() {
+
+        if (!BackendProtector::protectController('jornadas_crear')) {
+            return;
+        }
 
         // Debug: Verificar si llegan los datos POST
         echo "<script>console.log('POST data:', " . json_encode($_POST) . ");</script>";
@@ -127,6 +134,10 @@ class ControladorJornada {
 
     static public function ctrEditarJornada() {
 
+        if (!BackendProtector::protectController('jornadas_editar')) {
+            return;
+        }
+
         if(isset($_POST["editarCodigoJornada"])) {
 
             if(preg_match('/^[a-zA-Z0-9\-_]+$/', $_POST["editarCodigoJornada"]) &&
@@ -181,12 +192,35 @@ class ControladorJornada {
 
     static public function ctrBorrarJornada() {
 
+        if (!BackendProtector::protectController('jornadas_eliminar')) {
+            return;
+        }
+
         if(isset($_GET["idJornada"])) {
 
-            $tabla = "jornada";
-            $datos = $_GET["idJornada"];
+            $jornadaId = $_GET["idJornada"];
+            
+            // Verificar referencias
+            $referencias = ModeloJornada::mdlVerificarReferenciasJornada($jornadaId);
+            
+            if(!empty($referencias)) {
+                $listaReferencias = implode(", ", $referencias);
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "No se puede eliminar",
+                    text: "Esta jornada tiene referencias activas en: ' . $listaReferencias . '. No es posible eliminarla.",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "jornadas";
+                });
+                </script>';
+                return;
+            }
 
-            $respuesta = ModeloJornada::mdlBorrarJornada($tabla, $datos);
+            $tabla = "jornada";
+            $respuesta = ModeloJornada::mdlBorrarJornada($tabla, $jornadaId);
 
             if($respuesta == "ok") {
                 echo '<script>
@@ -201,6 +235,18 @@ class ControladorJornada {
                             window.location = "jornadas";
                         }
                     });
+                </script>';
+            } else {
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudo eliminar la jornada",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "jornadas";
+                });
                 </script>';
             }
         }

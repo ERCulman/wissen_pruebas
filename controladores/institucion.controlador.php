@@ -7,6 +7,9 @@ class ControladorInstitucion {
     =============================================*/
 
     static public function ctrMostrarInstitucion($item, $valor) {
+        if (!BackendProtector::protectController('institucion_ver')) {
+            return false;
+        }
         $tabla = "institucion";
         $respuesta = ModeloInstitucion::mdlMostrarInstitucion($tabla, $item, $valor);
         return $respuesta;
@@ -17,6 +20,10 @@ class ControladorInstitucion {
     =============================================*/
 
     public function ctrCrearInstitucion() {
+
+        if (!BackendProtector::protectController('institucion_crear')) {
+            return;
+        }
 
         // Debug: Verificar si llegan los datos POST
         echo "<script>console.log('POST data:', " . json_encode($_POST) . ");</script>";
@@ -178,6 +185,10 @@ class ControladorInstitucion {
 
     static public function ctrEditarInstitucion() {
 
+        if (!BackendProtector::protectController('institucion_editar')) {
+            return;
+        }
+
         if(isset($_POST["editarNombreInstitucion"])) {
 
             if(mb_ereg_match('^[a-zA-ZñÑáéíóúüÁÉÍÓÚÜ\s]+$', $_POST["editarNombreInstitucion"])&&
@@ -269,12 +280,35 @@ class ControladorInstitucion {
 
     static public function ctrBorrarInstitucion() {
 
+        if (!BackendProtector::protectController('institucion_eliminar')) {
+            return;
+        }
+
         if(isset($_GET["idInstitucion"])) {
 
-            $tabla = "institucion";
-            $datos = $_GET["idInstitucion"];
+            $institucionId = $_GET["idInstitucion"];
+            
+            // Verificar referencias
+            $referencias = ModeloInstitucion::mdlVerificarReferenciasInstitucion($institucionId);
+            
+            if(!empty($referencias)) {
+                $listaReferencias = implode(", ", $referencias);
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "No se puede eliminar",
+                    text: "Esta institución tiene referencias activas en: ' . $listaReferencias . '. No es posible eliminarla.",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "institucion";
+                });
+                </script>';
+                return;
+            }
 
-            $respuesta = ModeloInstitucion::mdlBorrarInstitucion($tabla, $datos);
+            $tabla = "institucion";
+            $respuesta = ModeloInstitucion::mdlBorrarInstitucion($tabla, $institucionId);
 
             if($respuesta == "ok") {
                 echo '<script>
@@ -289,6 +323,18 @@ class ControladorInstitucion {
                             window.location = "institucion";
                         }
                     });
+                </script>';
+            } else {
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudo eliminar la institución",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "institucion";
+                });
                 </script>';
             }
         }

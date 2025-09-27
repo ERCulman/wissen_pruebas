@@ -7,6 +7,11 @@ class ControladorSede {
     =============================================*/
 
     static public function ctrMostrarSede($item, $valor) {
+        // PROTECCIÓN: Verificar permisos antes de mostrar sede
+        if (!BackendProtector::protectController('sedes_ver')) {
+            return false;
+        }
+        
         $tabla = "sede";
         $respuesta = ModeloSede::mdlMostrarSede($tabla, $item, $valor);
         return $respuesta;
@@ -17,6 +22,11 @@ class ControladorSede {
     =============================================*/
 
     public function ctrCrearSede() {
+
+        // PROTECCIÓN: Verificar permisos antes de crear sede
+        if (!BackendProtector::protectController('sedes_crear')) {
+            return;
+        }
 
         // Debug: Verificar si llegan los datos POST
         echo "<script>console.log('POST data:', " . json_encode($_POST) . ");</script>";
@@ -182,6 +192,11 @@ class ControladorSede {
 
     static public function ctrEditarSede() {
 
+        // PROTECCIÓN: Verificar permisos antes de editar sede
+        if (!BackendProtector::protectController('sedes_editar')) {
+            return;
+        }
+
         if(isset($_POST["editarNumeroSede"])) {
 
             if(preg_match('/^[0-9]{1,2}$/', $_POST["editarNumeroSede"]) &&
@@ -276,12 +291,36 @@ class ControladorSede {
 
     static public function ctrBorrarSede() {
 
+        // PROTECCIÓN: Verificar permisos antes de eliminar sede
+        if (!BackendProtector::protectController('sedes_eliminar')) {
+            return;
+        }
+
         if(isset($_GET["idSede"])) {
 
-            $tabla = "sede";
-            $datos = $_GET["idSede"];
+            $sedeId = $_GET["idSede"];
+            
+            // Verificar referencias
+            $referencias = ModeloSede::mdlVerificarReferenciasSede($sedeId);
+            
+            if(!empty($referencias)) {
+                $listaReferencias = implode(", ", $referencias);
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "No se puede eliminar",
+                    text: "Esta sede tiene referencias activas en: ' . $listaReferencias . '. No es posible eliminarla.",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "sedes";
+                });
+                </script>';
+                return;
+            }
 
-            $respuesta = ModeloSede::mdlBorrarSede($tabla, $datos);
+            $tabla = "sede";
+            $respuesta = ModeloSede::mdlBorrarSede($tabla, $sedeId);
 
             if($respuesta == "ok") {
                 echo '<script>
@@ -296,6 +335,18 @@ class ControladorSede {
                             window.location = "sedes";
                         }
                     });
+                </script>';
+            } else {
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "No se pudo eliminar la sede",
+                    showConfirmButton: true,
+                    confirmButtonText: "Cerrar"
+                }).then(function(result) {
+                    window.location = "sedes";
+                });
                 </script>';
             }
         }

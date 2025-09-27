@@ -222,6 +222,26 @@ class ModeloGrado {
     }
 
     /*=============================================
+    VERIFICAR REFERENCIAS DE GRADO
+    =============================================*/
+
+    static public function mdlVerificarReferenciasGrado($gradoId) {
+        $referencias = array();
+        
+        // Verificar oferta_academica
+        $stmt = Conexion::conectar()->prepare("SELECT COUNT(*) as total FROM oferta_academica WHERE grado_id = :grado_id");
+        $stmt->bindParam(":grado_id", $gradoId, PDO::PARAM_INT);
+        $stmt->execute();
+        $ofertaAcademica = $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        
+        if ($ofertaAcademica > 0) {
+            $referencias[] = "Oferta Académica ($ofertaAcademica registros)";
+        }
+        
+        return $referencias;
+    }
+
+    /*=============================================
     OBTENER TODOS LOS NIVELES EDUCATIVOS PARA SELECT
     =============================================*/
 
