@@ -1,3 +1,6 @@
+import {formatearFecha, formatearFechaParaDB, calcularEdad, configurarCamposDeFecha} from './validaciones/Utilidades.js'
+
+
 /* =======================================
 	   EDITAR USUARIO
 ======================================= */
@@ -32,7 +35,10 @@ $(document).on('click', '.btnEditarUsuario', function() {
             $("#editarSexoUsuario").val(respuesta["sexo_usuario"]);
             $("#editarRhUsuario").html(respuesta["rh_usuario"]);
             $("#editarRhUsuario").val(respuesta["rh_usuario"]);
-            $("#editarFechaNacimiento").val(respuesta["fecha_nacimiento"]);
+            
+            // Formatear fecha usando función utilitaria
+            $("#editarFechaNacimiento").val(formatearFecha(respuesta["fecha_nacimiento"]));
+            
             $("#editarEdadUsuario").val(respuesta["edad_usuario"]);
             $("#editarTelefonoUsuario").val(respuesta["telefono_usuario"]);
             $("#editarEmailUsuario").val(respuesta["email_usuario"]);
@@ -41,14 +47,63 @@ $(document).on('click', '.btnEditarUsuario', function() {
             $("#editarEstadoUsuario").html(respuesta["estado_usuario"]);
             $("#editarEstadoUsuario").val(respuesta["estado_usuario"]);
 
-
             $('#modalEditarUsuario').modal('show');
-
         }
+    });
+});
 
+/*=================================================================
+   INICIALIZACIÓN DE DATEPICKERS Y LÓGICA DE FECHAS EN MODALES
+=================================================================*/
+$(document).ready(function() {
+    // 1. Opciones comunes
+    const datepickerOptions = {
+        format: 'dd/mm/yyyy',
+        language: 'es',
+        autoclose: true,
+        todayHighlight: true,
+        endDate: new Date(),
+        startDate: '01/01/1900'
+    };
+
+    // 2. Selector común para ambos modales
+    const modalesConDatepicker = '#modalAgregarUsuario, #modalEditarUsuario';
+
+    // 3. Evento para INICIALIZAR cuando se abre cualquier modal
+    $(document).on('shown.bs.modal', modalesConDatepicker, function() {
+        const modalActual = $(this);
+        const inputDatepicker = modalActual.find('.has-datepicker');
+
+        const idFecha = inputDatepicker.attr('id');
+        const idEdad = idFecha.includes('editar') ? 'editarEdadUsuario' : 'edadUsuario';
+
+        // A. Activa el auto-formato y cálculo de edad al escribir manualmente.
+        configurarCamposDeFecha({ idFecha, idEdad });
+
+        // B. Inicializa el datepicker y CONECTA el evento 'changeDate'.
+        inputDatepicker.datepicker({
+            ...datepickerOptions,
+            container: '#' + modalActual.attr('id')
+        }).on('changeDate', function(e) {
+            // C. Calcula la edad usando la función importada cuando se elige una fecha.
+            const edad = calcularEdad(e.format());
+            const campoEdad = document.getElementById(idEdad);
+            if (campoEdad) {
+                campoEdad.value = (edad !== null && edad >= 0) ? edad : '';
+                campoEdad.dispatchEvent(new Event('input')); // Notifica al validador
+            }
+        });
     });
 
+    // 4. Evento para DESTRUIR cuando se cierra cualquier modal
+    $(document).on('hidden.bs.modal', modalesConDatepicker, function() {
+        const inputDatepicker = $(this).find('.has-datepicker');
+        if (inputDatepicker.data('datepicker')) {
+            inputDatepicker.datepicker('remove');
+        }
+    });
 });
+
 
 /* =======================================
 	   VER USUARIO
@@ -79,15 +134,17 @@ $(document).on('click', '.btnVerUsuario', function() {
             $("#verApellidoUsuario").text(respuesta["apellidos_usuario"]);
             $("#verSexoUsuario").text(respuesta["sexo_usuario"]);
             $("#verRhUsuario").text(respuesta["rh_usuario"]);
-            $("#verFechaNacimiento").text(respuesta["fecha_nacimiento"]);
+            // Formatear fecha usando función utilitaria
+            $("#verFechaNacimiento").text(formatearFecha(respuesta["fecha_nacimiento"]));
             $("#verEdadUsuario").text(respuesta["edad_usuario"]);
             $("#verTelefonoUsuario").text(respuesta["telefono_usuario"]);
             $("#verEmailUsuario").text(respuesta["email_usuario"]);
             $("#verLoginUsuario").text(respuesta["usuario"]);
             $("#verEstadoUsuario").text(respuesta["estado_usuario"]);
 
-            $("#verFechaCreacion").text(respuesta["fecha_creacion"]);
-            $("#verFechaActualizacion").text(respuesta["fecha_actualizacion"]);
+            // Formatear fechas de auditoría usando función utilitaria
+            $("#verFechaCreacion").text(formatearFecha(respuesta["fecha_creacion"]));
+            $("#verFechaActualizacion").text(formatearFecha(respuesta["fecha_actualizacion"]));
 
             // Guardar ID para el botón editar del modal ver
             $('.btnEditarUsuario[data-dismiss="modal"]').attr('data-id', idUsuario);
@@ -106,6 +163,8 @@ $(document).on('submit', '#formAgregarUsuario', function(event) {
 
     var formData = new FormData($('#formAgregarUsuario')[0]);
 
+    formData = formatearFechaParaDB(formData, 'fechaNacimiento');
+
     $.ajax({
         url: "ajax/usuarios.ajax.php",
         method: "POST",
@@ -114,6 +173,8 @@ $(document).on('submit', '#formAgregarUsuario', function(event) {
         contentType: false,
         processData: false,
         success: function(respuesta) {
+            console.log('Respuesta del servidor:', respuesta);
+            console.log('Respuesta trimmed:', respuesta.trim());
             if (respuesta.trim() === "ok") {
                 Swal.fire({
                     icon: 'success',
@@ -141,15 +202,13 @@ $(document).on('submit', '#formAgregarUsuario', function(event) {
                 Swal.fire({
                     icon: 'error',
                     title: '¡Error al registrar!',
-                    text: 'No se pudo crear el usuario. Es posible que el número de documento o el email ya existan en el sistema.',
+                    text: 'No se pudo crear el usuario. Es posible que el número de documento o el usuario ya existan en el sistema.',
                     confirmButtonText: 'Cerrar'
                 });
             }
         }
     });
 });
-
-
 
 /* =======================================
 	   RECUPERAR PASSWORD
@@ -207,4 +266,24 @@ $(document).on('submit', '#formNuevaRecuperacion', function(event) {
             alert('Error de conexión');
         }
     });
+});
+
+
+
+// Manejar envío del formulario de editar usuario
+$(document).on('submit', '#formEditarUsuario', function(e) {
+    console.log("Enviando formulario de editar usuario");
+    
+    // Convertir fecha de DD/MM/AAAA a AAAA-MM-DD antes del envío
+    var fechaInput = $('#editarFechaNacimiento');
+    var fechaValor = fechaInput.val();
+    
+    if (fechaValor && fechaValor.includes('/')) {
+        var partes = fechaValor.split('/');
+        if (partes.length === 3) {
+            var fechaParaDB = partes[2] + '-' + partes[1] + '-' + partes[0];
+            console.log("Convirtiendo fecha de", fechaValor, "a", fechaParaDB);
+            fechaInput.val(fechaParaDB);
+        }
+    }
 });

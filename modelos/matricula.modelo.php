@@ -235,14 +235,24 @@ class ModeloMatricula {
     CREAR ASIGNACIÓN ACUDIENTE
     =============================================*/
     static public function mdlCrearAsignacionAcudiente($tabla, $datos) {
-        $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(matricula_id, roles_institucionales_id, parentesco, es_firmante_principal, autorizado_recoger, observaciones) VALUES (:matricula_id, :roles_institucionales_id, :parentesco, :es_firmante_principal, :autorizado_recoger, :observaciones)");
-        $stmt->bindParam(":matricula_id", $datos["matricula_id"], PDO::PARAM_INT);
-        $stmt->bindParam(":roles_institucionales_id", $datos["roles_institucionales_id"], PDO::PARAM_INT);
-        $stmt->bindParam(":parentesco", $datos["parentesco"], PDO::PARAM_STR);
-        $stmt->bindParam(":es_firmante_principal", $datos["es_firmante_principal"], PDO::PARAM_STR);
-        $stmt->bindParam(":autorizado_recoger", $datos["autorizado_recoger"], PDO::PARAM_STR);
-        $stmt->bindParam(":observaciones", $datos["observaciones"], PDO::PARAM_STR);
-        return $stmt->execute() ? "ok" : "error";
+        try {
+            // Asegurar que es_firmante_principal tenga un valor válido
+            if (empty($datos["es_firmante_principal"]) || !in_array($datos["es_firmante_principal"], ['Si', 'No'])) {
+                $datos["es_firmante_principal"] = 'No';
+            }
+            
+            $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(matricula_id, roles_institucionales_id, parentesco, es_firmante_principal, autorizado_recoger, observaciones) VALUES (:matricula_id, :roles_institucionales_id, :parentesco, :es_firmante_principal, :autorizado_recoger, :observaciones)");
+            $stmt->bindParam(":matricula_id", $datos["matricula_id"], PDO::PARAM_INT);
+            $stmt->bindParam(":roles_institucionales_id", $datos["roles_institucionales_id"], PDO::PARAM_INT);
+            $stmt->bindParam(":parentesco", $datos["parentesco"], PDO::PARAM_STR);
+            $stmt->bindParam(":es_firmante_principal", $datos["es_firmante_principal"], PDO::PARAM_STR);
+            $stmt->bindParam(":autorizado_recoger", $datos["autorizado_recoger"], PDO::PARAM_STR);
+            $stmt->bindParam(":observaciones", $datos["observaciones"], PDO::PARAM_STR);
+            return $stmt->execute() ? "ok" : "error";
+        } catch (PDOException $e) {
+            error_log("Error en mdlCrearAsignacionAcudiente: " . $e->getMessage());
+            return "error: " . $e->getMessage();
+        }
     }
 
     /*=============================================

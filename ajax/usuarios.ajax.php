@@ -83,8 +83,8 @@ if(isset($_POST["idUsuario"])){
 
 if(isset($_POST["loginUsuario"])){
 
-    // PROTECCIÓN: Verificar permisos para crear usuario
-    if (!BackendProtector::protectAjax('usuarios_crear')) {
+    // PROTECCIÓN: Permitir registro público (sin sesión) o verificar permisos si hay sesión
+    if (!BackendProtector::protectAjaxWithPublicException('usuarios_crear', true)) {
         exit();
     }
 

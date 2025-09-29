@@ -34,6 +34,15 @@
   .login-links .fa {
     margin-right: 5px;
   }
+
+  .validation-error-container {
+      margin-top: -10px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #dd4b39;
+      height: 15px;
+  }
 </style>
 
 <!-- PAGINA LOGIN -->
@@ -50,21 +59,23 @@
   <div class="login-box-body">
     <p class="login-box-msg">Ingresar al Sistema</p>
 
-    <form method="post">
+    <form id="formLogin" method="post" data-validacion-universal="">
 
       <!-- CAJA DE TEXTO PARA COLOCAR EL USUARIO -->
 
       <div class="form-group has-feedback">
-        <input type="text" class="form-control" placeholder="Usuario" name="ingUsuario" required> <!-- VARIABLE NAME="ingUsuario" PARA LA CAPTURA DEL DATO-->
+        <input type="text" class="form-control" placeholder="Usuario" name="ingUsuario" data-reglas="requerido"> <!-- VARIABLE NAME="ingUsuario" PARA LA CAPTURA DEL DATO-->
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
+        <div class="validation-error-container"></div>
 
       <!-- CAJA DE TEXTO PARA COLOCAR LA CONTRASEÑA -->
 
       <div class="form-group has-feedback">
-        <input type="password" class="form-control" placeholder="Contraseña" name="ingPassword">
+        <input type="password" class="form-control" placeholder="Contraseña" name="ingPassword" data-reglas="requerido">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
+        <div class="validation-error-container"></div>
 
       <div class="row">
 

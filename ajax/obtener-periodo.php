@@ -1,5 +1,6 @@
 <?php
 require_once "global-protection.php";
+require_once "../autoload.php";
 require_once "../controladores/periodos.controlador.php";
 require_once "../modelos/periodos.modelo.php";
 

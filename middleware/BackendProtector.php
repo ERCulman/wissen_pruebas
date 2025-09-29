@@ -51,6 +51,19 @@ class BackendProtector {
     }
     
     /*=============================================
+    PROTEGER AJAX CON EXCEPCIÓN PARA REGISTRO PÚBLICO
+    =============================================*/
+    public static function protectAjaxWithPublicException($action, $allowPublic = false) {
+        // Si se permite acceso público y no hay sesión, permitir
+        if ($allowPublic && !isset($_SESSION["id_usuario"])) {
+            return true;
+        }
+        
+        // Si no se permite público o hay sesión, usar protección normal
+        return self::protectAjax($action);
+    }
+    
+    /*=============================================
     RESPUESTAS DE ERROR
     =============================================*/
     private static function unauthorized() {

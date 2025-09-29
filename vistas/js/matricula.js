@@ -88,6 +88,7 @@ $(document).ready(function() {
             $.each(acudientesArray, function(index, acudiente) {
                 var obsHtml = acudiente.observacion ? `<br><small><em>Obs: ${acudiente.observacion}</em></small>` : '';
                 var autorizadoHtml = acudiente.autorizado_recoger === 'Si' ? '<span class="label label-success">Autorizado</span>' : '<span class="label label-danger">No Autorizado</span>';
+                var firmanteHtml = acudiente.es_firmante_principal === 'Si' ? '<span class="label label-success">Firmante</span>' : '<span class="label label-danger">No Firmante</span>';
                 html += `<div class="acudiente-item" style="padding: 8px; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;">
                             <div>
                                 <strong>${acudiente.nombres_completos}</strong>
@@ -95,6 +96,7 @@ $(document).ready(function() {
                                 ${obsHtml}
                             </div>
                             <div>
+                                ${firmanteHtml}
                                 ${autorizadoHtml}
                                 <button type="button" class="btn btn-warning btn-xs btn-editar-acudiente" data-index="${index}" style="margin-left: 5px;" title="Editar Acudiente"><i class="fa fa-edit"></i></button>
                                 <button type="button" class="btn btn-danger btn-xs btn-eliminar-acudiente" data-index="${index}" style="margin-left: 5px;" title="Eliminar Acudiente"><i class="fa fa-times"></i></button>
@@ -215,7 +217,9 @@ $(document).ready(function() {
                 tipo_documento: acudienteEncontradoTemporal.tipo_documento,
                 numero_documento: acudienteEncontradoTemporal.numero_documento,
                 nombres_completos: `${acudienteEncontradoTemporal.nombres_usuario} ${acudienteEncontradoTemporal.apellidos_usuario}`,
-                parentesco: parentesco, es_firmante_principal: esFirmante, autorizado_recoger: autorizado,
+                parentesco: parentesco, 
+                es_firmante_principal: esFirmante || 'No', 
+                autorizado_recoger: autorizado,
                 observacion: modal.find('.observacion-acudiente').val()
             };
             

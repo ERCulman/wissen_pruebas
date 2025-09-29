@@ -1,6 +1,7 @@
 <?php
 
 require_once "global-protection.php";
+require_once "../autoload.php";
 require_once "../controladores/institucion.controlador.php";
 require_once "../modelos/institucion.modelo.php";
 

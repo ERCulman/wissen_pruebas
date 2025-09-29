@@ -126,341 +126,232 @@
       MODAL EDITAR USUARIO
     =======================================-->
 
-    <div id="modalEditarUsuario" class="modal fade" role="dialog">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <form role ="form" method="post" enctype="multipart/form-data" id="formEditarUsuario">
-            <div class="modal-header" style="background: #3c8ebdff; color: white;">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-              <h4 class="modal-title"><i class="fa fa-pencil"></i>  Editar Usuario</h4>
-            </div>
-            <div class="modal-body">
-              <div class="box-body" id="camposEditar">
+      <div id="modalEditarUsuario" class="modal fade" role="dialog">
+          <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                  <form role="form" method="post" enctype="multipart/form-data" id="formEditarUsuario" data-validacion-universal>
+                      <div class="modal-header" style="background: #3c8ebdff; color: white;">
+                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                          <h4 class="modal-title"><i class="fa fa-pencil"></i> Editar Usuario</h4>
+                      </div>
 
-                <!-- NUMERO DOCUMENTO TITULO-->
+                      <div class="modal-body">
+                          <div class="box-body">
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Número de Documento:</label> 
-                    </div>
-                  </div>
-                </div>
+                              <div class="row">
+                                  <!-- CAMPO NÚMERO DE DOCUMENTO -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Número de Documento:</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-id-card"></i></span>
+                                              <input type="text" class="form-control input-lg" id="editarNumeroDocumento" name="editarNumeroDocumento" readonly>
+                                          </div>
+                                      </div>
+                                      <!-- Este campo es readonly, no necesita validación ni contenedor de error -->
+                                  </div>
 
-                <!-- TIPO DOCUMENTO TITULO-->
+                                  <!-- CAMPO TIPO DE DOCUMENTO -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Tipo de Documento:</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-list-alt"></i></span>
+                                              <select class="form-control input-lg" name="editarTipoDocumento" data-reglas="requerido">
+                                                  <option value="" id="editarTipoDocumento"></option>
+                                                  <option value="CC">CC - CEDULA CIUDADANIA</option>
+                                                  <option value="CE">CE - CEDULA EXTRANJERIA</option>
+                                                  <option value="TI">TI - TARJETA DE IDENTIDAD</option>
+                                                  <option value="RC">RC - REGISTRO CIVIL</option>
+                                                  <option value="PTE">PTE - PASAPORTE</option>
+                                                  <option value="TE">TE - TARJETA EXTRANJERIA</option>
+                                              </select>
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
+                              </div>
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Seleccione Tipo de Documento:</label> 
-                    </div>
-                  </div>
-                </div>
+                              <div class="row">
+                                  <!-- CAMPO NOMBRES -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Nombre(s):</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                              <input type="text" class="form-control input-lg" id="editarNombreUsuario" name="editarNombreUsuario" data-reglas="requerido|texto|min:3|max:20">
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
 
-                <!-- NUMERO DOCUMENTO CASILLA-->
+                                  <!-- CAMPO APELLIDOS -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Apellidos:</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                              <input type="text" class="form-control input-lg" id="editarApellidoUsuario" name="editarApellidoUsuario" data-reglas="requerido|texto|min:3|max:20">
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
+                              </div>
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
-                      <input type="text" class="form-control input-lg" id="editarNumeroDocumento" name="editarNumeroDocumento" value="" readonly> 
-                    </div>
-                  </div>
-                </div>
+                              <div class="row">
+                                  <!-- CAMPO GÉNERO -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Género:</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-venus-mars"></i></span>
+                                              <select class="form-control input-lg" name="editarSexoUsuario" data-reglas="requerido">
+                                                  <option value="" id="editarSexoUsuario"></option>
+                                                  <option value="Masculino">MASCULINO</option>
+                                                  <option value="Femenino">FEMENINO</option>
+                                              </select>
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
 
-                <!-- TIPO DOCUMENTO CASILLA -->
+                                  <!-- CAMPO RH -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Tipo de Sangre (RH):</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-tint"></i></span>
+                                              <select class="form-control input-lg" name="editarRhUsuario" data-reglas="requerido">
+                                                  <option value="" id="editarRhUsuario"></option>
+                                                  <option value="A+">A+</option>
+                                                  <option value="AB+">AB+</option>
+                                                  <option value="B+">B+</option>
+                                                  <option value="O+">O+</option>
+                                                  <option value="A-">A-</option>
+                                                  <option value="AB-">AB-</option>
+                                                  <option value="B-">B-</option>
+                                                  <option value="O-">O-</option>
+                                              </select>
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
+                              </div>
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
-                      <select class="form-control input-lg" name="editarTipoDocumento">
-                        <option value="" id="editarTipoDocumento"></option>
-                        <option value="CC">CC - CEDULA CIUDADANIA</option>
-                        <option value="CE">CE - CEDULA EXTRANJERIA</option>
-                        <option value="TI">TI - TARJETA DE IDENTIDAD</option>
-                        <option value="RC">RC - REGISTRO CIVIL</option>
-                        <option value="PTE">PTE - PASAPORTE</option>
-                        <option value="TE">TE - TARJETA EXTRANJERIA</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
+                              <div class="row">
+                                  <!-- CAMPO FECHA DE NACIMIENTO -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Fecha de Nacimiento:</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                              <input type="text" class="form-control input-lg has-datepicker" id="editarFechaNacimiento" name="editarFechaNacimiento" placeholder="dd/mm/aaaa" data-reglas="requerido|fechaUsuario">
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
 
-                <!-- NOMBRES TITULO-->
+                                  <!-- CAMPO EDAD -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Edad:</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-birthday-cake"></i></span>
+                                              <input type="number" class="form-control input-lg" id="editarEdadUsuario" name="editarEdadUsuario" data-reglas="requerido|minValor:1|maxValor:120" readonly>
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
+                              </div>
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Nombre(s):</label> 
-                    </div>
-                  </div>
-                </div>
+                              <div class="row">
+                                  <!-- CAMPO TELÉFONO -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Teléfono:</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-phone"></i></span>
+                                              <input type="text" class="form-control input-lg" id="editarTelefonoUsuario" name="editarTelefonoUsuario" data-reglas="requerido|numeros|min:10|max:15">
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
 
-                <!-- APELLIDOS TITULO-->
+                                  <!-- CAMPO EMAIL -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Correo Electrónico:</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
+                                              <input type="email" class="form-control input-lg" id="editarEmailUsuario" name="editarEmailUsuario" data-reglas="requerido|email">
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
+                              </div>
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Apellidos:</label> 
-                    </div>
-                  </div>
-                </div>
+                              <div class="row">
+                                  <!-- CAMPO USUARIO -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Usuario:</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-key"></i></span>
+                                              <input type="text" class="form-control input-lg" id="editarLoginUsuario" name="editarLoginUsuario" readonly>
+                                          </div>
+                                      </div>
+                                  </div>
 
-                <!-- NOMBRE CASILLA-->
+                                  <!-- CAMPO CONTRASEÑA -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Nueva Contraseña (Opcional):</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                              <input type="password" class="form-control input-lg" name="editarPassword" placeholder="Dejar en blanco para no cambiar" data-reglas="passwordFuerte">
+                                              <input type="hidden" id="passwordActual" name="passwordActual">
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
+                              </div>
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
-                      <input type="text" class="form-control input-lg" id="editarNombreUsuario" name="editarNombreUsuario" value="" required> 
-                    </div>
-                  </div>
-                </div>
+                              <div class="row">
+                                  <!-- CAMPO ESTADO -->
+                                  <div class="col-md-6">
+                                      <div class="form-group">
+                                          <label>Estado:</label>
+                                          <div class="input-group">
+                                              <span class="input-group-addon"><i class="fa fa-check-circle"></i></span>
+                                              <select class="form-control input-lg" name="editarEstadoUsuario" data-reglas="requerido">
+                                                  <option value="" id="editarEstadoUsuario"></option>
+                                                  <option value="Activo">Activo</option>
+                                                  <option value="Inactivo">Inactivo</option>
+                                                  <option value="Pendiente">Pendiente</option>
+                                              </select>
+                                          </div>
+                                      </div>
+                                      <div class="validation-error-container"></div>
+                                  </div>
+                              </div>
 
-                <!-- APELLIDOS CASILLA-->
+                          </div>
+                      </div>
+                      <div class="modal-footer">
+                          <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Salir</button>
+                          <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                      </div>
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
-                      <input type="text" class="form-control input-lg" id="editarApellidoUsuario" name="editarApellidoUsuario" value="" required> 
-                    </div>
-                  </div>
-                </div>
+                      <?php
 
-                <!-- GENERO TITULO-->
+                      $editarUsuario = new ControladorUsuarios();
+                      $editarUsuario -> ctrEditarUsuario();
 
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Seleccione el Genero del Usuario:</label> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- TIPO SANGRE TITULO-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Seleccione el Tipo de Sangre del Usuario:</label> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- GENERO CASILLA -->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
-                      <select class="form-control input-lg" name="editarSexoUsuario">
-                        <option value="" id="editarSexoUsuario"></option>
-                        <option value="Masculino">MASCULINO</option>
-                        <option value="Femenino">FEMENINO</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- TIPO SANGRE CASILLA -->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
-                      <select class="form-control input-lg" name="editarRhUsuario">
-                        <option value="" id="editarRhUsuario"></option>
-                        <option value="A+">A+</option>
-                        <option value="AB+">AB+</option>
-                        <option value="B+">B+</option>
-                        <option value="O+">O+</option>
-                        <option value="A-">A-</option>
-                        <option value="AB-">AB-</option>
-                        <option value="B-">B-</option>
-                        <option value="O-">O-</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- FECHA NACIMIENTO TITULO-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Fecha de Nacimiento:</label> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- EDAD TITULO-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Edad:</label> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- FECHA NACIMIENTO CASILLA-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                      <input type="text" class="form-control input-lg" id="editarFechaNacimiento" name="editarFechaNacimiento" value="" required> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- EDAD CASILLA-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
-                      <input type="text" class="form-control input-lg" id="editarEdadUsuario" name="editarEdadUsuario" value="" required> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- TELEFONO TITULO-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Telefono:</label> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- EMAIL TITULO-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Email:</label> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- TELEFONO CASILLA-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-phone"></i></span>
-                      <input type="text" class="form-control input-lg" id="editarTelefonoUsuario" name="editarTelefonoUsuario" value="" required> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- EMAIL CASILLA-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-envelope"></i></span>
-                      <input type="text" class="form-control input-lg" id="editarEmailUsuario" name="editarEmailUsuario" value="" required> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- USUARIO LOGIN TITULO-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Usuario:</label> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- CONTRASEÑA TITULO-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Contraseña:</label> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- USUARIO CASILLA-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-key"></i></span>
-                      <input type="text" class="form-control input-lg" id="editarLoginUsuario" name="editarLoginUsuario" value="" readonly> 
-                    </div>
-                  </div>
-                </div>
-
-                <!-- CONTRASEÑA CASILLA-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                      <input type="password" class="form-control input-lg" id="editarPassword" name="editarPassword" placeholder="Nueva Contraseña">
-                      <input type="hidden" id="passwordActual" name="passwordActual">
-                    </div>
-                  </div>
-                </div>
-
-                <!-- ESTADO TITULO-->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <label>Estado:</label> 
-                    </div>
-                  </div>
-                </div>
-
-
-
-                <!-- ESTADO CASILLA -->
-
-                <div class="form-row">
-                  <div class="form-group col-md-6">
-                    <div class="input-group">
-                      <span class="input-group-addon"><i class="fa fa-user-plus"></i></span>
-                      <select class="form-control input-lg" name="editarEstadoUsuario">
-                        <option value="" id="editarEstadoUsuario"></option>
-                        <option value="Activo">Activo</option>
-                        <option value="Inactivo">Inactivo</option>
-                        <option value="Pendiente">Pendiente</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-
-
-
-                <!-- <p>Aquí irán los campos del formulario para editar al usuario seleccionado.</p> -->
+                      ?>
+                  </form>
               </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Salir</button>
-              <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-            </div>
-
-            <?php
-
-            $editarUsuario = new ControladorUsuarios();
-            $editarUsuario -> ctrEditarUsuario();
-
-            ?>
-          </form>
-        </div>
+          </div>
       </div>
-    </div>
 
     <!-- =======================================
       MODAL VER USUARIO
@@ -551,4 +442,4 @@
     </div>
   </div>
 </body>
-</html> 
+</html>

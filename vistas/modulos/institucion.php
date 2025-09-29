@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<!--<head>
+<!-- <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Sistema de Educacion Wissen</title>
@@ -22,7 +22,7 @@
   <script src="bower_components/datatables.net-bs/js/responsive.bootstrap.min.js"></script>
   <script src="plugins/sweetalert2/sweetalert2.all.js"></script>
 
-</head> -->
+</head> --!>
 
 <body class="hold-transition skin-blue sidebar-collapse sidebar-mini login-page">
   <div class="wrapper">

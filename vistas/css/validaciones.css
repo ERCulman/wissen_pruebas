@@ -1,0 +1,46 @@
+/* =======================================
+   ESTILOS PARA SISTEMA DE VALIDACIÓN
+   ======================================= */
+
+/* Estado de error en form-group */
+.form-group--invalido .form-control {
+    border-color: #d73925 !important;
+    box-shadow: 0 0 0 0.2rem rgba(215, 57, 37, 0.25) !important;
+}
+
+.form-group--invalido .input-group-addon {
+    border-color: #d73925 !important;
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+    box-shadow: none !important;
+}
+
+/* Mensaje de error */
+.error-mensaje {
+    color: #d73925;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+    font-weight: 500;
+}
+
+/* Botón deshabilitado */
+button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Campo readonly con estilo especial */
+input[readonly] {
+    background-color: #f8f9fa !important;
+    cursor: not-allowed;
+}
+
+.validation-error-container {
+    margin-top: -10px;
+    margin-bottom: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #dd4b39;
+    height: 15px;
+}

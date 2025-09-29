@@ -38,10 +38,18 @@
 
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+  
+  <!-- Sistema de Validación -->
+  <link rel="stylesheet" href="vistas/css/validaciones.css">
+  
+
 
    <!-- DataTables -->
   <link rel="stylesheet" href="vistas/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css">
   <link rel="stylesheet" href="vistas/bower_components/datatables.net-bs/css/responsive.bootstrap.min.css">
+
+  <!-- bootstrap datepicker -->
+  <link rel="stylesheet" href="vistas/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
 
 <!-- =======================================
   PLUGINS DE JAVASCRIPT
@@ -63,6 +71,10 @@
   <script src="vistas/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
   <script src="vistas/bower_components/datatables.net-bs/js/dataTables.responsive.min.js"></script>
   <script src="vistas/bower_components/datatables.net-bs/js/responsive.bootstrap.min.js"></script>
+
+  <!-- bootstrap datepicker -->
+  <script src="vistas/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+  <script src="vistas/bower_components/bootstrap-datepicker/dist/locales/bootstrap-datepicker.es.min.js"></script>
 
   <!-- SweetAler2 -->
 
@@ -136,10 +148,13 @@
 <!-- ./wrapper -->
 
 <script src="vistas/js/plantilla.js"></script>
-<script src="vistas/js/usuarios.js"></script>
+<script  type="module" src="vistas/js/usuarios.js"></script>
 <script src="vistas/js/periodo.js"></script>
 <script src="vistas/js/asignar-roles.js"></script>
 <script src="vistas/js/validaciones-permisos.js"></script>
+
+
+<script type="module" src="vistas/js/validaciones/Inicializador.js"></script>
 
 <script src="vistas/js/estructura-curricular.js"></script>
 <!--  <script src="vistas/js/contraseña.js"></script> -->
