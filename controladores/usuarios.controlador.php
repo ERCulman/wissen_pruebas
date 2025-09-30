@@ -11,7 +11,7 @@ class ControladorUsuarios {
 		if(isset($_POST["ingUsuario"])){
 
 			if(preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingUsuario"]) &&
-			   preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingPassword"])){
+			   preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,50}$/', $_POST["ingPassword"])){
 
 				try {
 					$encriptar = crypt($_POST["ingPassword"], '$1$rasmusle$');
