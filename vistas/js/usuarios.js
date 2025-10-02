@@ -1,5 +1,16 @@
 import {formatearFecha, formatearFechaParaDB, calcularEdad, configurarCamposDeFecha} from './validaciones/Utilidades.js'
 
+/* =======================================
+	   INICIALIZAR TABLA DE USUARIOS
+=======================================*/
+$(document).ready(function() {
+    $("#tablaUsuarios").DataTable({
+        ...configuracionGlobalDataTables,
+        "deferRender": true,
+        "retrieve": true,
+        "processing": true
+    });
+});
 
 /* =======================================
 	   EDITAR USUARIO

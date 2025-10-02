@@ -1,158 +1,107 @@
 <?php
 
-class ControladorAuth{
+// Asegúrate de que el servicio de autorización esté disponible
+require_once __DIR__ . '/../servicios/ServicioAutorizacion.php';
 
-    /*=============================================
-    VERIFICAR PERMISOS DE USUARIO
-    =============================================*/
-    static public function ctrVerificarPermiso($accion, $sedeId = null){
-        if(!isset($_SESSION["id_usuario"])){
-            return false;
-        }
-        
-        $usuarioId = $_SESSION["id_usuario"];
-        return ModeloAuth::mdlVerificarPermiso($usuarioId, $accion, $sedeId);
+class ControladorAuth {
+
+    /**
+     * @deprecated Este método ahora es redundante. Usar ServicioAutorizacion::getInstance()->puede() directamente.
+     * Se mantiene por compatibilidad con código antiguo.
+     */
+    static public function ctrVerificarPermiso($accion, $sedeId = null) {
+        $auth = ServicioAutorizacion::getInstance();
+        return $auth->puede($accion);
     }
 
-    /*=============================================
-    VERIFICAR ACCESO A MÓDULO
-    =============================================*/
-    static public function ctrVerificarAccesoModulo($modulo){
-        if(!isset($_SESSION["id_usuario"])){
+    /**
+     * @deprecated La lógica de "es admin" está centralizada en el servicio.
+     * Se mantiene por compatibilidad. Para saber si es admin, la lógica ya está
+     * incluida en el método puede() del servicio.
+     */
+    static public function ctrEsAdministradorSistema() {
+        $usuarioId = $_SESSION["id_usuario"] ?? null;
+        if (!$usuarioId) return false;
+
+        // Delegamos al modelo, ya que el servicio no expone este método públicamente.
+        // La decisión de autorización ya lo considera internamente.
+        return ModeloAuth::mdlEsAdministradorSistema($usuarioId);
+    }
+
+    /**
+     * @deprecated Es un alias de ctrVerificarPermiso. Usar ServicioAutorizacion::getInstance()->puede() directamente.
+     */
+    static public function ctrTienePermiso($accion, $sedeId = null) {
+        return self::ctrVerificarPermiso($accion, $sedeId);
+    }
+
+    // =============================================
+    // MÉTODOS QUE SE MANTIENEN POR SU UTILIDAD ACTUAL
+    // =============================================
+
+    static public function ctrVerificarAccesoModulo($modulo) {
+        if (!isset($_SESSION["id_usuario"])) {
             return false;
         }
-        
         $usuarioId = $_SESSION["id_usuario"];
-        
-        // Los administradores de sistema tienen acceso total
-        if(ModeloAuth::mdlEsAdministradorSistema($usuarioId)){
+
+        // Un administrador siempre tiene acceso. La llamada a "puede" lo resolvería,
+        // pero para ser explícitos, lo verificamos aquí también.
+        if (self::ctrEsAdministradorSistema()) {
             return true;
         }
-        
+
         return ModeloAuth::mdlVerificarAccesoModulo($usuarioId, $modulo);
     }
 
-    /*=============================================
-    MIDDLEWARE - PROTEGER RUTA
-    =============================================*/
-    static public function ctrProtegerRuta($modulo){
-        if(!self::ctrVerificarAccesoModulo($modulo)){
-            // Redirigir a página de acceso denegado
-            echo '<script>window.location = "acceso-denegado";</script>';
+    static public function ctrProtegerRutaModal($modulo) {
+        if (!self::ctrVerificarAccesoModulo($modulo)) {
+            echo '<script>
+                swal({
+                    type: "error",
+                    title: "Acceso Denegado",
+                    text: "No tienes los permisos necesarios para acceder a este módulo.",
+                    showConfirmButton: true,
+                    confirmButtonText: "Entendido"
+                }).then(function(result){
+                    if (result.value) { window.location = "inicio"; }
+                })
+            </script>';
+            // Detiene la renderización posterior de la página.
             exit();
         }
         return true;
     }
 
-    /*=============================================
-    PROTEGER RUTA CON MODAL (ALTERNATIVA)
-    =============================================*/
-    static public function ctrProtegerRutaModal($modulo){
-        if(!self::ctrVerificarAccesoModulo($modulo)){
-            echo '<script>
-                swal({
-                    type: "error",
-                    title: "Acceso Denegado",
-                    text: "No tienes los permisos necesarios para acceder a este módulo. Comunícate con el administrador del sistema para solicitar los permisos requeridos.",
-                    showConfirmButton: true,
-                    confirmButtonText: "Entendido"
-                }).then(function(result){
-                    if (result.value) {
-                        window.location = "inicio";
-                    }
-                })
-            </script>';
-            return false;
-        }
-        return true;
+    // El resto de métodos que obtienen DATOS (no que verifican permisos) se mantienen igual.
+
+    static public function ctrObtenerPermisosUsuario($sedeId = null) {
+        if (!isset($_SESSION["id_usuario"])) return [];
+        return ModeloAuth::mdlObtenerPermisosUsuario($_SESSION["id_usuario"], $sedeId);
     }
 
-    /*=============================================
-    OBTENER PERMISOS DEL USUARIO ACTUAL
-    =============================================*/
-    static public function ctrObtenerPermisosUsuario($sedeId = null){
-        if(!isset($_SESSION["id_usuario"])){
-            return array();
-        }
-        
-        $usuarioId = $_SESSION["id_usuario"];
-        return ModeloAuth::mdlObtenerPermisosUsuario($usuarioId, $sedeId);
+    static public function ctrObtenerRolesUsuario() {
+        if (!isset($_SESSION["id_usuario"])) return [];
+        return ModeloAuth::mdlObtenerRolesUsuario($_SESSION["id_usuario"]);
     }
 
-    /*=============================================
-    VERIFICAR SI ES ADMINISTRADOR SISTEMA
-    =============================================*/
-    static public function ctrEsAdministradorSistema(){
-        if(!isset($_SESSION["id_usuario"])){
-            return false;
-        }
-        
-        $usuarioId = $_SESSION["id_usuario"];
-        return ModeloAuth::mdlEsAdministradorSistema($usuarioId);
-    }
-
-    /*=============================================
-    HELPER - MOSTRAR/OCULTAR ELEMENTOS EN VISTAS
-    =============================================*/
-    static public function ctrTienePermiso($accion, $sedeId = null){
-        return self::ctrVerificarPermiso($accion, $sedeId);
-    }
-
-    /*=============================================
-    OBTENER ROLES DEL USUARIO ACTUAL
-    =============================================*/
-    static public function ctrObtenerRolesUsuario(){
-        if(!isset($_SESSION["id_usuario"])){
-            return array();
-        }
-        
-        $usuarioId = $_SESSION["id_usuario"];
-        return ModeloAuth::mdlObtenerRolesUsuario($usuarioId);
-    }
-
-    /*=============================================
-    VERIFICAR MÚLTIPLES PERMISOS (OR)
-    =============================================*/
     static public function ctrTieneCualquierPermiso($acciones, $sedeId = null){
+        $auth = ServicioAutorizacion::getInstance();
         foreach($acciones as $accion){
-            if(self::ctrVerificarPermiso($accion, $sedeId)){
+            if($auth->puede($accion)){
                 return true;
             }
         }
         return false;
     }
 
-    /*=============================================
-    VERIFICAR MÚLTIPLES PERMISOS (AND)
-    =============================================*/
     static public function ctrTieneTodosPermisos($acciones, $sedeId = null){
+        $auth = ServicioAutorizacion::getInstance();
         foreach($acciones as $accion){
-            if(!self::ctrVerificarPermiso($accion, $sedeId)){
+            if($auth->noPuede($accion)){
                 return false;
             }
         }
         return true;
-    }
-
-    /*=============================================
-    DEBUG - MOSTRAR INFORMACIÓN DE PERMISOS
-    =============================================*/
-    static public function ctrDebugPermisos($modulo = null){
-        if(!isset($_SESSION["id_usuario"])){
-            return "Usuario no logueado";
-        }
-        
-        $usuarioId = $_SESSION["id_usuario"];
-        $info = array();
-        $info['usuario_id'] = $usuarioId;
-        $info['es_admin_sistema'] = ModeloAuth::mdlEsAdministradorSistema($usuarioId);
-        $info['roles'] = ModeloAuth::mdlObtenerRolesUsuario($usuarioId);
-        $info['permisos'] = ModeloAuth::mdlObtenerPermisosUsuario($usuarioId);
-        
-        if($modulo){
-            $info['acceso_modulo'] = ModeloAuth::mdlVerificarAccesoModulo($usuarioId, $modulo);
-        }
-        
-        return $info;
     }
 }

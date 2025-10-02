@@ -90,7 +90,7 @@
 
 			<!-- BOTON USUARIOS Y ROLES -->
 
-			<li class="treeview">				
+			<li class="treeview" data-permiso="usuarios_ver">
 				<a href="">					
 					<i class="fa fa-user"></i>
 					<span>Usuarios y Roles</span>
@@ -134,11 +134,32 @@
 
 			<!-- BOTON PERFIL LABORAL -->
 
-			<li>				
-				<a href="perfil-laboral">					
+			<li class="treeview">				
+				<a href="">					
 					<i class="fa fa-users"></i>
-					<span>Perfil laboral</span>
+					<span>Perfil Laboral</span>
+					<span class="pull-right-container">
+						<i class="fa fa-angle-left pull-right"></i>						
+					</span>
 				</a>
+
+				<!-- SUBBOTONES PERFIL LABORAL -->
+
+				<ul class="treeview-menu">
+					<li>						
+						<a href="perfil-laboral">							
+							<i class="fa fa-circle-o"></i>
+							<span>Gestionar Perfil</span>
+						</a>
+					</li>
+
+					<li>						
+						<a href="asignacion-docente-asignaturas">							
+							<i class="fa fa-circle-o"></i>
+							<span>Asignación Docente Asignaturas</span>
+						</a>
+					</li>
+				</ul>
 			</li>
 
 			<!-- BOTON MODULO ESTRUCTURA ORGANIZACIONAL EN ARBOL O JERARQUICO -->

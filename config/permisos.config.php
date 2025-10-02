@@ -88,7 +88,8 @@ class PermisosConfig {
                     'estructura-curricular_ver' => 'Ver estructura curricular',
                     'estructura-curricular_crear' => 'Crear estructura curricular',
                     'estructura-curricular_editar' => 'Editar estructura curricular',
-                    'estructura-curricular_eliminar' => 'Eliminar estructura curricular'
+                    'estructura-curricular_eliminar' => 'Eliminar estructura curricular',
+                    'estructura-curricular_area_ver' => 'Ver areas en estructura curricular'
                 )
             ),
             
@@ -175,6 +176,17 @@ class PermisosConfig {
                     'sistema_sincronizar' => 'Sincronizar sistema de permisos',
                     'sistema_diagnosticar' => 'Diagnosticar problemas del sistema',
                     'sistema_reparar' => 'Reparar sistema automáticamente'
+                )
+            ),
+            
+            'asignacion-docente-asignaturas' => array(
+                'nombre_display' => 'Asignación Docente Asignaturas',
+                'descripcion' => 'Módulo para asignar asignaturas a docentes',
+                'acciones' => array(
+                    'asignacion_docente_ver' => 'Ver asignaciones de docentes',
+                    'asignacion_docente_crear' => 'Crear asignaciones de docentes',
+                    'asignacion_docente_editar' => 'Editar horas semanales de docentes',
+                    'asignacion_docente_eliminar' => 'Eliminar asignaciones de docentes'
                 )
             )
         );

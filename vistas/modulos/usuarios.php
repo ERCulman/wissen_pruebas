@@ -41,7 +41,7 @@
 
         <!-- BOTON NUEVO USUARIO -->
 
-        <div class="box">
+        <div class="box" data-permiso="usuarios_crear">
           <div class="box-header with-border">
             <button class="btn btn-primary" data-toggle="modal" data-target="#modalAgregarUsuario">
               <i class="fa fa-user-plus"></i> Nuevo Usuario
@@ -50,7 +50,7 @@
 
           <!-- CABECERA INFORMACION USUARIOS -->
 
-          <div class="box-body">
+          <div class="box-body" data-permiso="usuarios_ver">
             <table class="table table-bordered table-striped dt-responsive tablas" id="tablaUsuarios">
               <thead>
                 <tr>

@@ -27,47 +27,36 @@ class ModeloUsuarios
     }
 
     /*=======================================
-	METODO REGISTRO DE USUARIO CON VALIDACIÓN
-	=======================================*/
+    METODO CREAR USUARIO
+    =======================================*/
     static public function mdlCrearUsuario($tabla, $datos)
     {
-        // --- INICIO DE LA VALIDACIÓN ---
-        $validador = new MotorValidaciones();
-        $reglas = ReglasUsuario::reglasCreacion();
-        $errores = $validador->validar($datos, $reglas);
-
-        if (!empty($errores)) {
-            // Si hay errores, se devuelve el array para ser manejado por el controlador.
-            return ['status' => 'error-validacion', 'errors' => $errores];
-        }
-        // --- FIN DE LA VALIDACIÓN ---
 
         try {
             // Verificar si el número de documento ya existe
             $stmtCheckDoc = Conexion::conectar()->prepare("SELECT numero_documento FROM $tabla WHERE numero_documento = :numero_documento");
             $stmtCheckDoc->bindParam(":numero_documento", $datos["numeroDocumento"], PDO::PARAM_STR);
             $stmtCheckDoc->execute();
-            
+
             if ($stmtCheckDoc->fetch()) {
                 return "error-duplicado"; // Documento duplicado
             }
-            
+
             // Verificar si el usuario ya existe
             $stmtCheckUser = Conexion::conectar()->prepare("SELECT usuario FROM $tabla WHERE usuario = :usuario");
             $stmtCheckUser->bindParam(":usuario", $datos["loginUsuario"], PDO::PARAM_STR);
             $stmtCheckUser->execute();
-            
+
             if ($stmtCheckUser->fetch()) {
                 return "error-duplicado"; // Usuario duplicado
             }
-            
-            // La contraseña debe ser encriptada.
-            $passwordEncriptada = password_hash($datos['password'], PASSWORD_DEFAULT);
-            $estadoInicial = 'Pendiente'; // El estado por defecto para nuevos usuarios.
 
+            $estadoInicial = 'Activo';
+
+            // Insertar el usuario
             $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(numero_documento, tipo_documento, nombres_usuario, apellidos_usuario, sexo_usuario, rh_usuario, fecha_nacimiento, edad_usuario, telefono_usuario, email_usuario, usuario, password, estado_usuario) VALUES (:numero_documento, :tipo_documento, :nombres_usuario, :apellidos_usuario, :sexo_usuario, :rh_usuario, :fecha_nacimiento, :edad_usuario, :telefono_usuario, :email_usuario, :usuario, :password, :estado_usuario)");
 
-            // Se usan las llaves del array $datos que vienen del formulario (camelCase).
+            // Bind de parámetros (la contraseña ya viene encriptada desde el controlador)
             $stmt->bindParam(":numero_documento", $datos["numeroDocumento"], PDO::PARAM_STR);
             $stmt->bindParam(":tipo_documento", $datos["tipoDocumento"], PDO::PARAM_STR);
             $stmt->bindParam(":nombres_usuario", $datos["nombreUsuario"], PDO::PARAM_STR);
@@ -79,7 +68,7 @@ class ModeloUsuarios
             $stmt->bindParam(":telefono_usuario", $datos["telefonoUsuario"], PDO::PARAM_STR);
             $stmt->bindParam(":email_usuario", $datos["emailUsuario"], PDO::PARAM_STR);
             $stmt->bindParam(":usuario", $datos["loginUsuario"], PDO::PARAM_STR);
-            $stmt->bindParam(":password", $passwordEncriptada, PDO::PARAM_STR);
+            $stmt->bindParam(":password", $datos["password"], PDO::PARAM_STR);
             $stmt->bindParam(":estado_usuario", $estadoInicial, PDO::PARAM_STR);
 
             if ($stmt->execute()) {

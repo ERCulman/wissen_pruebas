@@ -5,13 +5,12 @@ class ControladorUsuarios {
 	/* =======================================
 	   METODO INGRESO USUARIO
 	======================================= */
-
 	static public function ctrIngresoUsuario(){
         
 		if(isset($_POST["ingUsuario"])){
 
 			if(preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingUsuario"]) &&
-			   preg_match('/^[a-zA-Z0-9]+$/', $_POST["ingPassword"])){
+			   preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,50}$/', $_POST["ingPassword"])){
 
 				try {
 					$encriptar = crypt($_POST["ingPassword"], '$1$rasmusle$');
@@ -66,104 +65,114 @@ class ControladorUsuarios {
 		}
 	}
 
-	/* =======================================
-	   METODO CREAR USUARIO (CON SEGURIDAD Y VALIDACIÓN)
-	======================================= */
-	static public function ctrCrearUsuario()
-	{
-		// PROTECCIÓN DE ROL
-		if (isset($_SESSION["id_usuario"])) {
-			if (!BackendProtector::protectController('usuarios_crear')) {
-				return "error-permisos"; // Retorna error si no tiene permisos
-			}
-		}
+    /* =======================================
+    METODO CREAR USUARIO
+    ======================================= */
+    static public function ctrCrearUsuario()
+    {
+        // PROTECCIÓN DE ROL
+        if (isset($_SESSION["id_usuario"])) {
+            if (!BackendProtector::protectController('usuarios_crear')) {
+                return "error-permisos"; // Retorna error si no tiene permisos
+            }
+        }
 
-	    if (isset($_POST["loginUsuario"])) {
-	        $datos = [
-	            "numeroDocumento" => $_POST["numeroDocumento"] ?? '',
-	            "tipoDocumento"   => $_POST["tipoDocumento"] ?? '',
-	            "nombreUsuario"   => $_POST["nombreUsuario"] ?? '',
-	            "apellidoUsuario" => $_POST["apellidoUsuario"] ?? '',
-	            "sexoUsuario"     => $_POST["sexoUsuario"] ?? '',
-	            "rhUsuario"       => $_POST["rhUsuario"] ?? '',
-	            "fechaNacimiento" => $_POST["fechaNacimiento"] ?? '',
-	            "edadUsuario"     => $_POST["edadUsuario"] ?? '',
-	            "telefonoUsuario" => $_POST["telefonoUsuario"] ?? '',
-	            "emailUsuario"    => $_POST["emailUsuario"] ?? '',
-	            "loginUsuario"    => $_POST["loginUsuario"] ?? '',
-	            "password"        => $_POST["password"] ?? '',
-	        ];
+        if (isset($_POST["loginUsuario"])) {
 
-	        $tabla = "usuarios";
-	        $respuesta = ModeloUsuarios::mdlCrearUsuario($tabla, $datos);
+            // RECOGER LOS DATOS DEL FORMULARIO
+            $datos = [
+                "numeroDocumento" => $_POST["numeroDocumento"] ?? '',
+                "tipoDocumento"   => $_POST["tipoDocumento"] ?? '',
+                "nombreUsuario"   => $_POST["nombreUsuario"] ?? '',
+                "apellidoUsuario" => $_POST["apellidoUsuario"] ?? '',
+                "sexoUsuario"     => $_POST["sexoUsuario"] ?? '',
+                "rhUsuario"       => $_POST["rhUsuario"] ?? '',
+                "fechaNacimiento" => $_POST["fechaNacimiento"] ?? '',
+                "edadUsuario"     => $_POST["edadUsuario"] ?? '',
+                "telefonoUsuario" => $_POST["telefonoUsuario"] ?? '',
+                "emailUsuario"    => $_POST["emailUsuario"] ?? '',
+                "loginUsuario"    => $_POST["loginUsuario"] ?? '',
+                "password"        => $_POST["password"] ?? '',
+            ];
 
-	        // Detectar si es una llamada AJAX
-	        $esAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
-	        
-	        if (is_array($respuesta) && isset($respuesta['status']) && $respuesta['status'] === 'error-validacion') {
-	            if ($esAjax) {
-	                return "error-sintaxis";
-	            }
-	            $mensajeError = "Se encontraron los siguientes errores: \\n\\n";
-	            foreach ($respuesta['errors'] as $campo => $error) {
-	                $campoLegible = preg_replace('/(?<!^)[A-Z]/', ' $0', $campo);
-	                $mensajeError .= "- " . ucfirst($campoLegible) . ": " . $error . "\\n";
-	            }
+            // VALIDACIÓN DE DATOS
+            $validador = new MotorValidaciones();
+            $reglas = ReglasUsuario::reglasCreacion();
+            $errores = $validador->validar($datos, $reglas);
 
-	            echo '<script>
-	                Swal.fire({
-	                    icon: "error",
-	                    title: "¡Datos incorrectos!",
-	                    text: "' . $mensajeError . '",
-	                    confirmButtonText: "Corregir"
-	                }).then((result) => {
-	                    if (result.value) {
-	                        window.history.back();
-	                    }
-	                });
-	            </script>';
+            if (!empty($errores)) {
+                // Si hay errores de validación, mostramos la alerta y detenemos la ejecución
+                $mensajeError = "Se encontraron los siguientes errores: \\n\\n";
+                foreach ($errores as $campo => $error) {
+                    $campoLegible = preg_replace('/(?<!^)[A-Z]/', ' $0', $campo);
+                    $mensajeError .= "- " . ucfirst($campoLegible) . ": " . $error . "\\n";
+                }
 
-	        } elseif ($respuesta == "ok") {
-	            // Enviar email de bienvenida
-	            require_once __DIR__ . "/../servicios/email.servicio.php";
-	            $nombreCompleto = $datos["nombreUsuario"] . " " . $datos["apellidoUsuario"];
-	            $envioEmail = EmailServicio::enviarEmailBienvenida($datos["emailUsuario"], $nombreCompleto, $datos["loginUsuario"]);
-	            
-	            if ($esAjax) {
-	                return "ok";
-	            }
-	            echo '<script>
-	                Swal.fire({
-	                    position: "top-end",
-	                    icon: "success",
-	                    title: "¡Usuario registrado con éxito!",
-	                    showConfirmButton: false,
-	                    timer: 1500
-	                }).then(() => {
-	                    window.location = "usuarios";
-	                });
-	            </script>';
-	        } else {
-	            if ($esAjax) {
-	                return $respuesta; // Retorna el error específico (error-duplicado, etc.)
-	            }
-	            $errorMsg = ($respuesta == 'error-duplicado') ? 'El número de documento o el usuario ya están registrados.' : 'No se pudo completar el registro.';
-	            echo '<script>
-	                Swal.fire({
-	                    icon: "error",
-	                    title: "¡Error en el Registro!",
-	                    text: "' . $errorMsg . '",
-	                    confirmButtonText: "Cerrar"
-	                }).then((result) => {
-	                    if (result.value) {
-	                        window.history.back();
-	                    }
-	                });
-	            </script>';
-	        }
-	    }
-	    return "error"; // Fallback
-	}
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "¡Datos incorrectos!",
+                    text: "' . $mensajeError . '",
+                    confirmButtonText: "Corregir"
+                }).then((result) => {
+                    if (result.value) {
+                        window.history.back();
+                    }
+                });
+            </script>';
+                return;
+            }
+
+            //ENCRIPTACIÓN DE CONTRASEÑA (USANDO crypt)
+            $datos["password"] = crypt($datos["password"], '$1$rasmusle$');
+
+            // LLAMAR AL MODELO
+            $tabla = "usuarios";
+            $respuesta = ModeloUsuarios::mdlCrearUsuario($tabla, $datos);
+
+
+            $esAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+
+            if ($respuesta == "ok") {
+                // Enviar email de bienvenida
+                require_once __DIR__ . "/../servicios/email.servicio.php";
+                $nombreCompleto = $datos["nombreUsuario"] . " " . $datos["apellidoUsuario"];
+                $envioEmail = EmailServicio::enviarEmailBienvenida($datos["emailUsuario"], $nombreCompleto, $datos["loginUsuario"]);
+
+                if ($esAjax) {
+                    return "ok";
+                }
+                echo '<script>
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "¡Usuario registrado con éxito!",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location = "usuarios";
+                });
+            </script>';
+            } else {
+                if ($esAjax) {
+                    return $respuesta; // Retorna el error específico (error-duplicado, etc.)
+                }
+                $errorMsg = ($respuesta == 'error-duplicado') ? 'El número de documento o el usuario ya están registrados.' : 'No se pudo completar el registro.';
+                echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "¡Error en el Registro!",
+                    text: "' . $errorMsg . '",
+                    confirmButtonText: "Cerrar"
+                }).then((result) => {
+                    if (result.value) {
+                        window.history.back();
+                    }
+                });
+            </script>';
+            }
+        }
+    }
 
 
 	/* =======================================

@@ -1,67 +1,23 @@
 <?php
 
+// Asegúrate de que el servicio de autorización esté disponible
+require_once __DIR__ . '/../servicios/ServicioAutorizacion.php';
+
 class AuthMiddleware {
-    
+
+    // Las propiedades y métodos para cargar rutas se mantienen por ahora
+    // para no romper la compatibilidad con el sistema actual.
     private static $routePermissions = [];
     private static $initialized = false;
-    
-    /*=============================================
-    INICIALIZAR MIDDLEWARE - CARGA AUTOMÁTICA DE PERMISOS
-    =============================================*/
+
     public static function init() {
         if (self::$initialized) return;
-        
-        self::loadRoutePermissions();
+        self::loadLegacyMappings(); // Simplificado por ahora
         self::$initialized = true;
     }
-    
-    /*=============================================
-    CARGAR PERMISOS DE RUTAS AUTOMÁTICAMENTE
-    =============================================*/
-    private static function loadRoutePermissions() {
-        try {
-            // Cargar desde BD si existe la columna modulo_asociado
-            $stmt = Conexion::conectar()->prepare("SHOW COLUMNS FROM acciones LIKE 'modulo_asociado'");
-            $stmt->execute();
-            $columnExists = $stmt->fetch();
-            
-            if ($columnExists) {
-                $stmt = Conexion::conectar()->prepare("
-                    SELECT nombre_accion, modulo_asociado 
-                    FROM acciones 
-                    WHERE modulo_asociado IS NOT NULL 
-                    AND (estado = 'Activo' OR estado IS NULL)
-                ");
-                $stmt->execute();
-                $acciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
-                
-                foreach ($acciones as $accion) {
-                    $modulo = $accion['modulo_asociado'];
-                    $permiso = $accion['nombre_accion'];
-                    
-                    if (!isset(self::$routePermissions[$modulo])) {
-                        self::$routePermissions[$modulo] = [];
-                    }
-                    self::$routePermissions[$modulo][] = $permiso;
-                }
-            }
-            
-            // Mapeo de compatibilidad para sistema existente
-            self::loadLegacyMappings();
-            
-        } catch (Exception $e) {
-            error_log("Error cargando permisos de rutas: " . $e->getMessage());
-            // Cargar solo mapeo legacy si hay error
-            self::loadLegacyMappings();
-        }
-    }
-    
-    /*=============================================
-    MAPEO DE COMPATIBILIDAD CON SISTEMA EXISTENTE
-    =============================================*/
+
     private static function loadLegacyMappings() {
-        // Mapeo exacto del sistema actual en auth.modelo.php
-        $legacyMappings = [
+        self::$routePermissions = [
             'usuarios' => ['usuarios_ver'],
             'roles' => ['roles_ver'],
             'institucion' => ['institucion_ver'],
@@ -73,132 +29,86 @@ class AuthMiddleware {
             'gestionar-permisos' => ['permisos_asignar'],
             'asignar-roles' => ['roles_ver']
         ];
-        
-        foreach ($legacyMappings as $ruta => $permisos) {
-            if (!isset(self::$routePermissions[$ruta])) {
-                self::$routePermissions[$ruta] = $permisos;
-            }
-        }
     }
-    
+
     /*=============================================
-    MIDDLEWARE PRINCIPAL - VERIFICAR ACCESO
+    MIDDLEWARE PRINCIPAL - VERIFICAR ACCESO (AHORA CENTRALIZADO)
     =============================================*/
     public static function checkAccess($route, $action = 'ver') {
         self::init();
-        
+
         if (!isset($_SESSION["id_usuario"])) {
             self::redirectToLogin();
             return false;
         }
-        
-        // Administradores de sistema tienen acceso total
-        if (ControladorAuth::ctrEsAdministradorSistema()) {
-            return true;
-        }
-        
-        // Verificar permisos específicos de la ruta
-        if (isset(self::$routePermissions[$route])) {
-            $requiredPermission = $route . '_' . $action;
-            
-            // Buscar el permiso exacto o cualquier permiso del módulo
-            foreach (self::$routePermissions[$route] as $permission) {
-                if ($permission === $requiredPermission || 
-                    ControladorAuth::ctrVerificarPermiso($permission)) {
-                    return true;
-                }
-            }
-            
+
+        $auth = ServicioAutorizacion::getInstance();
+        $requiredPermission = $route . '_' . $action;
+
+        // La lógica ahora es simple: preguntar al servicio si el usuario puede.
+        if (isset(self::$routePermissions[$route]) && $auth->noPuede($requiredPermission)) {
             self::accessDenied();
             return false;
         }
-        
-        // FALLBACK: Denegar acceso si no hay permisos definidos
-        self::accessDenied();
-        return false;
+
+        return true;
     }
-    
+
     /*=============================================
-    DECORADOR PARA PROTEGER FUNCIONES
+    DECORADOR PARA PROTEGER FUNCIONES (AHORA CENTRALIZADO)
     =============================================*/
     public static function requirePermission($permission, $callback = null) {
         if (!isset($_SESSION["id_usuario"])) {
             self::redirectToLogin();
             return false;
         }
-        
-        if (!ControladorAuth::ctrVerificarPermiso($permission) && 
-            !ControladorAuth::ctrEsAdministradorSistema()) {
-            
+
+        $auth = ServicioAutorizacion::getInstance();
+
+        if ($auth->noPuede($permission)) {
             if ($callback && is_callable($callback)) {
                 return $callback();
             }
-            
             self::accessDenied();
             return false;
         }
-        
+
         return true;
     }
-    
+
     /*=============================================
-    VERIFICAR MÚLTIPLES PERMISOS (OR)
+    VERIFICAR MÚLTIPLES PERMISOS (OR) (AHORA CENTRALIZADO)
     =============================================*/
     public static function requireAnyPermission($permissions) {
         if (!isset($_SESSION["id_usuario"])) {
             self::redirectToLogin();
             return false;
         }
-        
-        if (ControladorAuth::ctrEsAdministradorSistema()) {
-            return true;
-        }
-        
+
+        $auth = ServicioAutorizacion::getInstance();
+
         foreach ($permissions as $permission) {
-            if (ControladorAuth::ctrVerificarPermiso($permission)) {
-                return true;
+            if ($auth->puede($permission)) {
+                return true; // Si puede al menos uno, retorna true.
             }
         }
-        
-        self::accessDenied();
+
+        self::accessDenied(); // Si no pudo con ninguno, deniega el acceso.
         return false;
     }
-    
+
     /*=============================================
-    VERIFICAR MÚLTIPLES PERMISOS (AND)
-    =============================================*/
-    public static function requireAllPermissions($permissions) {
-        if (!isset($_SESSION["id_usuario"])) {
-            self::redirectToLogin();
-            return false;
-        }
-        
-        if (ControladorAuth::ctrEsAdministradorSistema()) {
-            return true;
-        }
-        
-        foreach ($permissions as $permission) {
-            if (!ControladorAuth::ctrVerificarPermiso($permission)) {
-                self::accessDenied();
-                return false;
-            }
-        }
-        
-        return true;
-    }
-    
-    /*=============================================
-    HELPER PARA VISTAS - MOSTRAR/OCULTAR ELEMENTOS
+    HELPER PARA VISTAS (AHORA CENTRALIZADO)
     =============================================*/
     public static function canAccess($permission) {
         if (!isset($_SESSION["id_usuario"])) {
             return false;
         }
-        
-        return ControladorAuth::ctrVerificarPermiso($permission) || 
-               ControladorAuth::ctrEsAdministradorSistema();
+
+        $auth = ServicioAutorizacion::getInstance();
+        return $auth->puede($permission);
     }
-    
+
     /*=============================================
     HELPER PARA BOTONES/ENLACES CONDICIONALES
     =============================================*/
@@ -208,29 +118,12 @@ class AuthMiddleware {
         }
         return $alternative;
     }
-    
+
     /*=============================================
-    REGISTRAR NUEVA RUTA DINÁMICAMENTE
-    =============================================*/
-    public static function registerRoute($route, $permissions) {
-        self::$routePermissions[$route] = is_array($permissions) ? $permissions : [$permissions];
-    }
-    
-    /*=============================================
-    OBTENER PERMISOS DE UNA RUTA
-    =============================================*/
-    public static function getRoutePermissions($route) {
-        self::init();
-        return isset(self::$routePermissions[$route]) ? self::$routePermissions[$route] : [];
-    }
-    
-    /*=============================================
-    REDIRECCIONAR A LOGIN
+    REDIRECCIONAR A LOGIN (Sin cambios)
     =============================================*/
     private static function redirectToLogin() {
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            // Respuesta AJAX
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             http_response_code(401);
             echo json_encode(['error' => 'No autorizado', 'redirect' => 'login']);
         } else {
@@ -238,30 +131,16 @@ class AuthMiddleware {
         }
         exit();
     }
-    
+
     /*=============================================
-    ACCESO DENEGADO
+    ACCESO DENEGADO (Sin cambios)
     =============================================*/
-    private static function accessDenied() {
-        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
-            // Respuesta AJAX
+    public static function accessDenied() {
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
             http_response_code(403);
             echo json_encode(['error' => 'Acceso denegado']);
         } else {
-            echo '<script>
-                swal({
-                    type: "error",
-                    title: "Acceso Denegado",
-                    text: "No tienes permisos para realizar esta acción",
-                    showConfirmButton: true,
-                    confirmButtonText: "Entendido"
-                }).then(function(result){
-                    if (result.value) {
-                        window.location = "inicio";
-                    }
-                })
-            </script>';
+            echo '<script>window.location = "acceso-denegado";</script>';
         }
         exit();
     }

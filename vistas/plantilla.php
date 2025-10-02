@@ -38,10 +38,10 @@
 
   <!-- Google Font -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
-  
+
   <!-- Sistema de Validación -->
   <link rel="stylesheet" href="vistas/css/validaciones.css">
-  
+
 
 
    <!-- DataTables -->
@@ -89,62 +89,85 @@
 =======================================-->
 
 <body class="hold-transition skin-blue sidebar-collapse sidebar-mini login-page">
-  
 
-    <?php
 
-    if(isset($_SESSION["iniciarSesion"]) && $_SESSION["iniciarSesion"] == "ok"){
-        echo '<div class="wrapper">';
-        include "modulos/cabezote.php";
-        include "modulos/menu.php";
+<?php
+if(isset($_SESSION["iniciarSesion"]) && $_SESSION["iniciarSesion"] == "ok"){
+    echo '<div class="wrapper">';
+    include "modulos/cabezote.php";
+    include "modulos/menu.php";
 
-        if(isset($_GET["ruta"])){
-            $rutasValidas = array(
-                "inicio", "usuarios", "perfil-laboral", "institucion", "sedes", 
-                "niveleducativo", "jornadas", "grados", "cursos", "oferta", 
-                "periodos", "estructura-curricular", "matricula", "estudiantes", 
-                "acudientes", "pension-escolar", "asistencia", "calificaciones", 
-                "observaciones-academicas", "observaciones-disciplinarias", 
-                "horarios", "gestionar-acciones", "gestionar-permisos", 
-                "asignar-roles", "sincronizar-permisos", "acceso-denegado", "salir"
-            );
-            
-            if(in_array($_GET["ruta"], $rutasValidas)){
-                // Rutas que no requieren verificación de permisos
-                $rutasLibres = array("inicio", "salir", "acceso-denegado");
-                
-                if(in_array($_GET["ruta"], $rutasLibres)){
-                    include "modulos/".$_GET["ruta"].".php";
-                } else {
-                    // SISTEMA ESCALABLE: Verificar acceso dinámicamente
-                    if(ControladorAuth::ctrVerificarAccesoModulo($_GET["ruta"])){
-                        include "modulos/".$_GET["ruta"].".php";
-                    } else {
-                        // Log del intento de acceso denegado para debugging
-                        error_log("Acceso denegado para usuario " . $_SESSION["id_usuario"] . " al módulo: " . $_GET["ruta"]);
-                        echo '<script>
-                            console.log("Debug: Acceso denegado al módulo ' . $_GET["ruta"] . '");
-                            window.location = "acceso-denegado";
-                        </script>';
-                    }
-                }
+    // =============================================
+    // NUEVA LÓGICA DE ENRUTAMIENTO BASADA EN PERMISOS
+    // =============================================
+
+    // 1. Cargar el mapa de rutas y el servicio de autorización
+    $rutasMapa = include "routes-vistas.php"; // Asegúrate de que la ruta sea correcta
+    $auth = ServicioAutorizacion::getInstance();
+
+    if(isset($_GET["ruta"])){
+        $rutaActual = $_GET["ruta"];
+
+        // 2. Verificar si la ruta existe en nuestro mapa
+        if(array_key_exists($rutaActual, $rutasMapa)){
+
+            // 3. Obtener el permiso necesario para esta ruta
+            $permisoRequerido = $rutasMapa[$rutaActual]['permiso'];
+
+            // 4. Verificar el permiso
+            // El acceso se concede si la ruta es pública o si el usuario tiene el permiso requerido.
+            if($permisoRequerido === 'publico' || $auth->puede($permisoRequerido)){
+                include "modulos/".$rutaActual.".php";
             } else {
-                include "modulos/404.php";
+                // Si no tiene el permiso, se muestra la página de acceso denegado.
+                error_log("Acceso DENEGADO para usuario " . $_SESSION["id_usuario"] . " a la ruta: " . $rutaActual);
+                include "modulos/acceso-denegado.php";
             }
-        } else {
-            include "modulos/inicio.php";
-        }
 
-        include "modulos/footer.php";
-        echo '</div>';
+        } else {
+            // Si la ruta no está en el mapa, es un 404.
+            include "modulos/404.php";
+        }
     } else {
-        // Mostrar login tanto para ruta /login como para acceso sin sesión
-        include "modulos/login.php";
+        // Si no se especifica ruta, cargar el inicio.
+        include "modulos/inicio.php";
     }
 
-  ?>
-    
-  
+    include "modulos/footer.php";
+    echo '</div>';
+
+} else {
+    // Mostrar login si no hay sesión activa.
+    include "modulos/login.php";
+}
+?>
+
+<script src="vistas/js/plantilla.js"></script>
+<?php
+if(isset($_SESSION["iniciarSesion"]) && $_SESSION["iniciarSesion"] == "ok"){
+    // Reutilizamos la instancia del servicio de autorización que ya cargamos arriba.
+    $infoPermisos = $auth->debugInfo();
+    $permisosUsuario = $infoPermisos['listaPermisos'];
+
+    // Convertimos el array de permisos de PHP a un formato JSON para JavaScript.
+    $permisosJson = json_encode($permisosUsuario);
+}
+?>
+
+<script type="module">
+    // Importamos nuestro nuevo módulo de control de vistas.
+    import PermisosVista from './vistas/js/permisos-vista.js';
+
+    // Obtenemos la lista de permisos inyectada desde PHP.
+    // Estará completa si el rol es admin, o limitada para otros roles.
+    const permisosUsuario = <?php echo $permisosJson ?? '[]'; ?>;
+
+    // Inicializamos el sistema de permisos de la vista.
+    // Esta única línea se encarga de todo, sin condiciones.
+    PermisosVista.init(permisosUsuario);
+</script>
+
+
 <!-- ./wrapper -->
 
 <script src="vistas/js/plantilla.js"></script>

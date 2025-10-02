@@ -19,7 +19,7 @@ require_once "modelos/usuarios.modelo.php";
         <section class="content">
 
             <!-- SECCIÓN BÚSQUEDA DE ESTUDIANTE -->
-            <div class="box">
+            <div class="box" data-permiso="matricula_crear">
                 <div class="box-header with-border">
                     <h3 class="box-title"><i class="fa fa-search"></i> Buscar Estudiante</h3>
                 </div>
@@ -121,7 +121,7 @@ require_once "modelos/usuarios.modelo.php";
                 </div>
 
                 <div class="box-body">
-                    <table class="table table-bordered table-striped dt-responsive tablas" id="tablaMatricula">
+                    <table class="table table-bordered table-striped dt-responsive" id="tablaMatricula">
                         <thead>
                         <tr>
                             <th style="width: 15%">Sede</th>
@@ -164,11 +164,11 @@ require_once "modelos/usuarios.modelo.php";
 
                             echo '<td>
                                 <button class="btn btn-info btnVerMatricula" 
-                                data-id="'.$value["id"].'"><i class="fa fa-eye"></i></button>
+                                data-id="'.$value["id"].'" data-permiso="matricula_ver"><i class="fa fa-eye"></i></button>
                                 <button class="btn btn-warning btnEditarMatricula" 
-                                data-id="'.$value["id"].'" ><i class="fa fa-pencil"></i></button>
+                                data-id="'.$value["id"].'" data-permiso="matricula_editar"><i class="fa fa-pencil"></i></button>
                                 <button class="btn btn-danger btnEliminarMatricula" 
-                                data-id="'.$value["id"].'"><i class="fa fa-trash"></i></button>
+                                data-id="'.$value["id"].'" data-permiso="matricula_eliminar"><i class="fa fa-trash"></i></button>
                           </td>
                      </tr>';
                         }
@@ -824,7 +824,7 @@ require_once "modelos/usuarios.modelo.php";
 
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-primary btnEditarMatricula" data-dismiss="modal">
+                        <button type="button" class="btn btn-primary btnEditarMatricula" data-dismiss="modal" data-permiso="matricula_editar">
                             <i class="fa fa-edit"></i> Editar
                         </button>
                         <button type="button" class="btn btn-danger" id="btnDescargarPDF">

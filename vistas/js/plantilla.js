@@ -1,18 +1,13 @@
 /* =======================================
   NAVEGACION DEL MENU DESPLEGABLE EN ARBOL - SIDEBAR MENU
 =======================================*/
-
-
-$('.sidebar-menu').tree()
+$('.sidebar-menu').tree();
 
 /* =======================================
-  DATOS DE TABLA (DATA TABLE)
+  CONFIGURACIÓN GLOBAL PARA DATATABLES
 =======================================*/
-
-$(".tablas").DataTable({
-
+const configuracionGlobalDataTables = {
   "language": {
-
     "sProcessing":     "Procesando...",
     "sLengthMenu":     "Mostrar _MENU_ registros",
     "sZeroRecords":    "No se encontraron resultados",
@@ -26,16 +21,14 @@ $(".tablas").DataTable({
     "sInfoThousands":  ",",
     "sLoadingRecords": "Cargando...",
     "oPaginate": {
-    "sFirst":    "Primero",
-    "sLast":     "Último",
-    "sNext":     "Siguiente",
-    "sPrevious": "Anterior"
-  },
-
-  "oAria": {
-    "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
-    "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+      "sFirst":    "Primero",
+      "sLast":     "Último",
+      "sNext":     "Siguiente",
+      "sPrevious": "Anterior"
+    },
+    "oAria": {
+      "sSortAscending":  ": Activar para ordenar la columna de manera ascendente",
+      "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+    }
   }
-
-  }
-});
+};
