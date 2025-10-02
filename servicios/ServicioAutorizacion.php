@@ -1,19 +1,21 @@
 <?php
 
-require_once __DIR__ . '/../modelos/auth.modelo.php'; // Asegúrate que la ruta al modelo sea correcta
+require_once __DIR__ . '/../modelos/auth.modelo.php';
 
 class ServicioAutorizacion {
     private $permisos = [];
     private $rolActivoEsAdmin = false;
+    private $nombreRolActivo = ''; // <-- 1. NUEVA PROPIEDAD
     private static $instancia;
 
-    // El constructor ahora carga los permisos del usuario activo desde la BD
     private function __construct() {
         if (isset($_SESSION["id_usuario"])) {
+            // El modelo ahora debe devolver también el nombre del rol
             $datosPermisos = ModeloAuth::mdlObtenerPermisosDelRolActivo($_SESSION["id_usuario"]);
 
             $this->permisos = $datosPermisos['permisos'];
             $this->rolActivoEsAdmin = $datosPermisos['esRolAdmin'];
+            $this->nombreRolActivo = $datosPermisos['nombre_rol'] ?? ''; // <-- 2. GUARDAMOS EL NOMBRE
         }
     }
 
@@ -24,17 +26,8 @@ class ServicioAutorizacion {
         return self::$instancia;
     }
 
-    /**
-     * Verifica si el usuario activo tiene un permiso específico.
-     * Un rol de administrador siempre tendrá permiso.
-     */
+    // ... (método puede() y noPuede() se mantienen igual)
     public function puede(string $accion): bool {
-        // Si el rol activo es Superadministrador o Administrador, siempre puede.
-        if ($this->rolActivoEsAdmin) {
-            return true;
-        }
-
-        // Si no es admin, verifica si la acción está en su lista de permisos.
         return in_array($accion, $this->permisos);
     }
 
@@ -42,10 +35,26 @@ class ServicioAutorizacion {
         return !$this->puede($accion);
     }
 
+
+    /**
+     * Informa si el rol activo es de tipo Administrador global (Superadmin).
+     */
+    public function esRolAdmin(): bool {
+        return $this->rolActivoEsAdmin;
+    }
+
+    /**
+     * 3. NUEVO MÉTODO: Informa si el rol activo tiene alcance sobre toda una institución.
+     */
+    public function tieneAlcanceInstitucional(): bool {
+        return in_array($this->nombreRolActivo, ['Rector', 'Administrativo']);
+    }
+
     public function debugInfo() {
         return [
             'usuario_id' => $_SESSION['id_usuario'] ?? 'No definido',
             'rol_activo' => $_SESSION['rol_activo'] ?? 'No definido',
+            'nombreRolActivo' => $this->nombreRolActivo, // <-- Útil para depurar
             'rolActivoEsAdmin' => $this->rolActivoEsAdmin,
             'totalPermisosCargados' => count($this->permisos),
             'listaPermisos' => $this->permisos

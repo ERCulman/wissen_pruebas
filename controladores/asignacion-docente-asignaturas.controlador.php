@@ -1,183 +1,192 @@
 <?php
+// CÓDIGO FINAL Y CORREGIDO para: controladores/asignacion-docente-asignaturas.controlador.php
 
-class ControladorAsignacionDocenteAsignaturas {
+class ControladorAsignacionDocenteAsignaturas
+{
 
-    static public function ctrValidarAcceso() {
-        if(isset($_SESSION["iniciarSesion"]) && $_SESSION["iniciarSesion"] == "ok") {
-            $accesos = ModeloAsignacionDocenteAsignaturas::mdlValidarAccesoUsuario($_SESSION["id_usuario"]);
-            
-            $tieneAcceso = false;
-            $institucionId = null;
-            
-            foreach($accesos as $acceso) {
-                // Verificar si es rector en sede principal
-                if($acceso["nombre_rol"] == "Rector" && $acceso["tipo_sede"] == "Principal") {
-                    $tieneAcceso = true;
-                    $institucionId = $acceso["institucion_id"];
-                    break;
-                }
-                
-                // Verificar si es usuario representante de la institución en sede principal
-                if($acceso["id_usuario_representante"] == $_SESSION["id_usuario"] && $acceso["tipo_sede"] == "Principal") {
-                    $tieneAcceso = true;
-                    $institucionId = $acceso["institucion_id"];
-                    break;
-                }
+    /**
+     * MÉTODO CORREGIDO: Se ha eliminado el 'require_once' redundante.
+     * Ahora confía en que index.php ya ha cargado auth.controlador.php.
+     */
+    static private function ctrObtenerContextoAcceso()
+    {
+        if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
+            return ["acceso" => false, "esAdmin" => false, "institucionId" => null];
+        }
+
+        // La clase ServicioAutorizacion ya existe porque fue cargada por index.php
+        $auth = ServicioAutorizacion::getInstance();
+
+        if ($auth->esRolAdmin()) {
+            return ["acceso" => true, "esAdmin" => true, "institucionId" => null];
+        }
+
+        if ($auth->tieneAlcanceInstitucional()) {
+            // Obtener el ID de institución directamente desde la base de datos
+            $idUsuarioActual = $_SESSION['id_usuario'] ?? 0;
+            $institucionId = ModeloAsignacionDocenteAsignaturas::mdlObtenerInstitucionIdUsuario($idUsuarioActual);
+            if ($institucionId) {
+                return ["acceso" => true, "esAdmin" => false, "institucionId" => $institucionId];
             }
-            
-            if($tieneAcceso) {
-                return array("acceso" => true, "institucion_id" => $institucionId);
+        }
+
+        return ["acceso" => false, "esAdmin" => false, "institucionId" => null];
+    }
+
+    /**
+     * Valida el acceso usando el método central.
+     */
+    static public function ctrValidarAcceso()
+    {
+        return self::ctrObtenerContextoAcceso();
+    }
+
+    /**
+     * Obtiene instituciones según el contexto del usuario.
+     */
+    static public function ctrObtenerInstituciones()
+    {
+        $contexto = self::ctrObtenerContextoAcceso();
+        if ($contexto["acceso"]) {
+            return ModeloAsignacionDocenteAsignaturas::mdlObtenerTodasLasInstituciones();
+        }
+        return [];
+    }
+
+    /**
+     * Obtiene sedes según el contexto del usuario.
+     */
+    static public function ctrObtenerSedes()
+    {
+        $contexto = self::ctrObtenerContextoAcceso();
+        if (!$contexto["acceso"]) {
+            return [];
+        }
+
+        $institucionId = null;
+
+        // Para superadmin, usar el institucion_id enviado por POST
+        if ($contexto["esAdmin"]) {
+            if (isset($_POST['institucion_id']) && !empty($_POST['institucion_id'])) {
+                $institucionId = filter_var($_POST['institucion_id'], FILTER_VALIDATE_INT);
             }
+        } else {
+            // Para roles institucionales, usar su institución
+            $institucionId = $contexto["institucionId"];
         }
-        
-        return array("acceso" => false);
+
+        if (!$institucionId) {
+            return [];
+        }
+
+        return ModeloAsignacionDocenteAsignaturas::mdlObtenerSedesInstitucion($institucionId);
     }
 
-    static public function ctrObtenerSedes() {
-        $validacion = self::ctrValidarAcceso();
-        
-        if($validacion["acceso"]) {
-            return ModeloAsignacionDocenteAsignaturas::mdlObtenerSedesInstitucion($validacion["institucion_id"]);
-        }
-        
-        return array();
+    /**
+     * Pasa el contexto de la institución al modelo para un filtrado seguro.
+     */
+    static public function ctrObtenerDocentes($sedeId)
+    {
+        $contexto = self::ctrObtenerContextoAcceso();
+        if (!$contexto["acceso"]) return [];
+
+        return ModeloAsignacionDocenteAsignaturas::mdlObtenerDocentesPorSede($sedeId, $contexto["institucionId"]);
     }
 
-    static public function ctrObtenerDocentes($sedeId) {
-        $validacion = self::ctrValidarAcceso();
-        
-        if($validacion["acceso"]) {
-            return ModeloAsignacionDocenteAsignaturas::mdlObtenerDocentesPorSede($sedeId);
-        }
-        
-        return array();
+    /**
+     * Pasa el contexto de la institución al modelo.
+     */
+    static public function ctrObtenerAsignaturas($sedeId)
+    {
+        $contexto = self::ctrObtenerContextoAcceso();
+        if (!$contexto["acceso"]) return [];
+
+        return ModeloAsignacionDocenteAsignaturas::mdlObtenerAsignaturasPorSede($sedeId, $contexto["institucionId"]);
     }
 
-    static public function ctrObtenerAsignaturas($sedeId) {
-        $validacion = self::ctrValidarAcceso();
-        
-        if($validacion["acceso"]) {
-            return ModeloAsignacionDocenteAsignaturas::mdlObtenerAsignaturasPorSede($sedeId);
-        }
-        
-        return array();
+    /**
+     * Pasa el contexto de la institución al modelo.
+     */
+    static public function ctrObtenerAsignaciones($cuerpoDocenteId)
+    {
+        $contexto = self::ctrObtenerContextoAcceso();
+        if (!$contexto["acceso"]) return [];
+
+        return ModeloAsignacionDocenteAsignaturas::mdlObtenerAsignacionesDocente($cuerpoDocenteId, $contexto["institucionId"]);
     }
 
-    static public function ctrAsignarAsignaturas() {
+    /**
+     * Lógica de validación de acceso antes de ejecutar la acción.
+     */
+    static public function ctrAsignarAsignaturas()
+    {
+        $contexto = self::ctrObtenerContextoAcceso();
+        if (!$contexto["acceso"]) {
+            return "error_permisos";
+        }
+
+        // El resto de la lógica de la función permanece igual...
         try {
-            // Validar que existan los datos requeridos
-            if(!isset($_POST["rol_institucional_id"]) || !isset($_POST["asignaturas"])) {
-                error_log("Datos faltantes en ctrAsignarAsignaturas: " . json_encode($_POST));
-                return "error";
+            if (!isset($_POST["rol_institucional_id"]) || !isset($_POST["asignaturas"])) {
+                return "error_datos_faltantes";
             }
-            
-            $validacion = self::ctrValidarAcceso();
-            
-            if(!$validacion["acceso"]) {
-                error_log("Acceso denegado en ctrAsignarAsignaturas para usuario: " . ($_SESSION["id_usuario"] ?? 'no definido'));
-                return "error";
-            }
-            
-            // Validar y sanitizar datos
+
             $rolInstitucionalId = filter_var($_POST["rol_institucional_id"], FILTER_VALIDATE_INT);
-            if($rolInstitucionalId === false) {
-                error_log("rol_institucional_id inválido: " . $_POST["rol_institucional_id"]);
-                return "error";
-            }
-            
             $asignaturas = $_POST["asignaturas"];
-            if(!is_array($asignaturas) || empty($asignaturas)) {
-                error_log("Asignaturas inválidas: " . json_encode($asignaturas));
-                return "error";
+            if (!$rolInstitucionalId || !is_array($asignaturas) || empty($asignaturas)) {
+                return "error_datos_invalidos";
             }
-            
-            $maxHoras = isset($_POST["max_horas"]) ? filter_var($_POST["max_horas"], FILTER_VALIDATE_INT) : 20;
-            if($maxHoras === false || $maxHoras < 1 || $maxHoras > 40) {
-                $maxHoras = 20;
-            }
-            
+
+            $maxHoras = isset($_POST["max_horas"]) ? filter_var($_POST["max_horas"], FILTER_VALIDATE_INT, ["options" => ["default" => 20, "min_range" => 1, "max_range" => 40]]) : 20;
             $observaciones = isset($_POST["observaciones"]) ? trim($_POST["observaciones"]) : "";
-        
-            // Verificar si ya existe cuerpo docente para este rol
+
             $cuerpoDocenteId = ModeloAsignacionDocenteAsignaturas::mdlObtenerCuerpoDocentePorRol($rolInstitucionalId);
-            
-            if(!$cuerpoDocenteId) {
+
+            if (!$cuerpoDocenteId) {
                 $cuerpoDocenteId = ModeloAsignacionDocenteAsignaturas::mdlCrearCuerpoDocente($rolInstitucionalId, $maxHoras, $observaciones);
-                if(!$cuerpoDocenteId || $cuerpoDocenteId == "error") {
-                    error_log("Error creando cuerpo docente para rol: " . $rolInstitucionalId);
-                    return "error";
+                if (!$cuerpoDocenteId || $cuerpoDocenteId == "error") {
+                    return "error_creacion_cuerpo_docente";
                 }
             }
-            
+
             $asignadas = 0;
-            $errores = 0;
-            
-            foreach($asignaturas as $estructuraCurricularId) {
-                // Validar que sea un ID válido
+            foreach ($asignaturas as $estructuraCurricularId) {
                 $estructuraId = filter_var($estructuraCurricularId, FILTER_VALIDATE_INT);
-                if($estructuraId === false) {
-                    error_log("ID de estructura curricular inválido: " . $estructuraCurricularId);
-                    $errores++;
-                    continue;
-                }
-                
-                $resultado = ModeloAsignacionDocenteAsignaturas::mdlAsignarAsignatura($cuerpoDocenteId, $estructuraId);
-                if($resultado == "ok") {
+                if ($estructuraId && ModeloAsignacionDocenteAsignaturas::mdlAsignarAsignatura($cuerpoDocenteId, $estructuraId) == "ok") {
                     $asignadas++;
-                } else {
-                    error_log("Error asignando asignatura " . $estructuraId . " a cuerpo docente " . $cuerpoDocenteId);
-                    $errores++;
                 }
             }
-            
-            if($errores > 0 && $asignadas == 0) {
-                return "error";
-            }
-            
             return ($asignadas > 0) ? "ok" : "sin_cambios";
-            
-        } catch(Exception $e) {
-            error_log("Excepción en ctrAsignarAsignaturas: " . $e->getMessage());
-            return "error";
+        } catch (Exception $e) {
+            return "error_excepcion";
         }
     }
 
-    static public function ctrObtenerAsignaciones($cuerpoDocenteId) {
-        $validacion = self::ctrValidarAcceso();
-        
-        if($validacion["acceso"]) {
-            return ModeloAsignacionDocenteAsignaturas::mdlObtenerAsignacionesDocente($cuerpoDocenteId);
-        }
-        
-        return array();
-    }
-
-    static public function ctrEliminarAsignacion() {
-        if(isset($_POST["asignacion_id"])) {
-            $validacion = self::ctrValidarAcceso();
-            
-            if($validacion["acceso"]) {
-                return ModeloAsignacionDocenteAsignaturas::mdlEliminarAsignacion($_POST["asignacion_id"]);
-            }
-        }
-        
-        return "error";
-    }
-
-    static public function ctrActualizarHorasSemanales() {
-        if(!isset($_POST["cuerpo_docente_id"]) || !isset($_POST["horas_semanales"])) {
+    /**
+     * Lógica de validación de acceso.
+     */
+    static public function ctrEliminarAsignacion()
+    {
+        $contexto = self::ctrObtenerContextoAcceso();
+        if (!$contexto["acceso"] || !isset($_POST["asignacion_id"])) {
             return "error";
         }
-        
-        $validacion = self::ctrValidarAcceso();
-        
-        if(!$validacion["acceso"]) {
+        return ModeloAsignacionDocenteAsignaturas::mdlEliminarAsignacion($_POST["asignacion_id"]);
+    }
+
+    /**
+     * Lógica de validación de acceso.
+     */
+    static public function ctrActualizarHorasSemanales()
+    {
+        $contexto = self::ctrObtenerContextoAcceso();
+        if (!$contexto["acceso"] || !isset($_POST["cuerpo_docente_id"]) || !isset($_POST["horas_semanales"])) {
             return "error";
         }
-        
+
         $cuerpoDocenteId = $_POST["cuerpo_docente_id"];
         $horasSemanales = $_POST["horas_semanales"];
-        
+
         return ModeloAsignacionDocenteAsignaturas::mdlActualizarHorasSemanales($cuerpoDocenteId, $horasSemanales);
     }
 }

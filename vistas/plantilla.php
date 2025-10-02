@@ -105,6 +105,8 @@ if(isset($_SESSION["iniciarSesion"]) && $_SESSION["iniciarSesion"] == "ok"){
     $rutasMapa = include "routes-vistas.php"; // Asegúrate de que la ruta sea correcta
     $auth = ServicioAutorizacion::getInstance();
 
+
+
     if(isset($_GET["ruta"])){
         $rutaActual = $_GET["ruta"];
 
@@ -159,11 +161,9 @@ if(isset($_SESSION["iniciarSesion"]) && $_SESSION["iniciarSesion"] == "ok"){
     import PermisosVista from './vistas/js/permisos-vista.js';
 
     // Obtenemos la lista de permisos inyectada desde PHP.
-    // Estará completa si el rol es admin, o limitada para otros roles.
     const permisosUsuario = <?php echo $permisosJson ?? '[]'; ?>;
 
     // Inicializamos el sistema de permisos de la vista.
-    // Esta única línea se encarga de todo, sin condiciones.
     PermisosVista.init(permisosUsuario);
 </script>
 

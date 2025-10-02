@@ -378,77 +378,63 @@
 </aside>
 
 <script>
-$(document).ready(function(){
-	// Detectar cambio de estado del menu (expandido/colapsado)
-	function toggleRolSelector() {
-		if($('body').hasClass('sidebar-collapse')) {
-			// Menu colapsado - mostrar solo icono
-			$('#iconoRolColapsado, #iconoRolUnicoColapsado').show();
-			$('#selectorRolExpandido, #rolUnicoExpandido').hide();
-		} else {
-			// Menu expandido - mostrar selector completo
-			$('#iconoRolColapsado, #iconoRolUnicoColapsado').hide();
-			$('#selectorRolExpandido, #rolUnicoExpandido').show();
-		}
-	}
-	
-	// Ejecutar al cargar y cuando cambie el estado del menu
-	toggleRolSelector();
-	$('.sidebar-toggle').on('click', function(){
-		setTimeout(toggleRolSelector, 300); // Delay para esperar la animación
-	});
-	
-	// Sincronizar ambos selectores
-	function sincronizarSelectores(valor) {
-		$('#selectorRolActivo, #selectorRolColapsado').val(valor);
-	}
-	
-	// Manejar cambio de rol (ambos selectores)
-	$('#selectorRolActivo, #selectorRolColapsado').on('change', function(){
-		var rolSeleccionado = $(this).val();
-		
-		if(rolSeleccionado){
-			$('#loadingRol').show();
-			$(this).prop('disabled', true);
-			
-			$.ajax({
-				url: 'ajax/cambiar-rol.ajax.php',
-				method: 'POST',
-				data: {
-					rolSeleccionado: rolSeleccionado
-				},
-				success: function(respuesta){
-					if(respuesta.trim() === 'ok'){
-						// Sincronizar ambos selectores
-						sincronizarSelectores(rolSeleccionado);
-						
-						// Actualizar el nombre de la sede en el cabezote
-						$.ajax({
-							url: 'ajax/obtener-sede-rol.ajax.php',
-							method: 'POST',
-							data: {
-								rolSeleccionado: rolSeleccionado
-							},
-							success: function(sede){
-								$('#sedeActiva').text(sede.toUpperCase());
-							}
-						});
-						
-						$('#loadingRol').hide();
-						$('#selectorRolActivo, #selectorRolColapsado').prop('disabled', false);
-					} else {
-						alert('Error al cambiar el rol');
-						$('#loadingRol').hide();
-						$('#selectorRolActivo, #selectorRolColapsado').prop('disabled', false);
-					}
-				},
-				error: function(){
-					alert('Error de conexión');
-					$('#loadingRol').hide();
-					$('#selectorRolActivo, #selectorRolColapsado').prop('disabled', false);
-				}
-			});
-		}
-	});
-});
+    $(document).ready(function(){
+        // Detectar cambio de estado del menu (expandido/colapsado)
+        function toggleRolSelector() {
+            if($('body').hasClass('sidebar-collapse')) {
+                // Menu colapsado - mostrar solo icono
+                $('#iconoRolColapsado, #iconoRolUnicoColapsado').show();
+                $('#selectorRolExpandido, #rolUnicoExpandido').hide();
+            } else {
+                // Menu expandido - mostrar selector completo
+                $('#iconoRolColapsado, #iconoRolUnicoColapsado').hide();
+                $('#selectorRolExpandido, #rolUnicoExpandido').show();
+            }
+        }
+
+        // Ejecutar al cargar y cuando cambie el estado del menu
+        toggleRolSelector();
+        $('.sidebar-toggle').on('click', function(){
+            setTimeout(toggleRolSelector, 300); // Delay para esperar la animación
+        });
+
+        // Sincronizar ambos selectores
+        function sincronizarSelectores(valor) {
+            $('#selectorRolActivo, #selectorRolColapsado').val(valor);
+        }
+
+        // Manejar cambio de rol (ambos selectores)
+        $('#selectorRolActivo, #selectorRolColapsado').on('change', function(){
+            var rolSeleccionado = $(this).val();
+
+            if(rolSeleccionado){
+                $('#loadingRol').show();
+                $(this).prop('disabled', true);
+
+                $.ajax({
+                    url: 'ajax/cambiar-rol.ajax.php',
+                    method: 'POST',
+                    data: {
+                        rolSeleccionado: rolSeleccionado
+                    },
+                    success: function(respuesta){
+                        if(respuesta.trim() === 'ok'){
+                            // ¡CAMBIO CLAVE!
+                            // Recargar la página para aplicar todos los cambios de permisos y datos.
+                            location.reload();
+                        } else {
+                            alert('Error al cambiar el rol');
+                            $('#loadingRol').hide();
+                            $('#selectorRolActivo, #selectorRolColapsado').prop('disabled', false);
+                        }
+                    },
+                    error: function(){
+                        alert('Error de conexión');
+                        $('#loadingRol').hide();
+                        $('#selectorRolActivo, #selectorRolColapsado').prop('disabled', false);
+                    }
+                });
+            }
+        });
+    });
 </script>

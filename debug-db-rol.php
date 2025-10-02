@@ -1,77 +1,100 @@
 <?php
-// verificar-db.php
+/*
+ * SCRIPT DE DIAGNÓSTICO Y VERIFICACIÓN DE SINTAXIS PHP
+ * =======================================================
+ * INSTRUCCIONES:
+ * 1. Sube este archivo a la carpeta raíz de tu proyecto.
+ * 2. AJUSTA LAS RUTAS en la sección "$files_to_check" para que coincidan con tu estructura.
+ * 3. Abre este archivo en tu navegador (ej: https://tusitio.com/debug_checker.php).
+ * 4. Copia y pega TODO el resultado para compartirlo.
+ * 5. ¡¡¡BORRA ESTE ARCHIVO DE TU SERVIDOR CUANDO TERMINES!!!
+ */
 
-// Habilitar la visualización de errores
+// Forzar la visualización de errores para el propio script de debug
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Cargar solo la conexión a la base de datos
-require_once "modelos/conexion.php";
+// --- CONFIGURACIÓN: AJUSTA LAS RUTAS DE LOS ARCHIVOS AQUÍ ---
+$files_to_check = [
+    // Ajusta la ruta si tus controladores están en otra carpeta.
+    'controladores/asignacion-docente-asignaturas.controlador.php',
 
-session_start();
+    // Ajusta la ruta si tus modelos están en otra carpeta.
+    'modelos/asignacion-docente-asignaturas.modelo.php',
 
-// Verificar que haya una sesión para obtener el ID de usuario
-if (!isset($_SESSION['id_usuario'])) {
-    die("Por favor, inicia sesión primero y luego ejecuta este script.");
-}
-$usuarioId = $_SESSION['id_usuario'];
+    // Ajusta la ruta a tu vista. Puede ser 'vistas/paginas/', 'vistas/modulos/', etc.
+    'vistas/modulos/asignacion-docente-asignaturas.php',
+];
+// -----------------------------------------------------------
 
-echo "<h1>Verificación Directa de la Base de Datos</h1>";
-echo "<p>Ejecutando la consulta para el <strong>usuario_id = " . htmlspecialchars($usuarioId) . "</strong>...</p><hr>";
+?>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Verificador de Errores PHP</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f4f4; color: #333; line-height: 1.6; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #555; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .result { padding: 15px; margin-bottom: 15px; border-left-width: 5px; border-left-style: solid; }
+        .success { background-color: #e9f7ef; border-color: #2ecc71; color: #222; }
+        .error { background-color: #fbeae5; border-color: #e74c3c; color: #222; white-space: pre-wrap; word-wrap: break-word; }
+        .warning { background-color: #fcf8e3; border-color: #f1c40f; color: #222; }
+        code { background: #eee; padding: 2px 5px; border-radius: 3px; }
+        pre { background: #2d2d2d; color: #f1f1f1; padding: 15px; border-radius: 5px; white-space: pre-wrap; word-wrap: break-word; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Verificador de Errores PHP</h1>
+    <div class="result warning">
+        <strong>¡ADVERTENCIA DE SEGURIDAD!</strong> Por favor, borra este archivo de tu servidor tan pronto como hayas terminado de usarlo.
+    </div>
 
-try {
-    // Esta es la consulta exacta que se ejecuta cuando tu rol activo es de tipo "sistema"
-    $sql = "SELECT 
-                ads.usuario_id, 
-                ads.rol_id, 
-                ads.estado,
-                r.nombre_rol
-            FROM 
-                administradores_sistema ads
-            INNER JOIN 
-                roles r ON ads.rol_id = r.id_rol
-            WHERE 
-                ads.usuario_id = :usuario_id";
+    <h2>1. Verificación del Entorno del Servidor</h2>
+    <?php
+    echo "<div class='result ".(function_exists('ini_set') ? 'success' : 'error')."'>La función <code>ini_set()</code> está: ".(function_exists('ini_set') ? 'Habilitada' : 'Deshabilitada (esto puede impedir mostrar errores)')."</div>";
+    echo "<div class='result ".(function_exists('shell_exec') ? 'success' : 'error')."'>La función <code>shell_exec()</code> para análisis automático está: ".(function_exists('shell_exec') ? 'Habilitada' : 'Deshabilitada (no se podrá hacer el análisis automático)')."</div>";
+    ?>
 
-    $stmt = Conexion::conectar()->prepare($sql);
-    $stmt->bindParam(":usuario_id", $usuarioId, PDO::PARAM_INT);
-    $stmt->execute();
+    <h2>2. Análisis de Sintaxis de Archivos (usando <code>php -l</code>)</h2>
+    <?php
+    if (function_exists('shell_exec')) {
+        foreach ($files_to_check as $file) {
+            echo "<h4>Analizando: <code>" . htmlspecialchars($file) . "</code></h4>";
+            if (file_exists($file) && is_readable($file)) {
+                // Usamos realpath para obtener la ruta absoluta y evitar problemas
+                $command = 'php -l ' . escapeshellarg(realpath($file));
+                // Capturamos la salida estándar y de error
+                $output = shell_exec($command . ' 2>&1');
 
-    $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    echo "<h2>Resultado de la Consulta:</h2>";
-
-    if (empty($resultados)) {
-        echo "<p style='color:red; font-weight:bold;'>LA CONSULTA NO DEVOLVIÓ NINGÚN RESULTADO.</p>";
-        echo "<p>Esto confirma que no se encontró una entrada en la tabla 'administradores_sistema' para tu usuario.</p>";
-    } else {
-        echo "<p style='color:green; font-weight:bold;'>Se encontraron los siguientes registros:</p>";
-        echo "<pre>";
-        print_r($resultados);
-        echo "</pre>";
-        echo "<hr><h3>Análisis:</h3>";
-        $encontrado = false;
-        foreach($resultados as $fila) {
-            echo "<ul>";
-            echo "<li><strong>Usuario ID:</strong> " . $fila['usuario_id'] . "</li>";
-            echo "<li><strong>Rol ID:</strong> " . $fila['rol_id'] . "</li>";
-            echo "<li><strong>Estado:</strong> " . $fila['estado'] . "</li>";
-            echo "<li><strong>Nombre del Rol:</strong> " . $fila['nombre_rol'] . "</li>";
-            echo "</ul>";
-
-            if ($fila['estado'] === 'Activo' && in_array($fila['nombre_rol'], ['Superadministrador', 'Administrador'])) {
-                $encontrado = true;
+                if (strpos($output, 'No syntax errors detected') !== false) {
+                    echo "<div class='result success'><strong>OK:</strong> " . htmlspecialchars($output) . "</div>";
+                } else {
+                    echo "<div class='result error'><strong>ERROR:</strong><br>" . htmlspecialchars($output) . "</div>";
+                }
+            } else {
+                echo "<div class='result error'><strong>ERROR:</strong> El archivo no existe o no se puede leer en la ruta especificada. Verifica la configuración de rutas al inicio de este script.</div>";
             }
         }
-        if ($encontrado) {
-            echo "<p style='color:green; font-weight:bold;'>¡ÉXITO! Se encontró un rol de administrador activo. El problema debe ser otro (posiblemente caché).</p>";
+    } else {
+        echo "<div class='result warning'>El análisis automático no es posible porque <code>shell_exec</code> está deshabilitado en tu servidor. Revisa el contenido de los archivos manualmente en la siguiente sección.</div>";
+    }
+    ?>
+
+    <h2>3. Contenido de los Archivos (para revisión manual)</h2>
+    <?php
+    foreach ($files_to_check as $file) {
+        echo "<h4>Contenido de: <code>" . htmlspecialchars($file) . "</code></h4>";
+        if (file_exists($file) && is_readable($file)) {
+            echo "<pre><code>" . htmlspecialchars(file_get_contents($file)) . "</code></pre>";
         } else {
-            echo "<p style='color:red; font-weight:bold;'>¡PROBLEMA DETECTADO! Aunque se encontró un registro, o el estado no es 'Activo', o el nombre del rol no coincide exactamente con 'Superadministrador' o 'Administrador'.</p>";
+            echo "<div class='result error'>No se pudo leer el contenido del archivo.</div>";
         }
     }
-
-} catch (Throwable $e) {
-    echo "<h2 style='color:red;'>¡ERROR DE CONEXIÓN O SQL!</h2>";
-    echo "<p><strong>Mensaje:</strong> " . $e->getMessage() . "</p>";
-}
+    ?>
+</div>
+</body>
+</html>

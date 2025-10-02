@@ -6,7 +6,6 @@
 const PermisosVista = {
     /**
      * Almacena los permisos del usuario actual para una búsqueda rápida.
-     * Usamos un Set para un rendimiento óptimo (búsquedas en O(1)).
      * @type {Set<string>}
      */
     userPermissions: new Set(),

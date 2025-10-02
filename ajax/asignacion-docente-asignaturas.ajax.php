@@ -92,6 +92,31 @@ class AjaxAsignacionDocenteAsignaturas {
             echo json_encode(array('error' => $e->getMessage()));
         }
     }
+
+    public function ajaxObtenerSedesPorInstitucion() {
+        try {
+            // Asegurar que el institucion_id esté disponible en $_POST para el controlador
+            if (!isset($_POST['institucion_id'])) {
+                echo json_encode(array('error' => 'ID de institución requerido'));
+                return;
+            }
+            $sedes = ControladorAsignacionDocenteAsignaturas::ctrObtenerSedes();
+            echo json_encode($sedes);
+        } catch(Exception $e) {
+            http_response_code(500);
+            echo json_encode(array('error' => $e->getMessage()));
+        }
+    }
+
+    public function ajaxObtenerInstituciones() {
+        try {
+            $instituciones = ControladorAsignacionDocenteAsignaturas::ctrObtenerInstituciones();
+            echo json_encode($instituciones);
+        } catch(Exception $e) {
+            http_response_code(500);
+            echo json_encode(array('error' => $e->getMessage()));
+        }
+    }
 }
 
 if(isset($_POST["accion"])) {
@@ -123,6 +148,14 @@ if(isset($_POST["accion"])) {
         
         if($_POST["accion"] == "actualizarHorasSemanales") {
             $asignacion->ajaxActualizarHorasSemanales();
+        }
+        
+        if($_POST["accion"] == "obtenerSedesPorInstitucion") {
+            $asignacion->ajaxObtenerSedesPorInstitucion();
+        }
+        
+        if($_POST["accion"] == "obtenerInstituciones") {
+            $asignacion->ajaxObtenerInstituciones();
         }
     } catch(Exception $e) {
         http_response_code(500);

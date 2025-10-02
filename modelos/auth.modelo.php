@@ -5,15 +5,15 @@ require_once "conexion.php";
 class ModeloAuth{
 
     /*=============================================
-    NUEVO MÉTODO CENTRAL v2 - MÁS ROBUSTO Y PRECISO PARA ROL ACTIVO
-    =============================================*/
+MÉTODO CENTRAL PARA OBTENER PERMISOS DEL ROL ACTIVO (CORREGIDO)
+=============================================*/
     static public function mdlObtenerPermisosDelRolActivo($usuarioId){
-        // Obtenemos el rol activo de la sesión actual.
         $rolActivo = $_SESSION['rol_activo'] ?? null;
 
         $resultado = [
             'permisos' => [],
-            'esRolAdmin' => false
+            'esRolAdmin' => false,
+            'nombre_rol' => '' // Inicializamos el nombre del rol
         ];
 
         if(!$rolActivo){
@@ -25,64 +25,63 @@ class ModeloAuth{
 
         // --- SI EL ROL ACTIVO ES DE TIPO "SISTEMA" ---
         if($tipoRol == 'sistema'){
-
-            // Primero, necesitamos saber el ID del rol de sistema que está activo.
-            // Asumimos que la lógica de cambio de rol también guarda el ID del rol en la sesión.
-            // Si no es así, esta consulta lo obtiene.
             $stmt = Conexion::conectar()->prepare(
                 "SELECT r.id_rol, r.nombre_rol FROM administradores_sistema ads
-                 INNER JOIN roles r ON ads.rol_id = r.id_rol
-                 WHERE ads.usuario_id = :usuario_id AND ads.estado = 'Activo'
-                 LIMIT 1"
+             INNER JOIN roles r ON ads.rol_id = r.id_rol
+             WHERE ads.usuario_id = :usuario_id AND ads.estado = 'Activo'
+             LIMIT 1"
             );
             $stmt->bindParam(":usuario_id", $usuarioId, PDO::PARAM_INT);
             $stmt->execute();
             $rolSistema = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($rolSistema) {
-                // Verificamos si el rol activo es de tipo Superadministrador/Administrador
                 if (in_array($rolSistema['nombre_rol'], ['Superadministrador', 'Administrador'])) {
                     $resultado['esRolAdmin'] = true;
-                    // Si es admin, no necesitamos cargar permisos explícitos.
-                    return $resultado;
                 }
 
-                // Si es otro tipo de rol de sistema, cargamos sus permisos específicos
-                $stmt = Conexion::conectar()->prepare(
+                // AÑADIMOS EL NOMBRE DEL ROL AL RESULTADO
+                $resultado['nombre_rol'] = $rolSistema['nombre_rol'];
+
+                $stmtPermisos = Conexion::conectar()->prepare(
                     "SELECT a.nombre_accion FROM roles_acciones ra
-                     INNER JOIN acciones a ON ra.accion_id = a.id
-                     WHERE ra.rol_id = :rol_id"
+                 INNER JOIN acciones a ON ra.accion_id = a.id
+                 WHERE ra.rol_id = :rol_id"
                 );
-                $stmt->bindParam(":rol_id", $rolSistema['id_rol'], PDO::PARAM_INT);
-                $stmt->execute();
-                $resultado['permisos'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                $stmtPermisos->bindParam(":rol_id", $rolSistema['id_rol'], PDO::PARAM_INT);
+                $stmtPermisos->execute();
+                $resultado['permisos'] = $stmtPermisos->fetchAll(PDO::FETCH_COLUMN);
             }
         }
         // --- SI EL ROL ACTIVO ES DE TIPO "INSTITUCIONAL" ---
         else if ($tipoRol == 'institucional') {
             $sedeId = $partes[2] ?? null;
             if($sedeId) {
-                // Carga los permisos del rol institucional para la sede específica que está activa
+                // Modificamos la consulta para obtener también el nombre del rol
                 $stmt = Conexion::conectar()->prepare(
-                    "SELECT DISTINCT a.nombre_accion
-                     FROM roles_institucionales ri
-                     INNER JOIN roles_acciones ra ON ri.rol_id = ra.rol_id
-                     INNER JOIN acciones a ON ra.accion_id = a.id
-                     WHERE ri.usuario_id = :usuario_id AND ri.sede_id = :sede_id AND ri.estado = 'Activo'"
+                    "SELECT DISTINCT a.nombre_accion, r.nombre_rol
+                 FROM roles_institucionales ri
+                 INNER JOIN roles r ON ri.rol_id = r.id_rol
+                 INNER JOIN roles_acciones ra ON ri.rol_id = ra.rol_id
+                 INNER JOIN acciones a ON ra.accion_id = a.id
+                 WHERE ri.usuario_id = :usuario_id AND ri.sede_id = :sede_id AND ri.estado = 'Activo'"
                 );
                 $stmt->bindParam(":usuario_id", $usuarioId, PDO::PARAM_INT);
                 $stmt->bindParam(":sede_id", $sedeId, PDO::PARAM_INT);
                 $stmt->execute();
-                $resultado['permisos'] = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                if(!empty($data)){
+                    // AÑADIMOS EL NOMBRE DEL ROL AL RESULTADO
+                    $resultado['nombre_rol'] = $data[0]['nombre_rol'];
+                    // Extraemos solo la columna de permisos para el array de permisos
+                    $resultado['permisos'] = array_column($data, 'nombre_accion');
+                }
             }
         }
 
         return $resultado;
     }
-
-    /*=============================================
-    MÉTODOS ANTERIORES - MANTENIDOS POR COMPATIBILIDAD
-    =============================================*/
 
     /*=============================================
     OBTENER ROLES ACTIVOS DEL USUARIO
@@ -104,8 +103,6 @@ class ModeloAuth{
 
         return array_merge($rolesInstitucionales, $rolesSistema);
     }
-
-    // ... (El resto de los métodos como mdlVerificarAccesoModulo, etc., pueden permanecer igual)
 
     /*=============================================
     VERIFICAR SI USUARIO ES ADMINISTRADOR SISTEMA (EN GENERAL)

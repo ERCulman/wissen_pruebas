@@ -4,27 +4,65 @@
 require_once __DIR__ . "/conexion.php";
 require_once __DIR__ . "/validaciones/MotorValidaciones.php";
 require_once __DIR__ . "/validaciones/ReglasUsuario.php";
+// Se incluye el servicio de autorización que contiene la lógica de roles
+require_once __DIR__ . "/../controladores/auth.controlador.php";
 
 class ModeloUsuarios
 {
 
     /*=======================================
-	METODO MOSTRAR USUARIOS
+	METODO MOSTRAR USUARIOS CON LÓGICA DE ALCANCE POR ROL
 	=======================================*/
     static public function mdlMostrarUsuarios($tabla, $item, $valor)
     {
+        // La lógica para buscar un usuario específico no cambia.
         if ($item != null) {
             $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla WHERE $item = :$item");
             $stmt->bindParam(":" . $item, $valor, PDO::PARAM_STR);
             $stmt->execute();
             return $stmt->fetch();
         } else {
-            $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla");
+            // Inicia la lógica para mostrar la lista completa de usuarios
+            $auth = ServicioAutorizacion::getInstance();
+
+            // NIVEL 1: Si es Superadministrador, muestra todos los usuarios.
+            if ($auth->esRolAdmin()) {
+                $stmt = Conexion::conectar()->prepare("SELECT * FROM $tabla");
+
+                // NIVEL 2: Si tiene alcance institucional (Rector, Administrativo).
+            } else if ($auth->tieneAlcanceInstitucional()) {
+
+                // Obtenemos el ID del usuario que está realizando la consulta.
+                $idUsuarioActual = $_SESSION['id_usuario'] ?? 0;
+
+                // Consulta robusta con subconsulta para evitar dependencias de sesión.
+                $sql = "SELECT DISTINCT u.* FROM usuarios u
+                        INNER JOIN roles_institucionales ri ON u.id_usuario = ri.usuario_id
+                        INNER JOIN sede s ON ri.sede_id = s.id
+                        WHERE s.institucion_id = (
+                            SELECT s2.institucion_id 
+                            FROM roles_institucionales ri2 
+                            INNER JOIN sede s2 ON ri2.sede_id = s2.id 
+                            WHERE ri2.usuario_id = :id_usuario_actual
+                            LIMIT 1
+                        )";
+
+                $stmt = Conexion::conectar()->prepare($sql);
+                $stmt->bindParam(":id_usuario_actual", $idUsuarioActual, PDO::PARAM_INT);
+
+                // NIVEL 3: Cualquier otro rol no tiene permiso para ver la lista.
+            } else {
+                return [];
+            }
+
             $stmt->execute();
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+
         $stmt = null;
     }
+
+    // --- EL RESTO DE MÉTODOS (mdlCrearUsuario, mdlEditarUsuario, etc.) PERMANECEN INTACTOS ---
 
     /*=======================================
     METODO CREAR USUARIO
@@ -167,7 +205,7 @@ class ModeloUsuarios
         return $resultado;
     }
 
-    /*  =======================================
+    /* =======================================
   	METODO GUARDAR TOKEN DE RESETEO
 	======================================= */
 
@@ -188,7 +226,7 @@ class ModeloUsuarios
         $stmt = null;
     }
 
-    /*  =======================================
+    /* =======================================
   	METODO ACTUALIZAR PASSWORD
 	======================================= */
 
@@ -207,7 +245,4 @@ class ModeloUsuarios
 
         $stmt = null;
     }
-
-
-
 }
