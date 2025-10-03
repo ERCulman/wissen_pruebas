@@ -329,6 +329,13 @@
 					</li>
 
 					<li>						
+						<a href="asignacion-academica">							
+							<i class="fa fa-circle-o"></i>
+							<span>Asignación Académica</span>
+						</a>
+					</li>
+
+					<li>						
 						<a href="horarios">							
 							<i class="fa fa-circle-o"></i>
 							<span>Horarios de Clase</span>
