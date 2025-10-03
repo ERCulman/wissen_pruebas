@@ -29,20 +29,19 @@ $(document).ready(function() {
     $('#selectGrado').change(function() {
         gradoSeleccionado = $(this).val();
         $('#selectGrupo').html('<option value="">Seleccione un grupo...</option>');
-        $('#contenedorAsignaturas').hide();
+        
         if (gradoSeleccionado && sedeSeleccionada) {
             cargarGrupos(gradoSeleccionado, sedeSeleccionada);
+            cargarAsignaturas(gradoSeleccionado, sedeSeleccionada);
+        } else {
+            $('#contenedorAsignaturas').hide();
         }
     });
 
     // Detecta el cambio en el selector de Grupo.
     $('#selectGrupo').change(function() {
         grupoSeleccionado = $(this).val();
-        $('#contenedorAsignaturas').hide();
-        if (grupoSeleccionado && gradoSeleccionado && sedeSeleccionada) {
-            cargarAsignaturas(gradoSeleccionado, sedeSeleccionada);
-            $('#contenedorAsignaturas').show();
-        }
+        // Las asignaturas ya se muestran por grado, no necesitamos recargarlas por grupo
     });
 
     // Gestiona la selección de un docente de la tabla.
@@ -234,23 +233,41 @@ $(document).ready(function() {
 
     // Carga las asignaturas disponibles para un grado y sede.
     function cargarAsignaturas(gradoId, sedeId) {
-        cargarDatos('obtenerAsignaturas', { grado_id: gradoId, sede_id: sedeId }, function(asignaturas) {
-            var contenedor = $('#listaAsignaturas').empty();
-            if (asignaturas && asignaturas.length > 0) {
-                asignaturas.forEach(function(asignatura) {
-                    var ihs = asignatura.intensidad_horaria_semanal || '';
-                    var item = `
-                        <div class="checkbox">
-                            <label><input type="checkbox" name="asignaturas[]" value="${asignatura.id}"> ${asignatura.area} - ${asignatura.asignatura}</label>
-                            <div class="input-group" style="width:120px; margin-top:5px;">
-                                <input type="number" class="form-control input-sm intensidad-input" placeholder="IHS" min="1" max="10" value="${ihs}" disabled>
-                                <span class="input-group-addon">hrs</span>
-                            </div>
-                        </div>`;
-                    contenedor.append(item);
-                });
-            } else {
-                contenedor.html('<p class="text-muted">No hay asignaturas para este grado.</p>');
+        $.ajax({
+            url: AJAX_URL,
+            method: 'POST',
+            data: { accion: 'obtenerAsignaturas', grado_id: gradoId, sede_id: sedeId },
+            dataType: 'json',
+            success: function(asignaturas) {
+                var contenedor = $('#listaAsignaturas').empty();
+                if (asignaturas && asignaturas.length > 0) {
+                    asignaturas.forEach(function(asignatura) {
+                        var ihs = asignatura.intensidad_horaria_semanal || '';
+                        var item = `
+                            <div class="checkbox">
+                                <label><input type="checkbox" name="asignaturas[]" value="${asignatura.id}"> ${asignatura.area} - ${asignatura.asignatura}</label>
+                                <div class="input-group" style="width:120px; margin-top:5px;">
+                                    <input type="number" class="form-control input-sm intensidad-input" placeholder="IHS" min="1" max="10" value="${ihs}" disabled>
+                                    <span class="input-group-addon">hrs</span>
+                                </div>
+                            </div>`;
+                        contenedor.append(item);
+                    });
+                    $('#contenedorAsignaturas').show();
+                } else {
+                    contenedor.html('<p class="text-muted">No hay asignaturas para este grado.</p>');
+                    $('#contenedorAsignaturas').show();
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Error cargando asignaturas:", xhr.responseText, status, error);
+                var contenedor = $('#listaAsignaturas').empty();
+                if (xhr.status === 403) {
+                    contenedor.html('<p class="text-danger">No tiene permisos para ver las asignaturas.</p>');
+                } else {
+                    contenedor.html('<p class="text-danger">Error cargando asignaturas. Revise la consola.</p>');
+                }
+                $('#contenedorAsignaturas').show();
             }
         });
     }
@@ -305,7 +322,8 @@ $(document).ready(function() {
 
         $('#selectGrado').val('');
         $('#selectGrupo').val('').html('<option value="">Seleccione un grupo...</option>');
-        $('#contenedorAsignaturas').hide().empty();
+        $('#contenedorAsignaturas').hide();
+        $('#listaAsignaturas').empty();
         $('#contenedorAsignadas').hide();
         $('#btnAsignar').hide();
     }
