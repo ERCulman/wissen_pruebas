@@ -29,6 +29,28 @@ class ControladorOfertaEducativa {
     }
 
     /*=============================================
+    VALIDAR ACCESO AL MÓDULO
+    =============================================*/
+
+    static public function ctrValidarAcceso() {
+        if (!isset($_SESSION["iniciarSesion"]) || $_SESSION["iniciarSesion"] != "ok") {
+            return ["acceso" => false, "esAdmin" => false];
+        }
+
+        $auth = ServicioAutorizacion::getInstance();
+
+        if ($auth->esRolAdmin()) {
+            return ["acceso" => true, "esAdmin" => true];
+        }
+
+        if ($auth->tieneAlcanceInstitucional()) {
+            return ["acceso" => true, "esAdmin" => false];
+        }
+
+        return ["acceso" => false, "esAdmin" => false];
+    }
+
+    /*=============================================
     CREAR OFERTA EDUCATIVA CON GRUPOS
     =============================================*/
 
@@ -102,53 +124,93 @@ class ControladorOfertaEducativa {
                         }
                     }
 
+                    // =========================================================================
+                    // INICIO DE LA LÓGICA CORREGIDA
+                    // =========================================================================
+
                     // Procesar grupos para este grado
-                    $cursosKey = "cursos_" . $gradoId;
+                    // Verificamos si se marcó la casilla "multigrado" para este grado
+                    if (isset($_POST["multigrado_" . $gradoId]) && $_POST["multigrado_" . $gradoId] == '1') {
 
-                    if(isset($_POST[$cursosKey]) && is_array($_POST[$cursosKey])) {
+                        // Recogemos los datos de los campos de multigrado
+                        $nombreManual = $_POST["nombre_manual_" . $gradoId] ?? '';
+                        $cuposMultigrado = $_POST["cupos_multigrado_" . $gradoId] ?? 0;
 
-                        foreach($_POST[$cursosKey] as $cursoId) {
+                        if (!empty($nombreManual) && $cuposMultigrado > 0) {
+                            // Preparamos los datos para enviar al modelo
+                            $datosGrupo = array(
+                                "oferta_educativa_id" => $ofertaEducativaId,
+                                "curso_id"          => null, // El curso es nulo
+                                "nombre"            => $nombreManual,
+                                "cupos"             => $cuposMultigrado,
+                                "tipo"              => "Multigrado", // Campo nuevo para identificarlo
+                                "grupo_padre_id"    => null      // El grupo padre es nulo
+                            );
 
-                            $cuposKey = "cupos_" . $gradoId . "_" . $cursoId;
-                            $cupos = isset($_POST[$cuposKey]) ? intval($_POST[$cuposKey]) : 0;
+                            $respuestaGrupo = ModeloOfertaEducativa::mdlIngresarGrupo("grupo", $datosGrupo);
 
-                            if($cupos > 0) {
-                                // Usar conexión directa para obtener información
-                                $conexion = Conexion::conectar();
+                            if ($respuestaGrupo == "ok") {
+                                $gruposCreados++;
+                            } else {
+                                $errores++;
+                            }
+                        }
 
-                                // Obtener información del grado
-                                $stmt = $conexion->prepare("SELECT nombre FROM grado WHERE id = :id");
-                                $stmt->bindParam(":id", $gradoId, PDO::PARAM_INT);
-                                $stmt->execute();
-                                $gradoInfo = $stmt->fetch();
+                    } else { // Si no es multigrado, ejecuta la lógica original
 
-                                // Obtener información del curso
-                                $stmt = $conexion->prepare("SELECT nombre FROM curso WHERE id = :id");
-                                $stmt->bindParam(":id", $cursoId, PDO::PARAM_INT);
-                                $stmt->execute();
-                                $cursoInfo = $stmt->fetch();
+                        $cursosKey = "cursos_" . $gradoId;
 
-                                if($gradoInfo && $cursoInfo) {
-                                    $nombreGrupo = $gradoInfo["nombre"] . " " . $cursoInfo["nombre"] . " - " . $cupos . " Cupos";
+                        if(isset($_POST[$cursosKey]) && is_array($_POST[$cursosKey])) {
 
-                                    $datosGrupo = array(
-                                        "oferta_educativa_id" => $ofertaEducativaId,
-                                        "curso_id" => $cursoId,
-                                        "nombre" => $nombreGrupo,
-                                        "cupos" => $cupos
-                                    );
+                            foreach($_POST[$cursosKey] as $cursoId) {
 
-                                    $respuestaGrupo = ModeloOfertaEducativa::mdlIngresarGrupo("grupo", $datosGrupo);
+                                $cuposKey = "cupos_" . $gradoId . "_" . $cursoId;
+                                $cupos = isset($_POST[$cuposKey]) ? intval($_POST[$cuposKey]) : 0;
 
-                                    if($respuestaGrupo == "ok") {
-                                        $gruposCreados++;
-                                    } else {
-                                        $errores++;
+                                if($cupos > 0) {
+                                    // Usar conexión directa para obtener información
+                                    $conexion = Conexion::conectar();
+
+                                    // Obtener información del grado
+                                    $stmt = $conexion->prepare("SELECT nombre FROM grado WHERE id = :id");
+                                    $stmt->bindParam(":id", $gradoId, PDO::PARAM_INT);
+                                    $stmt->execute();
+                                    $gradoInfo = $stmt->fetch();
+
+                                    // Obtener información del curso
+                                    $stmt = $conexion->prepare("SELECT nombre FROM curso WHERE id = :id");
+                                    $stmt->bindParam(":id", $cursoId, PDO::PARAM_INT);
+                                    $stmt->execute();
+                                    $cursoInfo = $stmt->fetch();
+
+                                    if($gradoInfo && $cursoInfo) {
+                                        $nombreGrupo = $gradoInfo["nombre"] . " " . $cursoInfo["nombre"] . " - " . $cupos . " Cupos";
+
+                                        // Se añaden los nuevos campos para mantener consistencia
+                                        $datosGrupo = array(
+                                            "oferta_educativa_id" => $ofertaEducativaId,
+                                            "curso_id"          => $cursoId,
+                                            "nombre"            => $nombreGrupo,
+                                            "cupos"             => $cupos,
+                                            "tipo"              => "Regular",
+                                            "grupo_padre_id"    => null
+                                        );
+
+                                        $respuestaGrupo = ModeloOfertaEducativa::mdlIngresarGrupo("grupo", $datosGrupo);
+
+                                        if($respuestaGrupo == "ok") {
+                                            $gruposCreados++;
+                                        } else {
+                                            $errores++;
+                                        }
                                     }
                                 }
                             }
                         }
                     }
+                    // =========================================================================
+                    // FIN DE LA LÓGICA CORREGIDA
+                    // =========================================================================
                 }
 
                 if($gruposCreados > 0) {
@@ -203,11 +265,33 @@ class ControladorOfertaEducativa {
     }
 
     /*=============================================
-    OBTENER SEDES
+    OBTENER SEDES CON VALIDACIÓN DE ACCESO
     =============================================*/
 
     static public function ctrObtenerSedes() {
+        if (!BackendProtector::protectController('oferta_ver')) {
+            return array();
+        }
         $respuesta = ModeloOfertaEducativa::mdlObtenerSedes();
+        return $respuesta;
+    }
+
+    /*=============================================
+    OBTENER GRUPOS MULTIGRADO
+    =============================================*/
+
+    static public function ctrObtenerGruposMultigrado() {
+        // Log para debug
+        error_log("ctrObtenerGruposMultigrado - Iniciando");
+        
+        if (!BackendProtector::protectController('oferta_ver')) {
+            error_log("ctrObtenerGruposMultigrado - Sin permisos");
+            return array();
+        }
+        
+        $respuesta = ModeloOfertaEducativa::mdlObtenerGruposMultigrado();
+        error_log("ctrObtenerGruposMultigrado - Respuesta: " . json_encode($respuesta));
+        
         return $respuesta;
     }
 
@@ -352,45 +436,67 @@ class ControladorOfertaEducativa {
 
     static public function ctrEditarGrupo() {
 
+        if (!BackendProtector::protectController('oferta_editar')) {
+            return;
+        }
+
         if(isset($_POST["idGrupo"])) {
 
-            if(!empty($_POST["idGrupo"]) &&
-                !empty($_POST["editarCursoGrupo"]) &&
-                !empty($_POST["editarCuposGrupo"]) &&
-                !empty($_POST["editarNombreGrupo"])) {
-
-                $tabla = "grupo";
-                $datos = array(
-                    "id" => $_POST["idGrupo"],
-                    "curso_id" => $_POST["editarCursoGrupo"],
-                    "cupos" => $_POST["editarCuposGrupo"],
-                    "nombre" => $_POST["editarNombreGrupo"]
-                );
-
-                $respuesta = ModeloOfertaEducativa::mdlEditarGrupo($tabla, $datos);
-
-                if($respuesta == "ok") {
-                    echo '<script>
-                        Swal.fire({
-                            icon: "success",
-                            title: "Correcto",
-                            text: "El grupo ha sido actualizado correctamente",
-                            showConfirmButton: true,
-                            confirmButtonText: "Cerrar"
-                        }).then(function(result) {
-                            if (result.value) {
-                                window.location = "oferta";
-                            }
-                        });
-                    </script>';
-                }
-
-            } else {
+            if(empty($_POST["editarNombreGrupo"]) || !isset($_POST["editarCuposGrupo"]) || empty($_POST["editarTipoGrupo"])) {
                 echo '<script>
                     Swal.fire({
                         icon: "error",
                         title: "Error",
-                        text: "Todos los campos son requeridos para editar el grupo",
+                        text: "Faltan datos requeridos para editar el grupo.",
+                        showConfirmButton: true,
+                        confirmButtonText: "Cerrar"
+                    }).then(function(result) {
+                        window.location = "oferta";
+                    });
+                </script>';
+                return;
+            }
+
+            $datos = array(
+                "id" => $_POST["idGrupo"],
+                "nombre" => $_POST["editarNombreGrupo"],
+                "cupos" => $_POST["editarCuposGrupo"],
+                "tipo" => $_POST["editarTipoGrupo"],
+                "grupo_padre_id" => null
+            );
+
+            if ($datos["tipo"] == 'Regular') {
+                if (isset($_POST["grupoMultigrado"]) && !empty($_POST["editarGrupoPadre"])) {
+                    $datos["grupo_padre_id"] = $_POST["editarGrupoPadre"];
+                } else {
+                    $datos["grupo_padre_id"] = null;
+                    $datos["tipo"] = 'Regular';
+                }
+            }
+
+            $tabla = "grupo";
+            $respuesta = ModeloOfertaEducativa::mdlEditarGrupo($tabla, $datos);
+
+            if($respuesta == "ok") {
+                echo '<script>
+                    Swal.fire({
+                        icon: "success",
+                        title: "Correcto",
+                        text: "El grupo ha sido actualizado correctamente",
+                        showConfirmButton: true,
+                        confirmButtonText: "Cerrar"
+                    }).then(function(result) {
+                        if (result.value) {
+                            window.location = "oferta";
+                        }
+                    });
+                </script>';
+            } else {
+                 echo '<script>
+                    Swal.fire({
+                        icon: "error",
+                        title: "Error",
+                        text: "No se pudo actualizar el grupo. Verifique los logs.",
                         showConfirmButton: true,
                         confirmButtonText: "Cerrar"
                     }).then(function(result) {
@@ -439,6 +545,10 @@ class ControladorOfertaEducativa {
     =============================================*/
 
     static public function ctrProcesarDatosParaVista() {
+        if (!BackendProtector::protectController('oferta_ver')) {
+            return array();
+        }
+
         $datos = self::ctrMostrarOfertaEducativaConGrupos(null, null);
 
         if(empty($datos)) {
@@ -468,7 +578,9 @@ class ControladorOfertaEducativa {
                     "id" => $fila["grupo_id"],
                     "nombre" => $fila["nombre_grupo"],
                     "cupos" => $fila["cupos"],
-                    "curso" => $fila["nombre_curso"]
+                    "curso" => $fila["nombre_curso"],
+                    "tipo" => $fila["tipo"] ?? "Regular",
+                    "grupo_padre_id" => $fila["grupo_padre_id"]
                 );
             }
         }
@@ -505,10 +617,10 @@ class ControladorOfertaEducativa {
         if(isset($_GET["idGrupo"])) {
 
             $grupoId = $_GET["idGrupo"];
-            
+
             // Verificar si el grupo tiene estudiantes matriculados
             $tieneEstudiantes = ModeloOfertaEducativa::mdlVerificarEstudiantesEnGrupo($grupoId);
-            
+
             if($tieneEstudiantes) {
                 echo '<script>
                 Swal.fire({
@@ -523,24 +635,24 @@ class ControladorOfertaEducativa {
                 </script>';
                 return;
             }
-            
+
             // Verificar si es el último grupo y tiene referencias
             $stmt = Conexion::conectar()->prepare("SELECT oferta_educativa_id FROM grupo WHERE id = :id");
             $stmt->bindParam(":id", $grupoId, PDO::PARAM_INT);
             $stmt->execute();
             $grupoInfo = $stmt->fetch(PDO::FETCH_ASSOC);
-            
+
             $totalGrupos = 1;
             $esUltimoGrupo = false;
-            
+
             if($grupoInfo) {
                 $ofertaId = $grupoInfo['oferta_educativa_id'];
                 $totalGrupos = ModeloOfertaEducativa::mdlContarGruposEnOferta($ofertaId);
                 $esUltimoGrupo = ($totalGrupos == 1);
-                
+
                 if($esUltimoGrupo) {
                     $referencias = ModeloOfertaEducativa::mdlVerificarReferenciasOferta($ofertaId);
-                    
+
                     if(!empty($referencias)) {
                         $listaReferencias = implode(", ", $referencias);
                         echo '<script>
@@ -558,7 +670,7 @@ class ControladorOfertaEducativa {
                     }
                 }
             }
-            
+
             $tabla = "grupo";
             $respuesta = ModeloOfertaEducativa::mdlBorrarGrupo($tabla, $grupoId);
 
@@ -567,7 +679,7 @@ class ControladorOfertaEducativa {
                 if($esUltimoGrupo) {
                     $mensaje .= " y la oferta educativa también fue eliminada por no tener más grupos";
                 }
-                
+
                 echo '<script>
                 Swal.fire({
                     icon: "success",

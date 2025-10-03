@@ -147,9 +147,9 @@
 
 				<ul class="treeview-menu">
 					<li>						
-						<a href="perfil-laboral">							
+						<a href="perfil-profesional">
 							<i class="fa fa-circle-o"></i>
-							<span>Gestionar Perfil</span>
+							<span>Perfil Profesional</span>
 						</a>
 					</li>
 

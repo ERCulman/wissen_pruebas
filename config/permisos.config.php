@@ -188,7 +188,19 @@ class PermisosConfig {
                     'asignacion_docente_editar' => 'Editar horas semanales de docentes',
                     'asignacion_docente_eliminar' => 'Eliminar asignaciones de docentes'
                 )
-            )
+            ),
+            
+            'perfil-profesional' => array(
+                'nombre_display' => 'Perfil Profesional',
+                'descripcion' => 'Módulo para gestionar perfiles profesionales',
+                'acciones' => array(
+                    'perfil_profesional_ver' => 'Ver perfiles profesionales',
+                    'perfil_profesional_crear' => 'Crear perfiles profesionales',
+                    'perfil_profesional_editar' => 'Editar perfiles profesionales',
+                    'perfil_profesional_eliminar' => 'Eliminar perfiles profesionales'
+                )
+            ),
+
         );
     }
     

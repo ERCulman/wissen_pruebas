@@ -17,6 +17,21 @@ if(isset($_POST['accion']) && $_POST['accion'] == 'obtenerCursos') {
     echo json_encode($respuesta);
 }
 
+// OBTENER GRUPOS MULTIGRADO (PARA USAR COMO GRUPOS PADRE)
+if(isset($_POST['accion']) && $_POST['accion'] == 'obtenerGruposMultigrado') {
+    try {
+        // Consulta directa simple
+        $stmt = Conexion::conectar()->prepare("SELECT id, nombre FROM grupo WHERE tipo = 'Multigrado' AND curso_id IS NULL ORDER BY nombre");
+        $stmt->execute();
+        $respuesta = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode($respuesta);
+        
+    } catch (Exception $e) {
+        echo json_encode(array());
+    }
+}
+
 // OBTENER CURSOS OCUPADOS POR GRADO
 if(isset($_POST['accion']) && $_POST['accion'] == 'obtenerCursosOcupados') {
     $gradoId = $_POST['gradoId'];
@@ -56,7 +71,7 @@ if(isset($_POST['accion']) && $_POST['accion'] == 'obtenerDatosGrupo') {
     $ofertaId = $_POST['ofertaId'];
 
     $stmt = Conexion::conectar()->prepare("SELECT 
-        g.id as grupo_id, g.nombre as nombre_grupo, g.cupos,
+        g.id as grupo_id, g.nombre as nombre_grupo, g.cupos, g.tipo, g.grupo_padre_id,
         oa.id as oferta_id, oa.grado_id, oa.anio_lectivo_id,
         sj.id as sede_jornada_id, sj.sede_id, sj.jornada_id,
         al.anio, s.nombre_sede, j.nombre as nombre_jornada,
@@ -70,7 +85,7 @@ if(isset($_POST['accion']) && $_POST['accion'] == 'obtenerDatosGrupo') {
         INNER JOIN jornada j ON sj.jornada_id = j.id
         INNER JOIN grado gr ON oa.grado_id = gr.id
         INNER JOIN nivel_educativo ne ON gr.nivel_educativo_id = ne.id
-        INNER JOIN curso c ON g.curso_id = c.id
+        LEFT JOIN curso c ON g.curso_id = c.id
         WHERE g.id = :grupo_id AND oa.id = :oferta_id");
 
     $stmt->bindParam(":grupo_id", $grupoId, PDO::PARAM_INT);

@@ -161,14 +161,14 @@ require_once "modelos/oferta.modelo.php";
                                 echo '<td>'.$indicador.$grupo["nombre"].'</td>';
 
                                 // Acciones por grupo
-                                echo '<td style="text-align: center;">
-                                    <button class="btn btn-info btn-sm btnVerGrupo" 
+                                echo '<td style="text-align: center; white-space: nowrap;">
+                                    <button class="btn btn-info btn-sm btnVerGrupo" style="margin-right: 2px;" 
                                     data-grupo-id="'.$grupo["id"].'" 
                                     data-oferta-id="'.$value["id"].'"
                                     data-toggle="tooltip" title="Ver">
                                         <i class="fa fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-warning btn-sm btnEditarGrupo" 
+                                    <button class="btn btn-warning btn-sm btnEditarGrupo" style="margin-right: 2px;" 
                                     data-grupo-id="'.$grupo["id"].'" 
                                     data-oferta-id="'.$value["id"].'"
                                     data-toggle="tooltip" title="Editar">
@@ -325,13 +325,13 @@ require_once "modelos/oferta.modelo.php";
     </div>
 
     <!-- =======================================
-      MODAL EDITAR GRUPO
+      MODAL EDITAR GRUPO (CORREGIDO)
     =======================================-->
 
     <div id="modalEditarGrupo" class="modal fade" role="dialog">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
-          <form role ="form" method="post" enctype="multipart/form-data" id="formEditarGrupo">
+          <form role="form" method="post" enctype="multipart/form-data" id="formEditarGrupo">
             <div class="modal-header" style="background: #3c8ebdff; color: white;">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
               <h4 class="modal-title"><i class="fa fa-pencil"></i> Editar Grupo</h4>
@@ -339,22 +339,23 @@ require_once "modelos/oferta.modelo.php";
             <div class="modal-body">
               <div class="box-body">
 
-                <!-- CAMPO OCULTO PARA EL ID DEL GRUPO -->
+                <!-- CAMPOS OCULTOS -->
                 <input type="hidden" name="idGrupo" id="idGrupo">
                 <input type="hidden" name="ofertaEducativaId" id="ofertaEducativaId">
+                <input type="hidden" name="editarTipoGrupo" id="editarTipoGrupo">
 
                 <!-- INFORMACIÓN DE CONTEXTO (SOLO LECTURA) -->
                 <div class="row">
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Año Lectivo:</label>
-                      <input type="text" class="form-control" id="editarGrupoAnio" readonly>
+                      <input type="text" class="form-control input-lg" id="editarGrupoAnio" readonly>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Sede:</label>
-                      <input type="text" class="form-control" id="editarGrupoSede" readonly>
+                      <input type="text" class="form-control input-lg" id="editarGrupoSede" readonly>
                     </div>
                   </div>
                 </div>
@@ -363,22 +364,13 @@ require_once "modelos/oferta.modelo.php";
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Jornada:</label>
-                      <input type="text" class="form-control" id="editarGrupoJornada" readonly>
+                      <input type="text" class="form-control input-lg" id="editarGrupoJornada" readonly>
                     </div>
                   </div>
                   <div class="col-md-6">
                     <div class="form-group">
                       <label>Nivel Educativo:</label>
-                      <input type="text" class="form-control" id="editarGrupoNivel" readonly>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Grado:</label>
-                      <input type="text" class="form-control" id="editarGrupoGrado" readonly>
+                      <input type="text" class="form-control input-lg" id="editarGrupoNivel" readonly>
                     </div>
                   </div>
                 </div>
@@ -388,34 +380,65 @@ require_once "modelos/oferta.modelo.php";
                 <!-- CAMPOS EDITABLES -->
                 <div class="row">
                   <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Curso:</label>
-                      <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-book"></i></span>
-                        <select class="form-control input-lg" name="editarCursoGrupo" id="editarCursoGrupo" required>
-                          <option value="">Seleccione un Curso...</option>
-                        </select>
+                      <div class="form-group">
+                          <label>Grado:</label>
+                          <input type="text" class="form-control input-lg" id="editarGrupoGrado" readonly>
                       </div>
-                    </div>
                   </div>
-                  <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Cupos:</label>
-                      <div class="input-group">
-                        <span class="input-group-addon"><i class="fa fa-users"></i></span>
-                        <input type="number" class="form-control input-lg" name="editarCuposGrupo" id="editarCuposGrupo" min="1" max="50" required>
+                  <div class="col-md-6" id="contenedorEditarCurso">
+                      <div class="form-group">
+                          <label>Curso:</label>
+                          <input type="text" class="form-control input-lg" id="editarCursoGrupo" name="editarCursoGrupo" readonly>
                       </div>
-                    </div>
                   </div>
                 </div>
 
                 <div class="row">
-                  <div class="col-md-12">
-                    <div class="form-group">
-                      <label>Nombre del Grupo:</label>
-                      <input type="text" class="form-control" name="editarNombreGrupo" id="editarNombreGrupo" readonly style="background-color: #f9f9f9;">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Cupos:</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-users"></i></span>
+                                <input type="number" class="form-control input-lg" name="editarCuposGrupo" id="editarCuposGrupo" min="0" required>
+                            </div>
+                        </div>
                     </div>
-                  </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nombre del Grupo:</label>
+                            <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-tag"></i></span>
+                                <input type="text" class="form-control input-lg" name="editarNombreGrupo" id="editarNombreGrupo" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN PARA ASOCIAR A GRUPO MULTIGRADO -->
+                <div id="seccionAsociarMultigrado" style="display: none;">
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>
+                                    <input type="checkbox" name="grupoMultigrado" id="grupoMultigrado"> Asociar a Grupo Multigrado
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="contenedorGrupoPadre" style="display: none;">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Grupos Padre:</label>
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-sitemap"></i></span>
+                                    <select class="form-control input-lg" name="editarGrupoPadre" id="editarGrupoPadre">
+                                        <option value="">Seleccione un Grupo Padre...</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
               </div>

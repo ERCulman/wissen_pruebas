@@ -30,6 +30,9 @@ return [
     'gestionar-permisos' => ['archivo' => 'gestionar-permisos.php', 'permiso' => 'permisos_asignar'],
     'asignar-roles' => ['archivo' => 'asignar-roles.php', 'permiso' => 'roles_ver'],
     'asignacion-docente-asignaturas' => ['archivo' => 'asignacion-docente-asignaturas.php', 'permiso' => 'asignacion_docente_ver'],
+    'perfil-profesional' => ['archivo' => 'perfil-profesional.php', 'permiso' => 'perfil_profesional_ver'],
+
+
 
     // NOTA: Tus otras rutas como "perfil-laboral", "estudiantes", etc.,
     // deberían ser agregadas aquí siguiendo el mismo formato. Por ejemplo:
