@@ -126,13 +126,23 @@ if (!$contexto["acceso"]) {
                   <!-- ASIGNATURAS DISPONIBLES -->
                   <div id="contenedorAsignaturas" style="display: none;">
                     <h5>Asignaturas Disponibles</h5>
-                    <div id="listaAsignaturas" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
+                    <div id="listaAsignaturas" class="row" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; padding: 10px; border-radius: 4px;">
                     </div>
                   </div>
 
                   <!-- ASIGNATURAS ASIGNADAS -->
                   <div id="contenedorAsignadas" style="display: none; margin-top: 20px;">
-                    <h5 id="tituloAsignadas">Asignaturas Asignadas</h5>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <h5 id="tituloAsignadas">Asignaturas Asignadas</h5>
+                      </div>
+                      <div class="col-md-6">
+                        <div id="contenedorPeriodos" style="display: none;">
+                          <small><strong>Períodos:</strong></small>
+                          <div id="listaPeriodos" style="display: inline-block; margin-left: 10px;"></div>
+                        </div>
+                      </div>
+                    </div>
                     <div class="alert alert-info" id="infoHoras" style="display: none;">
                       <strong>Horas asignadas:</strong> <span id="horasAsignadas">0</span> / <span id="horasMaximas">0</span>
                     </div>
@@ -157,6 +167,221 @@ if (!$contexto["acceso"]) {
       </section>
     </div>
   </div>
+<!-- MODAL VER ASIGNACIÓN -->
+<div class="modal fade" id="modalVerAsignacion" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background: #3c8ebdff; color: white;">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><i class="fa fa-eye"></i> Ver Asignación Académica</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <table style="border: none; width: 100%; font-size: 16px;">
+              <tr style="border: none;">
+                <td style="border: none; padding: 12px; font-weight: bold; width: 30%;">Grado:</td>
+                <td style="border: none; padding: 12px;" id="verGrado"></td>
+              </tr>
+              <tr style="border: none;">
+                <td style="border: none; padding: 12px; font-weight: bold;">Grupo:</td>
+                <td style="border: none; padding: 12px;" id="verGrupo"></td>
+              </tr>
+              <tr style="border: none;">
+                <td style="border: none; padding: 12px; font-weight: bold;">Asignatura:</td>
+                <td style="border: none; padding: 12px;" id="verAsignatura"></td>
+              </tr>
+              <tr style="border: none;">
+                <td style="border: none; padding: 12px; font-weight: bold;">IHS Asignada:</td>
+                <td style="border: none; padding: 12px;" id="verIHS"></td>
+              </tr>
+              <tr style="border: none;">
+                <td style="border: none; padding: 12px; font-weight: bold;">Períodos Asignados:</td>
+                <td style="border: none; padding: 12px;" id="verPeriodos"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL VER MULTIGRADO -->
+<div class="modal fade" id="modalVerMultigrado" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background: #3c8ebdff; color: white;">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><i class="fa fa-eye"></i> Ver Asignación Multigrado</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <table style="border: none; width: 100%; font-size: 16px;">
+              <tr style="border: none;">
+                <td style="border: none; padding: 12px; font-weight: bold; width: 30%;">Asignatura:</td>
+                <td style="border: none; padding: 12px;" id="verMultigradoAsignatura"></td>
+              </tr>
+              <tr style="border: none;">
+                <td style="border: none; padding: 12px; font-weight: bold;">Grados:</td>
+                <td style="border: none; padding: 12px;" id="verMultigradoGrados"></td>
+              </tr>
+              <tr style="border: none;">
+                <td style="border: none; padding: 12px; font-weight: bold;">Grupos:</td>
+                <td style="border: none; padding: 12px;" id="verMultigradoGrupos"></td>
+              </tr>
+              <tr style="border: none;">
+                <td style="border: none; padding: 12px; font-weight: bold;">IHS:</td>
+                <td style="border: none; padding: 12px;" id="verMultigradoIHS"></td>
+              </tr>
+              <tr style="border: none;">
+                <td style="border: none; padding: 12px; font-weight: bold;">Períodos Asignados:</td>
+                <td style="border: none; padding: 12px;" id="verMultigradoPeriodos"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR MULTIGRADO -->
+<div class="modal fade" id="modalEditarMultigrado" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background: #3c8ebdff; color: white;">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><i class="fa fa-edit"></i> Editar Asignación Multigrado</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+            <table style="border: none; width: 100%; margin-bottom: 20px; font-size: 16px;">
+              <tr style="border: none;">
+                <td style="border: none; padding: 10px; font-weight: bold; width: 25%;">Grupo Multigrado:</td>
+                <td style="border: none; padding: 10px;" id="editarMultigradoGrupo"></td>
+              </tr>
+              <tr style="border: none;">
+                <td style="border: none; padding: 10px; font-weight: bold;">Asignatura:</td>
+                <td style="border: none; padding: 10px;" id="editarMultigradoAsignatura"></td>
+              </tr>
+              <tr style="border: none;">
+                <td style="border: none; padding: 10px; font-weight: bold;">IH:</td>
+                <td style="border: none; padding: 10px;" id="editarMultigradoIH"></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-6">
+                <h5>Grados del Multigrado:</h5>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label><strong>Aplicar cambios a períodos:</strong></label>
+                  <div id="contenedorPeriodosMultigrado" style="margin-top: 5px;">
+                    <!-- Los checkboxes se cargan dinámicamente -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <table class="table table-bordered" id="tablaEditarMultigrado">
+              <thead>
+                <tr>
+                  <th>Grado</th>
+                  <th>Grupo</th>
+                  <th>IHS</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnGuardarEdicionMultigrado">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ASIGNACIÓN -->
+<div class="modal fade" id="modalEditarAsignacion" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" style="background: #3c8ebdff; color: white;">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title"><i class="fa fa-edit"></i> Editar Asignación Académica</h4>
+      </div>
+      <div class="modal-body">
+        <div class="box-body">
+          <!-- INFORMACIÓN DE SOLO LECTURA -->
+          <div class="row">
+            <div class="col-md-12">
+              <table style="border: none; width: 100%; margin-bottom: 20px; font-size: 16px;">
+                <tr style="border: none;">
+                  <td style="border: none; padding: 10px; font-weight: bold; width: 25%;">Grado:</td>
+                  <td style="border: none; padding: 10px;" id="editarGrado"></td>
+                </tr>
+                <tr style="border: none;">
+                  <td style="border: none; padding: 10px; font-weight: bold;">Grupo:</td>
+                  <td style="border: none; padding: 10px;" id="editarGrupo"></td>
+                </tr>
+                <tr style="border: none;">
+                  <td style="border: none; padding: 10px; font-weight: bold;">Asignatura:</td>
+                  <td style="border: none; padding: 10px;" id="editarAsignatura"></td>
+                </tr>
+                <tr style="border: none;">
+                  <td style="border: none; padding: 10px; font-weight: bold;">IHS Asignada:</td>
+                  <td style="border: none; padding: 10px;" id="editarIHS"></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          
+          <!-- CAMPOS EDITABLES -->
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Estado:</label>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-flag"></i></span>
+                <select class="form-control input-lg" id="editarEstado">
+                  <!-- Las opciones se cargan dinámicamente desde la base de datos -->
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group col-md-12">
+              <label>Períodos:</label>
+              <div id="editarPeriodos" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; background-color: #f9f9f9; font-size: 15px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-primary" id="btnGuardarEdicion">Guardar Cambios</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 

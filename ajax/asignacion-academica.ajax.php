@@ -30,8 +30,47 @@ class AjaxAsignacionAcademica {
     public function ajaxEliminarAsignacion() {
         echo json_encode(ControladorAsignacionAcademica::ctrEliminarAsignacion());
     }
+    public function ajaxObtenerPeriodos() {
+        echo json_encode(ControladorAsignacionAcademica::ctrObtenerPeriodos());
+    }
+    public function ajaxObtenerAsignaturasHabilitadas() {
+        echo json_encode(ControladorAsignacionAcademica::ctrObtenerAsignaturasHabilitadas($_POST["cuerpo_docente_id"]));
+    }
+    public function ajaxActualizarEstadoAsignaciones() {
+        echo json_encode(ControladorAsignacionAcademica::ctrActualizarEstadoAsignaciones());
+    }
+    public function ajaxObtenerDetalleAsignacion() {
+        echo json_encode(ControladorAsignacionAcademica::ctrObtenerDetalleAsignacion());
+    }
+    public function ajaxVerificarRelacionesActivas() {
+        echo json_encode(ControladorAsignacionAcademica::ctrVerificarRelacionesActivas());
+    }
+    public function ajaxEliminarAsignacionPorPeriodo() {
+        echo json_encode(ControladorAsignacionAcademica::ctrEliminarAsignacionPorPeriodo());
+    }
     public function ajaxCalcularHoras() {
         echo json_encode(ControladorAsignacionAcademica::ctrCalcularHorasAsignadas($_POST["cuerpo_docente_id"]));
+    }
+    public function ajaxObtenerEstadosAsignacion() {
+        echo json_encode(ControladorAsignacionAcademica::ctrObtenerEstadosAsignacion());
+    }
+    public function ajaxActualizarAsignacionEspecifica() {
+        echo json_encode(ControladorAsignacionAcademica::ctrActualizarAsignacionEspecifica());
+    }
+    public function ajaxEliminarAsignacionCompleta() {
+        echo json_encode(ControladorAsignacionAcademica::ctrEliminarAsignacionCompleta());
+    }
+    public function ajaxObtenerDatosMultigrado() {
+        echo json_encode(ControladorAsignacionAcademica::ctrObtenerDatosMultigrado());
+    }
+    public function ajaxObtenerDatosEdicionMultigrado() {
+        echo json_encode(ControladorAsignacionAcademica::ctrObtenerDatosEdicionMultigrado());
+    }
+    public function ajaxActualizarMultigrado() {
+        echo json_encode(ControladorAsignacionAcademica::ctrActualizarMultigrado());
+    }
+    public function ajaxVerificarRelacionesAsignacion() {
+        echo json_encode(ControladorAsignacionAcademica::ctrVerificarRelacionesAsignacion());
     }
 }
 
