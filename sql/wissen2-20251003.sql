@@ -58,7 +58,7 @@ CREATE TABLE `acciones` (
   UNIQUE KEY `uk_nombre_accion` (`nombre_accion`),
   KEY `idx_acciones_modulo_asociado` (`modulo_asociado`),
   KEY `idx_acciones_estado` (`estado`)
-) ENGINE=InnoDB AUTO_INCREMENT=165 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=169 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -67,7 +67,7 @@ CREATE TABLE `acciones` (
 
 LOCK TABLES `acciones` WRITE;
 /*!40000 ALTER TABLE `acciones` DISABLE KEYS */;
-INSERT INTO `acciones` VALUES (1,'usuarios_crear','Crear nuevos usuarios','Usuarios','usuarios','Activo'),(2,'usuarios_ver','Ver lista de usuarios','Usuarios','usuarios','Activo'),(3,'usuarios_editar','Editar datos de usuarios','Usuarios','usuarios','Activo'),(4,'usuarios_eliminar','Eliminar usuarios','Usuarios','usuarios','Activo'),(5,'institucion_crear','Crear nueva institución','Institución','institucion','Activo'),(6,'institucion_ver','Ver datos de institución','Institución','institucion','Activo'),(7,'institucion_editar','Editar datos de institución','Institución','institucion','Activo'),(8,'sedes_crear','Crear nuevas sedes','Sedes','sedes','Activo'),(9,'sedes_ver','Ver lista de sedes','Sedes','sedes','Activo'),(10,'sedes_editar','Editar datos de sedes','Sedes','sedes','Activo'),(11,'sedes_eliminar','Eliminar sedes','Sedes','sedes','Activo'),(12,'jornadas_crear','Crear nuevas jornadas','Jornadas','jornadas','Activo'),(13,'jornadas_ver','Ver lista de jornadas','Jornadas','jornadas','Activo'),(14,'jornadas_editar','Editar jornadas','Jornadas','jornadas','Activo'),(15,'jornadas_eliminar','Eliminar jornadas','Jornadas','jornadas','Activo'),(16,'niveles_crear','Crear niveles educativos','Niveles Educativos','niveleducativo','Activo'),(17,'niveles_ver','Ver niveles educativos','Niveles Educativos','niveleducativo','Activo'),(18,'niveles_editar','Editar niveles educativos','Niveles Educativos','niveleducativo','Activo'),(19,'niveles_eliminar','Eliminar niveles educativos','Niveles Educativos','niveleducativo','Activo'),(20,'grados_crear','Crear nuevos grados','Grados','grados','Activo'),(21,'grados_ver','Ver lista de grados','Grados','grados','Activo'),(22,'grados_editar','Editar grados','Grados','grados','Activo'),(23,'grados_eliminar','Eliminar grados','Grados','grados','Activo'),(24,'cursos_crear','Crear nuevos cursos','Cursos','cursos','Activo'),(25,'cursos_ver','Ver lista de cursos','Cursos','cursos','Activo'),(26,'cursos_editar','Editar cursos','Cursos','cursos','Activo'),(27,'cursos_eliminar','Eliminar cursos','Cursos','cursos','Activo'),(28,'oferta_crear','Crear oferta educativa','Oferta Educativa','oferta','Activo'),(29,'oferta_ver','Ver oferta educativa','Oferta Educativa','oferta','Activo'),(30,'oferta_editar','Editar oferta educativa','Oferta Educativa','oferta','Activo'),(31,'oferta_eliminar','Eliminar oferta educativa','Oferta Educativa','oferta','Activo'),(32,'matricula_crear','Registrar nueva matrícula','Matrícula','matricula','Activo'),(33,'matricula_ver','Ver matrículas','Matrícula','matricula','Activo'),(34,'matricula_editar','Editar matrícula','Matrícula','matricula','Activo'),(35,'matricula_eliminar','Eliminar matrícula','Matrícula','matricula','Activo'),(36,'estructura-curricular_crear_area','Crear estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(37,'estructura-curricular_ver_area','Ver estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(38,'estructura-curricular_editar_area','Editar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(39,'estructura-curricular_eliminar_area','Eliminar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(40,'periodos_crear','Crear períodos académicos','Períodos','periodos','Activo'),(41,'periodos_ver','Ver períodos académicos','Períodos','periodos','Activo'),(42,'periodos_editar','Editar períodos académicos','Períodos','periodos','Activo'),(43,'periodos_eliminar','Eliminar períodos académicos','Períodos','periodos','Activo'),(44,'roles_crear','Crear nuevos roles','Gestión de Roles','asignar-roles','Activo'),(45,'roles_ver','Ver roles del sistema','Gestión de Roles','asignar-roles','Activo'),(46,'roles_editar','Editar roles','Gestión de Roles','asignar-roles','Activo'),(47,'permisos_asignar','Asignar permisos a roles','Roles y Permisos','gestionar-permisos','Activo'),(48,'permisos_ver','Ver permisos del sistema','Roles y Permisos','gestionar-acciones','Activo'),(49,'reportes_generar','Generar reportes','Reportes',NULL,'Activo'),(50,'reportes_ver','Ver reportes generados','Reportes',NULL,'Activo'),(51,'reportes_exportar','Exportar reportes','Reportes',NULL,'Activo'),(56,'estudiantes_ver','Ver listado de estudiantes','Estudiantes','estudiantes','Activo'),(57,'estudiantes_crear','Crear nuevos estudiantes','Estudiantes','estudiantes','Activo'),(58,'estudiantes_editar','Editar estudiantes existentes','Estudiantes','estudiantes','Activo'),(59,'estudiantes_eliminar','Eliminar estudiantes','Estudiantes','estudiantes','Activo'),(80,'niveleducativo_ver','Ver listado de niveles educativos','Nivel Educativo','niveleducativo','Activo'),(81,'niveleducativo_crear','Crear nuevos niveles educativos','Nivel Educativo','niveleducativo','Activo'),(82,'niveleducativo_editar','Editar niveles educativos existentes','Nivel Educativo','niveleducativo','Activo'),(83,'niveleducativo_eliminar','Eliminar niveles educativos','Nivel Educativo','niveleducativo','Activo'),(92,'estructura-curricular_ver','Ver estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(93,'estructura-curricular_crear','Crear estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(94,'estructura-curricular_editar','Editar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(95,'estructura-curricular_eliminar','Eliminar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(140,'usuarios_cambiar_estado','Activar/Desactivar usuarios','Gestión de Usuarios','usuarios','Activo'),(141,'matricula_reportes','Generar reportes de matrícula','Gestión de Matrículas','matricula','Activo'),(142,'permisos_crear','Crear nuevos permisos','Gestión de Acciones','gestionar-acciones','Activo'),(143,'permisos_editar','Editar permisos','Gestión de Acciones','gestionar-acciones','Activo'),(144,'permisos_eliminar','Eliminar permisos','Gestión de Acciones','gestionar-acciones','Activo'),(145,'permisos_revocar','Revocar permisos de roles','Asignación de Permisos','gestionar-permisos','Activo'),(146,'roles_asignar','Asignar roles a usuarios','Gestión de Roles','asignar-roles','Activo'),(147,'roles_eliminar','Eliminar roles','Gestión de Roles','asignar-roles','Activo'),(148,'sistema_sincronizar','Sincronizar sistema de permisos','Sincronización del Sistema','sincronizar-permisos','Activo'),(149,'sistema_diagnosticar','Diagnosticar problemas del sistema','Sincronización del Sistema','sincronizar-permisos','Activo'),(150,'sistema_reparar','Reparar sistema automáticamente','Sincronización del Sistema','sincronizar-permisos','Activo'),(151,'curriculo_crear','Crear estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(152,'curriculo_ver','Ver estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(153,'curriculo_editar','Editar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(154,'curriculo_eliminar','Eliminar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(155,'asignacion_docente_ver','Ver asignaciones de docentes','Asignación Docente Asignaturas','asignacion-docente-asignaturas','Activo'),(156,'asignacion_docente_crear','Crear asignaciones de docentes','Asignación Docente Asignaturas','asignacion-docente-asignaturas','Activo'),(157,'asignacion_docente_eliminar','Eliminar asignaciones de docentes','Asignación Docente Asignaturas','asignacion-docente-asignaturas','Activo'),(158,'asignacion_docente_editar','Editar horas semanales de docentes','Asignación Docente Asignaturas','asignacion-docente-asignaturas','Activo'),(160,'perfil_profesional_crear','Ver perfil profesional registradas','Perfil Profesional','perfil-profesional','Activo'),(161,'perfil_profesional_editar','Ediatar Perfil Profesional','Perfil Profesional','perfil-profesional','Activo'),(162,'perfil_profesional_eliminar','Eliminar Perfil Profesional','Perfil Profesional','perfil-profesional','Activo'),(163,'perfil_profesional_reportes','Generar Reportes Perfil Profesional','Perfil Profesional','perfil-profesional','Activo'),(164,'perfil_profesional_ver','Ver Perfil Profesional','Perfil Profesional','perfil-profesional','Activo');
+INSERT INTO `acciones` VALUES (1,'usuarios_crear','Crear nuevos usuarios','Usuarios','usuarios','Activo'),(2,'usuarios_ver','Ver lista de usuarios','Usuarios','usuarios','Activo'),(3,'usuarios_editar','Editar datos de usuarios','Usuarios','usuarios','Activo'),(4,'usuarios_eliminar','Eliminar usuarios','Usuarios','usuarios','Activo'),(5,'institucion_crear','Crear nueva institución','Institución','institucion','Activo'),(6,'institucion_ver','Ver datos de institución','Institución','institucion','Activo'),(7,'institucion_editar','Editar datos de institución','Institución','institucion','Activo'),(8,'sedes_crear','Crear nuevas sedes','Sedes','sedes','Activo'),(9,'sedes_ver','Ver lista de sedes','Sedes','sedes','Activo'),(10,'sedes_editar','Editar datos de sedes','Sedes','sedes','Activo'),(11,'sedes_eliminar','Eliminar sedes','Sedes','sedes','Activo'),(12,'jornadas_crear','Crear nuevas jornadas','Jornadas','jornadas','Activo'),(13,'jornadas_ver','Ver lista de jornadas','Jornadas','jornadas','Activo'),(14,'jornadas_editar','Editar jornadas','Jornadas','jornadas','Activo'),(15,'jornadas_eliminar','Eliminar jornadas','Jornadas','jornadas','Activo'),(16,'niveles_crear','Crear niveles educativos','Niveles Educativos','niveleducativo','Activo'),(17,'niveles_ver','Ver niveles educativos','Niveles Educativos','niveleducativo','Activo'),(18,'niveles_editar','Editar niveles educativos','Niveles Educativos','niveleducativo','Activo'),(19,'niveles_eliminar','Eliminar niveles educativos','Niveles Educativos','niveleducativo','Activo'),(20,'grados_crear','Crear nuevos grados','Grados','grados','Activo'),(21,'grados_ver','Ver lista de grados','Grados','grados','Activo'),(22,'grados_editar','Editar grados','Grados','grados','Activo'),(23,'grados_eliminar','Eliminar grados','Grados','grados','Activo'),(24,'cursos_crear','Crear nuevos cursos','Cursos','cursos','Activo'),(25,'cursos_ver','Ver lista de cursos','Cursos','cursos','Activo'),(26,'cursos_editar','Editar cursos','Cursos','cursos','Activo'),(27,'cursos_eliminar','Eliminar cursos','Cursos','cursos','Activo'),(28,'oferta_crear','Crear oferta educativa','Oferta Educativa','oferta','Activo'),(29,'oferta_ver','Ver oferta educativa','Oferta Educativa','oferta','Activo'),(30,'oferta_editar','Editar oferta educativa','Oferta Educativa','oferta','Activo'),(31,'oferta_eliminar','Eliminar oferta educativa','Oferta Educativa','oferta','Activo'),(32,'matricula_crear','Registrar nueva matrícula','Matrícula','matricula','Activo'),(33,'matricula_ver','Ver matrículas','Matrícula','matricula','Activo'),(34,'matricula_editar','Editar matrícula','Matrícula','matricula','Activo'),(35,'matricula_eliminar','Eliminar matrícula','Matrícula','matricula','Activo'),(36,'estructura-curricular_crear_area','Crear estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(37,'estructura-curricular_ver_area','Ver estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(38,'estructura-curricular_editar_area','Editar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(39,'estructura-curricular_eliminar_area','Eliminar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(40,'periodos_crear','Crear períodos académicos','Períodos','periodos','Activo'),(41,'periodos_ver','Ver períodos académicos','Períodos','periodos','Activo'),(42,'periodos_editar','Editar períodos académicos','Períodos','periodos','Activo'),(43,'periodos_eliminar','Eliminar períodos académicos','Períodos','periodos','Activo'),(44,'roles_crear','Crear nuevos roles','Gestión de Roles','asignar-roles','Activo'),(45,'roles_ver','Ver roles del sistema','Gestión de Roles','asignar-roles','Activo'),(46,'roles_editar','Editar roles','Gestión de Roles','asignar-roles','Activo'),(47,'permisos_asignar','Asignar permisos a roles','Roles y Permisos','gestionar-permisos','Activo'),(48,'permisos_ver','Ver permisos del sistema','Roles y Permisos','gestionar-acciones','Activo'),(49,'reportes_generar','Generar reportes','Reportes',NULL,'Activo'),(50,'reportes_ver','Ver reportes generados','Reportes',NULL,'Activo'),(51,'reportes_exportar','Exportar reportes','Reportes',NULL,'Activo'),(56,'estudiantes_ver','Ver listado de estudiantes','Estudiantes','estudiantes','Activo'),(57,'estudiantes_crear','Crear nuevos estudiantes','Estudiantes','estudiantes','Activo'),(58,'estudiantes_editar','Editar estudiantes existentes','Estudiantes','estudiantes','Activo'),(59,'estudiantes_eliminar','Eliminar estudiantes','Estudiantes','estudiantes','Activo'),(80,'niveleducativo_ver','Ver listado de niveles educativos','Nivel Educativo','niveleducativo','Activo'),(81,'niveleducativo_crear','Crear nuevos niveles educativos','Nivel Educativo','niveleducativo','Activo'),(82,'niveleducativo_editar','Editar niveles educativos existentes','Nivel Educativo','niveleducativo','Activo'),(83,'niveleducativo_eliminar','Eliminar niveles educativos','Nivel Educativo','niveleducativo','Activo'),(92,'estructura-curricular_ver','Ver estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(93,'estructura-curricular_crear','Crear estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(94,'estructura-curricular_editar','Editar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(95,'estructura-curricular_eliminar','Eliminar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(140,'usuarios_cambiar_estado','Activar/Desactivar usuarios','Gestión de Usuarios','usuarios','Activo'),(141,'matricula_reportes','Generar reportes de matrícula','Gestión de Matrículas','matricula','Activo'),(142,'permisos_crear','Crear nuevos permisos','Gestión de Acciones','gestionar-acciones','Activo'),(143,'permisos_editar','Editar permisos','Gestión de Acciones','gestionar-acciones','Activo'),(144,'permisos_eliminar','Eliminar permisos','Gestión de Acciones','gestionar-acciones','Activo'),(145,'permisos_revocar','Revocar permisos de roles','Asignación de Permisos','gestionar-permisos','Activo'),(146,'roles_asignar','Asignar roles a usuarios','Gestión de Roles','asignar-roles','Activo'),(147,'roles_eliminar','Eliminar roles','Gestión de Roles','asignar-roles','Activo'),(148,'sistema_sincronizar','Sincronizar sistema de permisos','Sincronización del Sistema','sincronizar-permisos','Activo'),(149,'sistema_diagnosticar','Diagnosticar problemas del sistema','Sincronización del Sistema','sincronizar-permisos','Activo'),(150,'sistema_reparar','Reparar sistema automáticamente','Sincronización del Sistema','sincronizar-permisos','Activo'),(151,'curriculo_crear','Crear estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(152,'curriculo_ver','Ver estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(153,'curriculo_editar','Editar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(154,'curriculo_eliminar','Eliminar estructura curricular','Estructura Curricular','estructura-curricular','Activo'),(155,'asignacion_docente_ver','Ver asignaciones de docentes','Asignación Docente Asignaturas','asignacion-docente-asignaturas','Activo'),(156,'asignacion_docente_crear','Crear asignaciones de docentes','Asignación Docente Asignaturas','asignacion-docente-asignaturas','Activo'),(157,'asignacion_docente_eliminar','Eliminar asignaciones de docentes','Asignación Docente Asignaturas','asignacion-docente-asignaturas','Activo'),(158,'asignacion_docente_editar','Editar horas semanales de docentes','Asignación Docente Asignaturas','asignacion-docente-asignaturas','Activo'),(160,'perfil_profesional_crear','Ver perfil profesional registradas','Perfil Profesional','perfil-profesional','Activo'),(161,'perfil_profesional_editar','Ediatar Perfil Profesional','Perfil Profesional','perfil-profesional','Activo'),(162,'perfil_profesional_eliminar','Eliminar Perfil Profesional','Perfil Profesional','perfil-profesional','Activo'),(163,'perfil_profesional_reportes','Generar Reportes Perfil Profesional','Perfil Profesional','perfil-profesional','Activo'),(164,'perfil_profesional_ver','Ver Perfil Profesional','Perfil Profesional','perfil-profesional','Activo'),(165,'asignacion_academica_ver','Ver asignaciones académicas','Asignación Académica','asignacion-academica','Activo'),(166,'asignacion_academica_crear','Crear asignaciones académicas','Asignación Académica','asignacion-academica','Activo'),(167,'asignacion_academica_editar','Editar asignaciones académicas','Asignación Académica','asignacion-academica','Activo'),(168,'asignacion_academica_eliminar','Eliminar asignaciones académicas','Asignación Académica','asignacion-academica','Activo');
 /*!40000 ALTER TABLE `acciones` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -181,7 +181,7 @@ CREATE TABLE `asignacion_academica` (
   CONSTRAINT `asignacion_academica_ibfk_2` FOREIGN KEY (`estructura_curricular_id`) REFERENCES `estructura_curricular` (`id`),
   CONSTRAINT `asignacion_academica_ibfk_3` FOREIGN KEY (`grupo_id`) REFERENCES `grupo` (`id`),
   CONSTRAINT `asignacion_academica_ibfk_4` FOREIGN KEY (`periodo_academico_id`) REFERENCES `periodo` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=59 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -190,6 +190,7 @@ CREATE TABLE `asignacion_academica` (
 
 LOCK TABLES `asignacion_academica` WRITE;
 /*!40000 ALTER TABLE `asignacion_academica` DISABLE KEYS */;
+INSERT INTO `asignacion_academica` VALUES (7,3,12,12,6,10,'Activa'),(22,3,11,12,6,2,'Activa'),(23,2,12,12,6,5,'Activa'),(29,1,10,22,2,5,'Finalizada'),(43,1,14,23,2,3,'Activa'),(44,1,14,23,4,3,'Activa'),(45,1,14,23,5,3,'Activa'),(46,1,14,23,6,3,'Activa'),(47,1,15,23,2,1,'Activa'),(48,1,15,23,4,1,'Activa'),(49,1,15,23,5,1,'Activa'),(50,1,15,23,6,1,'Activa'),(51,1,13,23,2,2,'Activa'),(52,1,13,23,4,2,'Activa'),(53,1,13,23,5,2,'Activa'),(54,1,13,23,6,2,'Activa'),(55,1,4,8,2,2,'Activa'),(56,1,4,8,4,2,'Activa'),(57,1,10,8,2,2,'Activa'),(58,1,10,8,4,2,'Activa');
 /*!40000 ALTER TABLE `asignacion_academica` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -252,6 +253,45 @@ LOCK TABLES `asignatura` WRITE;
 /*!40000 ALTER TABLE `asignatura` DISABLE KEYS */;
 INSERT INTO `asignatura` VALUES (1,'Geometría',1),(5,'Calculo',1),(8,'Estadistica',1);
 /*!40000 ALTER TABLE `asignatura` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `asistencia_clase`
+--
+
+DROP TABLE IF EXISTS `asistencia_clase`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `asistencia_clase` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `asignacion_academica_id` int NOT NULL,
+  `matricula_id` int NOT NULL,
+  `fecha` date NOT NULL,
+  `estado` enum('Presente','Ausente','Retraso') COLLATE utf8mb4_general_ci NOT NULL,
+  `minutos_retraso` int unsigned DEFAULT NULL,
+  `justificacion_estado` enum('No aplica','Sin justificar','En revisión','Aceptada','Rechazada') COLLATE utf8mb4_general_ci NOT NULL DEFAULT 'No aplica',
+  `observaciones_docente` text COLLATE utf8mb4_general_ci,
+  `registrado_por_usuario_id` int NOT NULL,
+  `fecha_registro` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_asistencia_unica` (`asignacion_academica_id`,`matricula_id`,`fecha`),
+  KEY `fk_asistencia_matricula` (`matricula_id`),
+  KEY `fk_asistencia_registrador` (`registrado_por_usuario_id`),
+  KEY `idx_fecha` (`fecha`),
+  KEY `idx_justificacion_estado` (`justificacion_estado`),
+  CONSTRAINT `fk_asistencia_asignacion` FOREIGN KEY (`asignacion_academica_id`) REFERENCES `asignacion_academica` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_asistencia_matricula` FOREIGN KEY (`matricula_id`) REFERENCES `matricula` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `fk_asistencia_registrador` FOREIGN KEY (`registrado_por_usuario_id`) REFERENCES `usuarios` (`id_usuario`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `asistencia_clase`
+--
+
+LOCK TABLES `asistencia_clase` WRITE;
+/*!40000 ALTER TABLE `asistencia_clase` DISABLE KEYS */;
+/*!40000 ALTER TABLE `asistencia_clase` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -500,7 +540,7 @@ CREATE TABLE `estructura_curricular` (
   KEY `asignatura_id` (`asignatura_id`),
   CONSTRAINT `estructura_curricular_ibfk_1` FOREIGN KEY (`oferta_academica_id`) REFERENCES `oferta_academica` (`id`),
   CONSTRAINT `estructura_curricular_ibfk_2` FOREIGN KEY (`asignatura_id`) REFERENCES `asignatura` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -509,7 +549,7 @@ CREATE TABLE `estructura_curricular` (
 
 LOCK TABLES `estructura_curricular` WRITE;
 /*!40000 ALTER TABLE `estructura_curricular` DISABLE KEYS */;
-INSERT INTO `estructura_curricular` VALUES (4,3,18,5),(10,12,18,8),(11,8,19,1),(12,5,19,5);
+INSERT INTO `estructura_curricular` VALUES (4,3,18,5),(10,12,18,8),(11,8,19,1),(12,5,19,5),(13,1,22,1),(14,1,22,5),(15,1,22,8),(16,1,23,1),(17,1,23,5),(18,1,23,8);
 /*!40000 ALTER TABLE `estructura_curricular` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -565,7 +605,7 @@ CREATE TABLE `grado` (
   PRIMARY KEY (`id`),
   KEY `fk_nivel_educativo_grado` (`nivel_educativo_id`),
   CONSTRAINT `fk_nivel_educativo_grado` FOREIGN KEY (`nivel_educativo_id`) REFERENCES `nivel_educativo` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -574,7 +614,7 @@ CREATE TABLE `grado` (
 
 LOCK TABLES `grado` WRITE;
 /*!40000 ALTER TABLE `grado` DISABLE KEYS */;
-INSERT INTO `grado` VALUES (2,'2','Segundo',2);
+INSERT INTO `grado` VALUES (2,'2','Segundo',2),(4,'1','Primero',2),(5,'3','Tercero',2),(6,'4','Cuarto',2),(7,'5','Quinto',2);
 /*!40000 ALTER TABLE `grado` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -600,7 +640,7 @@ CREATE TABLE `grupo` (
   CONSTRAINT `fk_grupo_padre` FOREIGN KEY (`grupo_padre_id`) REFERENCES `grupo` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
   CONSTRAINT `grupo_ibfk_1` FOREIGN KEY (`oferta_educativa_id`) REFERENCES `oferta_academica` (`id`),
   CONSTRAINT `grupo_ibfk_2` FOREIGN KEY (`curso_id`) REFERENCES `curso` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -609,7 +649,7 @@ CREATE TABLE `grupo` (
 
 LOCK TABLES `grupo` WRITE;
 /*!40000 ALTER TABLE `grupo` DISABLE KEYS */;
-INSERT INTO `grupo` VALUES (8,18,1,'Segundo 001 - 25 Cupos',25,'Regular',NULL),(12,19,1,'Segundo 001 - 25 Cupos',25,'Regular',21),(20,18,NULL,'Primero, Segundo, Tercero',50,'Multigrado',NULL),(21,18,NULL,'Multigrado 4 y 5',50,'Multigrado',NULL);
+INSERT INTO `grupo` VALUES (8,18,1,'Segundo 001 - 25 Cupos',25,'Regular',NULL),(12,19,1,'Segundo 001 - 25 Cupos',25,'Regular',21),(20,18,NULL,'Primero, Segundo, Tercero',50,'Multigrado',NULL),(21,18,NULL,'Multigrado 4 y 5',50,'Multigrado',NULL),(22,18,6,'Segundo 02 - 10 Cupos',10,'Regular',NULL),(23,22,1,'Primero 001 - 25 Cupos',25,'Regular',20),(24,23,1,'Tercero 001 - 20 Cupos',20,'Regular',20);
 /*!40000 ALTER TABLE `grupo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -818,7 +858,7 @@ CREATE TABLE `oferta_academica` (
   CONSTRAINT `oferta_academica_ibfk_1` FOREIGN KEY (`grado_id`) REFERENCES `grado` (`id`),
   CONSTRAINT `oferta_academica_ibfk_2` FOREIGN KEY (`sede_jornada_id`) REFERENCES `sede_jornada` (`id`),
   CONSTRAINT `oferta_academica_ibfk_3` FOREIGN KEY (`anio_lectivo_id`) REFERENCES `anio_lectivo` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -827,7 +867,7 @@ CREATE TABLE `oferta_academica` (
 
 LOCK TABLES `oferta_academica` WRITE;
 /*!40000 ALTER TABLE `oferta_academica` DISABLE KEYS */;
-INSERT INTO `oferta_academica` VALUES (18,2,1,1),(19,2,4,1);
+INSERT INTO `oferta_academica` VALUES (18,2,1,1),(19,2,4,1),(22,4,1,1),(23,5,1,1);
 /*!40000 ALTER TABLE `oferta_academica` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -878,7 +918,7 @@ CREATE TABLE `periodo` (
   PRIMARY KEY (`id`),
   KEY `anio_lectivo_id` (`anio_lectivo_id`),
   CONSTRAINT `periodo_ibfk_1` FOREIGN KEY (`anio_lectivo_id`) REFERENCES `anio_lectivo` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -887,7 +927,7 @@ CREATE TABLE `periodo` (
 
 LOCK TABLES `periodo` WRITE;
 /*!40000 ALTER TABLE `periodo` DISABLE KEYS */;
-INSERT INTO `periodo` VALUES (2,'Periodo I','2025-02-10','2025-04-15',1);
+INSERT INTO `periodo` VALUES (2,'Periodo I','2025-02-10','2025-04-15',1),(4,'Periodo II','2025-04-16','2025-06-30',1),(5,'Periodo III','2025-07-20','2025-09-20',1),(6,'Periodo IV','2025-09-21','2025-11-30',1);
 /*!40000 ALTER TABLE `periodo` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -968,7 +1008,7 @@ CREATE TABLE `roles_acciones` (
 
 LOCK TABLES `roles_acciones` WRITE;
 /*!40000 ALTER TABLE `roles_acciones` DISABLE KEYS */;
-INSERT INTO `roles_acciones` VALUES (1,1),(2,1),(3,1),(1,2),(2,2),(3,2),(4,2),(1,3),(2,3),(3,3),(1,4),(2,4),(1,5),(2,5),(1,6),(2,6),(3,6),(1,7),(2,7),(3,7),(1,8),(2,8),(3,8),(1,9),(2,9),(3,9),(1,10),(2,10),(3,10),(1,11),(2,11),(3,11),(1,12),(2,12),(1,13),(2,13),(1,14),(2,14),(1,15),(2,15),(1,16),(2,16),(1,17),(2,17),(1,18),(2,18),(1,19),(2,19),(1,20),(2,20),(1,21),(2,21),(3,21),(4,21),(5,21),(1,22),(2,22),(1,23),(2,23),(1,24),(2,24),(1,25),(2,25),(4,25),(5,25),(1,26),(2,26),(1,27),(2,27),(1,28),(2,28),(3,28),(6,28),(1,29),(2,29),(3,29),(6,29),(1,30),(2,30),(3,30),(6,30),(1,31),(2,31),(3,31),(6,31),(1,32),(2,32),(3,32),(4,32),(6,32),(1,33),(2,33),(3,33),(4,33),(5,33),(6,33),(7,33),(1,34),(2,34),(3,34),(4,34),(6,34),(1,35),(2,35),(1,36),(2,36),(3,36),(1,37),(2,37),(3,37),(6,37),(1,38),(2,38),(3,38),(1,39),(2,39),(3,39),(1,40),(2,40),(3,40),(6,40),(1,41),(2,41),(3,41),(6,41),(1,42),(2,42),(3,42),(6,42),(1,43),(2,43),(3,43),(6,43),(1,44),(2,44),(1,45),(2,45),(3,45),(1,46),(2,46),(1,47),(2,47),(3,47),(1,48),(2,48),(3,48),(1,49),(2,49),(3,49),(1,50),(2,50),(3,50),(7,50),(1,51),(2,51),(3,51),(1,56),(2,56),(1,57),(2,57),(1,58),(2,58),(1,59),(2,59),(1,80),(2,80),(1,81),(2,81),(1,82),(2,82),(1,83),(2,83),(1,92),(2,92),(3,92),(4,92),(6,92),(1,93),(2,93),(3,93),(1,94),(2,94),(3,94),(1,95),(2,95),(3,95),(1,140),(2,140),(1,141),(2,141),(1,142),(2,142),(1,143),(2,143),(1,144),(2,144),(1,145),(2,145),(1,146),(2,146),(1,147),(2,147),(1,148),(2,148),(1,149),(2,149),(1,150),(2,150),(1,151),(3,151),(1,152),(3,152),(1,153),(3,153),(1,154),(3,154),(1,155),(2,155),(3,155),(1,156),(2,156),(3,156),(1,157),(2,157),(3,157),(1,158),(2,158),(3,158),(1,160),(1,161),(1,162),(1,163),(1,164);
+INSERT INTO `roles_acciones` VALUES (1,1),(2,1),(3,1),(1,2),(2,2),(3,2),(4,2),(1,3),(2,3),(3,3),(1,4),(2,4),(1,5),(2,5),(1,6),(2,6),(3,6),(1,7),(2,7),(3,7),(1,8),(2,8),(3,8),(1,9),(2,9),(3,9),(1,10),(2,10),(3,10),(1,11),(2,11),(3,11),(1,12),(2,12),(1,13),(2,13),(1,14),(2,14),(1,15),(2,15),(1,16),(2,16),(1,17),(2,17),(1,18),(2,18),(1,19),(2,19),(1,20),(2,20),(1,21),(2,21),(3,21),(4,21),(5,21),(1,22),(2,22),(1,23),(2,23),(1,24),(2,24),(1,25),(2,25),(4,25),(5,25),(1,26),(2,26),(1,27),(2,27),(1,28),(2,28),(3,28),(6,28),(1,29),(2,29),(3,29),(6,29),(1,30),(2,30),(3,30),(6,30),(1,31),(2,31),(3,31),(6,31),(1,32),(2,32),(3,32),(4,32),(6,32),(1,33),(2,33),(3,33),(4,33),(5,33),(6,33),(7,33),(1,34),(2,34),(3,34),(4,34),(6,34),(1,35),(2,35),(1,36),(2,36),(3,36),(1,37),(2,37),(3,37),(6,37),(1,38),(2,38),(3,38),(1,39),(2,39),(3,39),(1,40),(2,40),(3,40),(6,40),(1,41),(2,41),(3,41),(6,41),(1,42),(2,42),(3,42),(6,42),(1,43),(2,43),(3,43),(6,43),(1,44),(2,44),(1,45),(2,45),(3,45),(1,46),(2,46),(1,47),(2,47),(3,47),(1,48),(2,48),(3,48),(1,49),(2,49),(3,49),(1,50),(2,50),(3,50),(7,50),(1,51),(2,51),(3,51),(1,56),(2,56),(1,57),(2,57),(1,58),(2,58),(1,59),(2,59),(1,80),(2,80),(1,81),(2,81),(1,82),(2,82),(1,83),(2,83),(1,92),(2,92),(3,92),(4,92),(6,92),(1,93),(2,93),(3,93),(1,94),(2,94),(3,94),(1,95),(2,95),(3,95),(1,140),(2,140),(1,141),(2,141),(1,142),(2,142),(1,143),(2,143),(1,144),(2,144),(1,145),(2,145),(1,146),(2,146),(3,146),(1,147),(2,147),(1,148),(2,148),(1,149),(2,149),(1,150),(2,150),(1,151),(3,151),(1,152),(3,152),(1,153),(3,153),(1,154),(3,154),(1,155),(2,155),(3,155),(1,156),(2,156),(3,156),(1,157),(2,157),(3,157),(1,158),(2,158),(3,158),(1,160),(1,161),(1,162),(1,163),(1,164),(1,165),(2,165),(3,165),(1,166),(2,166),(3,166),(1,167),(2,167),(3,167),(1,168),(2,168),(3,168);
 /*!40000 ALTER TABLE `roles_acciones` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1135,4 +1175,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-10-03  0:03:27
+-- Dump completed on 2025-10-03 15:48:19

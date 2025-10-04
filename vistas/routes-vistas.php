@@ -32,6 +32,7 @@ return [
     'asignacion-docente-asignaturas' => ['archivo' => 'asignacion-docente-asignaturas.php', 'permiso' => 'asignacion_docente_ver'],
     'asignacion-academica' => ['archivo' => 'asignacion-academica.php', 'permiso' => 'asignacion_academica_ver'],
     'perfil-profesional' => ['archivo' => 'perfil-profesional.php', 'permiso' => 'perfil_profesional_ver'],
+    'asistencia' => ['archivo' => 'asistencia.php', 'permiso' => 'asistencia_ver'],
 
 
 

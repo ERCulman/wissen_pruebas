@@ -20,6 +20,7 @@ require_once "controladores/roles.controlador.php";
 require_once "controladores/auth.controlador.php";
 require_once "controladores/asignacion-docente-asignaturas.controlador.php";
 require_once "controladores/asignacion-academica.controlador.php";
+require_once "controladores/asistencia.controlador.php";
 
 
 require_once "modelos/usuarios.modelo.php";
@@ -38,6 +39,7 @@ require_once "modelos/roles.modelo.php";
 require_once "modelos/auth.modelo.php";
 require_once "modelos/asignacion-docente-asignaturas.modelo.php";
 require_once "modelos/asignacion-academica.modelo.php";
+require_once "modelos/asistencia.modelo.php";
 
 
 

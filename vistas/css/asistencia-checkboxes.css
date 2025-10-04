@@ -1,0 +1,96 @@
+/* =======================================
+   ESTILOS PARA CHECKBOXES DE ASISTENCIA
+======================================= */
+
+/* Contenedor de checkboxes */
+.checkbox-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 4px;
+  gap: 8px;
+}
+
+/* Estilos base para todos los checkboxes */
+.checkbox-container input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  margin: 0;
+  transform: scale(1.08);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border-radius: 4px;
+  position: relative;
+}
+
+/* Checkmark cuando está marcado */
+.checkbox-container input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: -2px;
+  left: 2px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+}
+
+/* Estilos específicos por color - bordes siempre visibles */
+.checkbox-pendiente {
+  border: 3px solid #007bff !important;
+  background-color: transparent;
+}
+
+.checkbox-pendiente:checked {
+  background-color: #007bff !important;
+}
+
+.checkbox-presente {
+  border: 3px solid #28a745 !important;
+  background-color: transparent;
+}
+
+.checkbox-presente:checked {
+  background-color: #28a745 !important;
+}
+
+.checkbox-ausente {
+  border: 3px solid #dc3545 !important;
+  background-color: transparent;
+}
+
+.checkbox-ausente:checked {
+  background-color: #dc3545 !important;
+}
+
+/* Hover effects */
+.checkbox-container input[type="checkbox"]:hover {
+  transform: scale(1.17);
+  transition: transform 0.2s ease;
+}
+
+/* Checkboxes deshabilitados */
+.checkbox-container input[type="checkbox"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: scale(1.08);
+}
+
+.checkbox-container input[type="checkbox"]:disabled:hover {
+  transform: scale(1.08);
+}
+
+/* Estilos para botones de estado visual */
+.btn-estado {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: none;
+  color: white;
+}
+
+.btn-pendiente { background-color: #6c757d; }
+.btn-presente { background-color: #28a745; }
+.btn-ausente { background-color: #dc3545; }
+.btn-retraso { background-color: #fd7e14; }

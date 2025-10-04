@@ -184,7 +184,7 @@ class ControladorOfertaEducativa {
                                     $cursoInfo = $stmt->fetch();
 
                                     if($gradoInfo && $cursoInfo) {
-                                        $nombreGrupo = $gradoInfo["nombre"] . " " . $cursoInfo["nombre"] . " - " . $cupos . " Cupos";
+                                        $nombreGrupo = $gradoInfo["nombre"] . " " . $cursoInfo["nombre"];
 
                                         // Se añaden los nuevos campos para mantener consistencia
                                         $datosGrupo = array(

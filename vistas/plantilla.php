@@ -180,6 +180,13 @@ if(isset($_SESSION["iniciarSesion"]) && $_SESSION["iniciarSesion"] == "ok"){
 <script type="module" src="vistas/js/validaciones/Inicializador.js"></script>
 
 <script src="vistas/js/estructura-curricular.js"></script>
+
+<?php
+if(isset($_GET["ruta"]) && $_GET["ruta"] == "asistencia"){
+    echo '<script src="vistas/js/asistencia.js?v=' . time() . '"></script>';
+}
+?>
+
 <!--  <script src="vistas/js/contraseña.js"></script> -->
 </body>
 </html>
